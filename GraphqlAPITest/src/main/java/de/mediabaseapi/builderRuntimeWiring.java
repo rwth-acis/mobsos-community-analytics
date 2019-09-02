@@ -20,6 +20,8 @@ import graphql.schema.DataFetchingEnvironment;
 import javax.servlet.annotation.WebServlet;
 import graphql.servlet.SimpleGraphQLServlet;
 
+
+//this is a test
 public class builderRuntimeWiring {
 	
 	public static GraphQLSchema generateSchema(String url) {
