@@ -1,0 +1,1 @@
+0:0:0:0:0:0:0:1 - - [29/Aug/2019:12:16:31 +0200] "GET /MediabaseRESTAPI/rest/mediabase/data/DB2INFO5/BW_ENTRIES/?colname=PERMA_LINK,%20ID&condition=ID=175105 HTTP/1.1" 200 91 http-bio-8080-exec-2 1034

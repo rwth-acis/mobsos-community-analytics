@@ -1,0 +1,13 @@
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:10:38:15 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 28455
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:11:28:18 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 24793
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:11:31:18 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 25721
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:11:33:22 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 23421
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:12:26:39 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 24584
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:13:53:57 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 16946
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:13:55:41 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 17039
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:14:39:27 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 17364
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:14:41:56 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 16318
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:14:47:43 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 18312
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:14:49:49 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 16993
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:14:54:00 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 19445
+0:0:0:0:0:0:0:1 - - [18/Aug/2019:15:11:58 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 405 - http-bio-8080-exec-1 17003
