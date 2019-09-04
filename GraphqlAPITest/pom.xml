@@ -7,14 +7,36 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>GraphqlAPITest Maven Webapp</name>
   <url>http://maven.apache.org</url>
+  
+  <repositories>
+  	<repository>
+  		<id>snapshots</id>
+  		<url>http://role.dbis.rwth-aachen.de:9911/archiva/repository/internal/</url>
+  	</repository>
+  </repositories>
+  
   <dependencies>
+  
+  <!-- http://role.dbis.rwth-aachen.de:9911/archiva/repository/internal/ -->
+    <dependency>
+    <groupId>i5</groupId>
+    <artifactId>las2peer</artifactId>
+    <version>0.7.6</version>
+	</dependency>
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
+      <version>4.12</version>
     </dependency>
     
+    <!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
+	<dependency>
+    	<groupId>com.nimbusds</groupId>
+    	<artifactId>nimbus-jose-jwt</artifactId>
+   		<version>3.10</version>
+	</dependency>
+	
     <dependency>
     	<groupId>javax.xml.bind</groupId>
     	<artifactId>jaxb-api</artifactId>

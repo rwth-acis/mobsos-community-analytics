@@ -1,5 +1,5 @@
 /**
- *  @author Clemens Kersjes
+ *  @author Kersjes
  *  RESTful API for Mediabase
  */
 package de.mediabaseapi;
@@ -15,8 +15,15 @@ import org.json.JSONObject;
 import javax.ws.rs.*;
 import java.sql.*;
 
-@Path("/mediabase")
-public class MediabaseTestAPI{
+import i5.las2peer.api.Service;
+import i5.las2peer.restMapper.RESTService;
+import i5.las2peer.restMapper.annotations.ServicePath;
+
+// for las2peer testing
+@ServicePath("/mediabase")
+// for API outside of las2peer
+//@Path("/mediabase")
+public class MediabaseTestAPI extends RESTService{
 	
 	 // API is hosted under http://localhost:8080/MediabaseRESTAPI/rest/mediabase/
 	 private Connection connection = dbConnection("jdbc:db2://beuys.informatik.rwth-aachen.de:50003/mav_meas", "db2info5", "pfidb52ab");
@@ -37,6 +44,9 @@ public class MediabaseTestAPI{
 		     rs.close();
 		     stmt.close();
 		     connection.close();
+		     if (json != null && json.toString().equals("[]")) {
+					return Response.status(454).build();
+				}
 			 return Response.status(200).entity(json.toString()).build();
 		 } catch (SQLException exc) {
 			    System.out.println("JDBC/SQL error: " + exc.toString());
@@ -57,12 +67,16 @@ public class MediabaseTestAPI{
 			    
 			    // construct SQL-Query from path parameters 
 			    stmt = connection.createStatement();
-			    String query = "SELECT COLNAME from SYSCAT.COLUMNS where TABNAME='" + tableName + "'";
+			    String query = "SELECT COLNAME from SYSCAT.COLUMNS where TABNAME='" 
+			    + tableName + "' AND TABSCHEMA ='" + schema + "'";
 
 			    // execute the query
 			    ResultSet rs = stmt.executeQuery(query);
 			    
 				JSONArray json = resultSetToJSON(rs);
+				if (json != null && json.toString().equals("[]")) {
+					return Response.status(454).build();
+				}
 			    rs.close();
 			    stmt.close();
 			    connection.close();
@@ -77,7 +91,7 @@ public class MediabaseTestAPI{
 			}
 	 }
 	 
-	 // return entry in column in table in  schema
+	 // return entry in column in table in schema
 	 @Path("/data/{schema}/{tableName}")
 	 @GET
 	 public Response getEntry(@PathParam("schema") String schema, @PathParam("tableName") String tableName, 
@@ -105,8 +119,10 @@ public class MediabaseTestAPI{
 			    // execute the query
 			    ResultSet rs = stmt.executeQuery(query);
 
-			    
 				JSONArray json = resultSetToJSON(rs);
+				if (json != null && json.toString().equals("[]")) {
+					return Response.status(455).build();
+				}
 			    rs.close();
 			    stmt.close();
 			    connection.close();
@@ -114,7 +130,10 @@ public class MediabaseTestAPI{
 			    return Response.status(200).entity(json.toString()).build();
 			} catch (SQLException exc) {
 				if (exc.getMessage().contains("SQLCODE=-206, SQLSTATE=42703")) {
-					return Response.status(404).build();
+					return Response.status(453).build();
+				}
+				if (exc.getMessage().contains("SQLCODE=-204, SQLSTATE=42704")) {
+					return Response.status(454).build();
 				}
 			    System.out.println("JDBC/SQL error: " + exc.toString());
 			    return Response.status(400).build();
@@ -144,7 +163,7 @@ public class MediabaseTestAPI{
 
 	 }
 	 
-	 protected static Connection dbConnection(String url, String username, String password) {
+	 public static Connection dbConnection(String url, String username, String password) {
 		 try {
 			 Class.forName("com.ibm.db2.jcc.DB2Driver");
 		 } catch (ClassNotFoundException exc) {

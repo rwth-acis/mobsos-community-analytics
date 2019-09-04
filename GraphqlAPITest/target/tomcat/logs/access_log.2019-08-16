@@ -1,9 +1,0 @@
-0:0:0:0:0:0:0:1 - - [16/Aug/2019:15:42:28 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 20236
-0:0:0:0:0:0:0:1 - - [16/Aug/2019:15:46:36 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 21804
-0:0:0:0:0:0:0:1 - - [16/Aug/2019:16:21:26 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 22338
-0:0:0:0:0:0:0:1 - - [16/Aug/2019:16:23:27 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 21574
-0:0:0:0:0:0:0:1 - - [16/Aug/2019:16:26:34 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 21896
-0:0:0:0:0:0:0:1 - - [16/Aug/2019:16:28:01 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 22790
-127.0.0.1 - - [16/Aug/2019:16:40:12 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 19885
-127.0.0.1 - - [16/Aug/2019:16:43:07 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 17797
-127.0.0.1 - - [16/Aug/2019:16:44:46 +0200] "GET /GraphqlAPITest/graphql/graphql/test HTTP/1.1" 500 3036 http-bio-8080-exec-1 18175

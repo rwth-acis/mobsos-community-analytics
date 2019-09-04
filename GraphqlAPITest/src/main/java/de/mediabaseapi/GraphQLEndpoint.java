@@ -24,6 +24,7 @@ import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.TypeDefinitionRegistry;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
 
@@ -97,8 +98,8 @@ public class GraphQLEndpoint{
 	
 	List<String> primaryKeyValues;
 
-	@Path("test")
-	public Response test() {
+	@Path("test/{query}")
+	public Response test(@PathParam("query") String query) {
 				
 		// database url
         String url = "jdbc:db2://beuys.informatik.rwth-aachen.de:50003/mav_meas";
@@ -123,6 +124,7 @@ public class GraphQLEndpoint{
  	        
  	        String graphqlQuery = "query { bw_entries(id: 915609){ perma_link, insert_date}}";
  	        //graphqlQuery = "query {bw_bursts { project_id, word}}";
+ 	        graphqlQuery = query;
  	        ExecutionInput executionInput = ExecutionInput.newExecutionInput().query(graphqlQuery).build();
  	        ExecutionResult executionResult = build.execute(executionInput);
  	        Object data = executionResult.getData();
@@ -480,7 +482,7 @@ public class GraphQLEndpoint{
 	 * @param 	con contains connection to DB2 database
 	 * @return 	list of the primary keys
 	 */
-	protected static List<String> getPrimaryKeys(String tableName, String schema, Connection con) {
+	public static List<String> getPrimaryKeys(String tableName, String schema, Connection con) {
 		try {		
 			Statement stmt = con.createStatement();
 			String query = "SELECT NAME " + 
@@ -508,7 +510,7 @@ public class GraphQLEndpoint{
 	 * @param 	con contains connection to DB2 database
 	 * @return	list of the foreign keys
 	 */
-	protected static List<String> getForeignTables(String tableName, String schema, Connection con) {
+	public static List<String> getForeignTables(String tableName, String schema, Connection con) {
 		try {		
 			Statement stmt = con.createStatement();
 			String query = "SELECT ref.tabname as foreign_table, " +
