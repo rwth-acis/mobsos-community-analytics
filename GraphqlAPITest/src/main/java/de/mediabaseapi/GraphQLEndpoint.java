@@ -1,9 +1,20 @@
 /**
- *  @author Clemens Kersjes
- *  GraphQL API for Mediabase
+ * GraphQL API for Mediabase
  */
-
 package de.mediabaseapi;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
 //import com.google.common.io.Resources;
@@ -22,17 +33,83 @@ import graphql.schema.idl.RuntimeWiring.Builder;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.TypeDefinitionRegistry;
+import graphql.servlet.GraphQLServlet;
+import graphql.servlet.SimpleGraphQLServlet;
+import i5.las2peer.api.Service;
+import i5.las2peer.restMapper.RESTService;
+import i5.las2peer.restMapper.annotations.ServicePath;
 
+import javax.servlet.ServletContext;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
 
 
 @Path("/graphql")
-public class GraphQLEndpoint{
+//@WebServlet("/graphql")
+@ServicePath("/graphql")
+//public class GraphQLEndpoint extends RESTService {
+public class GraphQLEndpoint {
 	
-	@Path("nexttest")
+	GraphQLSchema schema = null;
+	@Context ServletContext context;
+	
+	@Path("/graphql")
+	@GET
+	public Response executeQuery(@QueryParam("query") String query) {
+		GraphQL graphQL = (GraphQL) context.getAttribute("graphqlBuild");
+		ExecutionResult executionResult = graphQL.execute(query);
+		return Response.status(200).entity(executionResult.getData().toString()).build();
+	}
+	
+//	public GraphQLEndpoint() {
+//		super(buildSchema());
+//		System.out.println("testing2");
+//	}
+//	
+//	private static GraphQLSchema buildSchema() {
+//		Connection con = null;
+//        
+//        // load JDBC-driver
+//        try {
+//		    Class.forName("com.ibm.db2.jcc.DB2Driver");
+//		} catch (ClassNotFoundException exc) {
+//		    System.err.println("Could not load DB2Driver:" + exc.toString());
+//		    return null;
+//		}
+//        try {
+//        	InputStream input = new FileInputStream("src/main/resources/config.properties");
+//        	Properties prop = new Properties();
+//        	prop.load(input);
+// 		    con = DriverManager.getConnection(prop.getProperty("db.url"), prop.getProperty("db.user"), prop.getProperty("db.password"));
+// 	        
+// 	        //GraphQLSchema graphQLSchema = builderRuntimeWiring.generateSchema(con);
+// 		    // build GraphQL API form schema
+// 		   System.out.println("testing");
+// 	        GraphQLSchema graphQLSchema = generateSchema(con, "DB2INFO5");
+// 	       
+// 	        return graphQLSchema;
+//        } catch (SQLException exc) {
+// 		    System.err.println("getConnection failed: " + exc.toString());
+// 		    return null;
+// 		} catch (IOException exc) {
+// 			System.err.println("Input failed: " + exc.toString());
+// 			return null;
+// 		}
+//	}
+	
+	@Path("/nexttest/")
 	public Response nexttest() {
 		String schema = "type BW_ENTRIES {id: ID! project_id: Int! perma_link: String!"
 				+ " content_chunk: String title: String trackback_url: String insert_date: String!"
@@ -96,15 +173,20 @@ public class GraphQLEndpoint{
         return Response.status(200).build();
 	}
 	
-	List<String> primaryKeyValues;
+	//static List<String> primaryKeyValues;
+	
 
-	@Path("test/{query}")
-	public Response test(@PathParam("query") String query) {
+	@Path("/testing/{input}")
+	@GET
+	public Response query(@PathParam("input") String query) {
 				
 		// database url
-        String url = "jdbc:db2://beuys.informatik.rwth-aachen.de:50003/mav_meas";
+        //String url = "jdbc:db2://beuys.informatik.rwth-aachen.de:50003/mav_meas";
         String dbSchema = "DB2INFO5";
+        String filePath = "src/main/resources/config.properties";
         Connection con = null;
+        
+        System.out.println("Query: " + query);
         
         // load JDBC-driver
         try {
@@ -114,16 +196,21 @@ public class GraphQLEndpoint{
 		    return null;
 		}
         try {
- 	       // TODO get username and password from outside source
- 		   con = DriverManager.getConnection(url, "db2info5","pfidb52ab");
+        	InputStream input = new FileInputStream(filePath);
+        	Properties prop = new Properties();
+        	prop.load(input);
+ 		    con = DriverManager.getConnection(prop.getProperty("db.url"), prop.getProperty("db.user"), prop.getProperty("db.password"));
  	        
  	        //GraphQLSchema graphQLSchema = builderRuntimeWiring.generateSchema(con);
- 		    // build GraphQL API form schema
- 	        GraphQLSchema graphQLSchema = generateSchema(con, dbSchema);
- 	        GraphQL build = GraphQL.newGraphQL(graphQLSchema).build();
- 	        
- 	        String graphqlQuery = "query { bw_entries(id: 915609){ perma_link, insert_date}}";
- 	        //graphqlQuery = "query {bw_bursts { project_id, word}}";
+ 		    // build GraphQL API form schema, only once at the first API call
+ 		    if (schema == null) {
+ 		    	schema = generateSchema(con, dbSchema);
+ 		    }
+ 	        //GraphQLSchema graphQLSchema = generateSchema(con, dbSchema);
+ 	        //GraphQL build = GraphQL.newGraphQL(graphQLSchema).build();
+ 		    GraphQL build = GraphQL.newGraphQL(schema).build();
+ 		    
+ 	        String graphqlQuery = "query{bw_entries(id:915609){perma_link,insert_date}}";
  	        graphqlQuery = query;
  	        ExecutionInput executionInput = ExecutionInput.newExecutionInput().query(graphqlQuery).build();
  	        ExecutionResult executionResult = build.execute(executionInput);
@@ -139,12 +226,15 @@ public class GraphQLEndpoint{
  	        	System.out.println("Error during execution!");
  	        	return Response.status(400).build();
  	        } else {
- 	        	System.out.println(data.toString());
- 	            return Response.status(200).build();
+ 	        	System.out.println("Data: " + data.toString());
+ 	            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(data.toString()).build();
  	        }
  		} catch (SQLException exc) {
- 		    System.err.println("getConnection failed:" + exc.toString());
+ 		    System.err.println("getConnection failed: " + exc.toString());
  		    return null;
+ 		} catch (IOException exc) {
+ 			System.err.println("Input failed: " + exc.toString());
+ 			return null;
  		}
 	}
 	
@@ -336,9 +426,8 @@ public class GraphQLEndpoint{
 					query = "SELECT " + subfieldSelection + " FROM " + tableName;
 				}
 				// check if there are any parameters
-				if (environment.getArguments() != null && environment.getArguments().isEmpty()) {
+				if (environment.getArguments() != null && !environment.getArguments().isEmpty()) {
 					// transform parameters into SQL conditions for the query
-					List<String> parameter = new ArrayList<String>();
 					List<String> keys = new ArrayList<String>(environment.getArguments().keySet());
 					for (int i = 0; i < keys.size(); i++) {
 						//parameter.add(environment.getArgument(keys.get(i)));	
@@ -366,7 +455,7 @@ public class GraphQLEndpoint{
 //					else {
 //						return null;
 //					}
-					primaryKeyValues = parameter;
+					//primaryKeyValues = parameter;
 				}
 				
 				try {

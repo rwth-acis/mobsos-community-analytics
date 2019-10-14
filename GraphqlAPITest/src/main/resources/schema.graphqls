@@ -1,3245 +1,1076 @@
-type Query {
-	b_discourses: B_DISCOURSES
-}
-type B_DISCOURSES {
-	id: Int!
-	discourses: String
-}
-type Query {
-	b_roles: B_ROLES
-}
-type B_ROLES {
-	id: Int!
-	roles: String
-}
-type Query {
-	b_role_num: B_ROLE_NUM
-}
-type B_ROLE_NUM {
-	id: Int!
-	roles: Float
-}
-type Query {
-	advise_index: ADVISE_INDEX
-}
-type ADVISE_INDEX {
-	firstkeycard: Int!
-	fullkeycard: Int!
-	first2keycard: Int!
-	first3keycard: Int!
-	first4keycard: Int!
-	packed_desc: String
-	explain_level: String!
-	querytag: String!
-	uniquerule: String!
-	converted: String!
-	reverse_scans: String!
-	use_index: String
-	exists: String!
-	ridtoblock: String!
-	colnames: String!
-	creation_text: String!
-	clusterfactor: Float!
-	stmtno: Int!
-	sectno: Int!
-	queryno: Int!
-	nleaf: Int!
-	sequential_pages: Int!
-	density: Int!
-	colcount: Int!
-	iid: Int!
-	nlevels: Int!
-	clusterratio: Int!
-	userdefined: Int!
-	system_required: Int!
-	pctfree: Int!
-	unique_colcount: Int!
-	minpctused: Int!
-	explain_time: String!
-	create_time: String!
-	stats_time: String
-	run_id: String
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	name: String!
-	creator: String!
-	tbname: String!
-	page_fetch_pairs: String!
-	remarks: String
-	tbcreator: String!
-	definer: String!
-	indextype: String!
-	advise_instance: ADVISE_INSTANCE!
-}
-type Query {
-	advise_instance: ADVISE_INSTANCE
-}
-type ADVISE_INSTANCE {
-	wkld_compression: String!
-	status: String!
-	start_time: String!
-	end_time: String!
-	mode: String!
-}
-type Query {
-	advise_mqt: ADVISE_MQT
-}
-type ADVISE_MQT {
-	extra_info: String!
-	explain_level: String!
-	use_mqt: String
-	mqt_source: String
-	refresh_type: String!
-	exists: String!
-	query_text: String!
-	creation_text: String!
-	sample_text: String!
-	colstats: String!
-	numrows: Float!
-	rowsize: Float!
-	benefit: Float!
-	stmtno: Int!
-	sectno: Int!
-	iid: Int!
-	numcols: Int!
-	explain_time: String!
-	create_time: String!
-	stats_time: String
-	run_id: String
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	name: String!
-	tbspace: String!
-	creator: String!
-	advise_instance: ADVISE_INSTANCE!
-}
-type Query {
-	advise_partition: ADVISE_PARTITION
-}
-type ADVISE_PARTITION {
-	explain_level: String!
-	querytag: String!
-	replicate: String!
-	useit: String
-	colnames: String!
-	cost: Float!
-	stmtno: Int!
-	sectno: Int!
-	queryno: Int!
-	pmid: Int!
-	colcount: Int!
-	explain_time: String!
-	run_id: String
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	tbname: String!
-	tbcreator: String!
-	tbspace: String!
-	advise_instance: ADVISE_INSTANCE!
-}
-type Query {
-	advise_table: ADVISE_TABLE
-}
-type ADVISE_TABLE {
-	table_exists: String!
-	use_table: String!
-	gen_columns: String!
-	organize_by: String!
-	creation_text: String!
-	alter_command: String!
-	diskuse: Float!
-	run_id: String
-	table_name: String!
-	table_schema: String!
-	tablespace: String!
-	selection_flag: String!
-	advise_instance: ADVISE_INSTANCE!
-}
-type Query {
-	advise_workload: ADVISE_WORKLOAD
-}
-type ADVISE_WORKLOAD {
-	workload_name: String!
-	compilable: String
-	statement_text: String!
-	importance: Float!
-	weight: Float!
-	cost_before: Float
-	cost_after: Float
-	statement_no: Int!
-	frequency: Int!
-	statement_tag: String!
-}
-type Query {
-	bw_author: BW_AUTHOR
-}
-type BW_AUTHOR {
-	id: Int!
-	authorname: String!
-	authorurl: String
-}
-type Query {
-	bw_bursts: BW_BURSTS
-}
-type BW_BURSTS {
-	project_id: Int!
-	id: Int!
-	entry_id: Int!
-	word: String!
-	power: Float!
-	bdate: String!
-	bw_entries: BW_ENTRIES!
-	bw_projects: BW_PROJECTS!
-}
-type Query {
-	bw_comment: BW_COMMENT
-}
-type BW_COMMENT {
-	content_chunk: String!
-	id: Int!
-	entry_id: Int!
-	author_id: Int!
-	date: String!
-}
-type Query {
-	bw_entries: BW_ENTRIES
-}
-type BW_ENTRIES {
-	id: Int!
-	project_id: Int!
-	perma_link: String!
-	content_chunk: String
-	title: String
-	trackback_url: String
-	insert_date: String!
-	mood: String
-	content: String
-	author_id: Int
-	commentlink: String
-	est_date: String
-	res_code: Int!
-	word_set: String
-	word_count: Int
-}
-type Query {
-	bw_multimedia: BW_MULTIMEDIA
-}
-type BW_MULTIMEDIA {
-	multimedia: String!
-	id: Int!
-	entry_id: Int!
-	mime: String!
-}
-type Query {
-	bw_projects: BW_PROJECTS
-}
-type BW_PROJECTS {
-	archive: Int!
-	feed_a: Int!
-	feed_len: Int!
-	content_pos: String
-	content_link: String
-	content_len: Int
-	descr: String
-	proj_update: String
-	id: Int!
-	url: String!
-	name: String
-	category: Int
-	language: String
-	proj_start: String
-	proj_end: String
-	feed: String!
-}
-type Query {
-	bw_references: BW_REFERENCES
-}
-type BW_REFERENCES {
-	id: Int!
-	entry_id: Int!
-	type: Int
-	url: String!
-}
-type Query {
-	bw_trackbacks: BW_TRACKBACKS
-}
-type BW_TRACKBACKS {
-	id: Int!
-	entry_id: Int!
-	url: String!
-	title_trackback: String
-}
-type Query {
-	contacts: CONTACTS
-}
-type CONTACTS {
-	id: Int!
-	created_on: String
-	updated_on: String
-	name: String
-}
-type Query {
-	country: COUNTRY
-}
-type COUNTRY {
-	code: String
-	abbrcaption: String
-	id: Int!
-	caption: String
-}
-type Query {
-	egraeculi: EGRAECULI
-}
-type EGRAECULI {
-	swprojid: Int
-	mailid: Int!
-	swprojname: String
-	url: String!
-}
-type Query {
-	event: EVENT
-}
-type EVENT {
-	start: String
-	end: String
-	id: Int!
-	title: String
-}
-type Query {
-	explain_argument: EXPLAIN_ARGUMENT
-}
-type EXPLAIN_ARGUMENT {
-	explain_level: String!
-	argument_type: String!
-	long_argument_value: String
-	stmtno: Int!
-	sectno: Int!
-	operator_id: Int!
-	explain_time: String!
-	source_name: String!
-	source_schema: String!
-	explain_requester: String!
-	source_version: String!
-	argument_value: String
-	explain_statement: EXPLAIN_STATEMENT!
-}
-type Query {
-	explain_instance: EXPLAIN_INSTANCE
-}
-type EXPLAIN_INSTANCE {
-	explain_option: String!
-	snapshot_taken: String!
-	db2_version: String!
-	sql_type: String!
-	block: String!
-	isolation: String!
-	parallelism: String!
-	datajoiner: String!
-	cpu_speed: Float!
-	comm_speed: Float!
-	queryopt: Int!
-	buffpage: Int!
-	avg_appls: Int!
-	sortheap: Int!
-	locklist: Int!
-	locks_avail: Int!
-	dbheap: Int!
-	maxlocks: Int!
-	explain_time: String!
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	remarks: String
-}
-type Query {
-	explain_object: EXPLAIN_OBJECT
-}
-type EXPLAIN_OBJECT {
-	row_count: Int!
-	fullkeycard: Int!
-	firstkeycard: Int!
-	first2keycard: Int!
-	first3keycard: Int!
-	first4keycard: Int!
-	numrids: Int!
-	numrids_deleted: Int!
-	num_empty_leafs: Int!
-	active_blocks: Int!
-	explain_level: String!
-	distinct: String!
-	object_type: String!
-	stats_src: String!
-	overhead: Float!
-	transfer_rate: Float!
-	cluster: Float!
-	average_sequence_gap: Float!
-	average_random_fetch_pages: Float!
-	average_sequence_fetch_gap: Float!
-	average_sequence_pages: Float!
-	average_sequence_fetch_pages: Float!
-	average_random_pages: Float!
-	stmtno: Int!
-	pages: Int!
-	prefetchsize: Int!
-	extentsize: Int!
-	nleaf: Int!
-	sectno: Int!
-	width: Int!
-	density: Int!
-	nlevels: Int!
-	overflow: Int!
-	sequential_pages: Int!
-	column_count: Int!
-	explain_time: String!
-	create_time: String
-	statistics_time: String
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	tablespace_name: String
-	object_schema: String!
-	object_name: String!
-	explain_statement: EXPLAIN_STATEMENT!
-}
-type Query {
-	explain_operator: EXPLAIN_OPERATOR
-}
-type EXPLAIN_OPERATOR {
-	explain_level: String!
-	operator_type: String!
-	total_cost: Float!
-	io_cost: Float!
-	cpu_cost: Float!
-	first_row_cost: Float!
-	re_total_cost: Float!
-	re_io_cost: Float!
-	re_cpu_cost: Float!
-	comm_cost: Float!
-	first_comm_cost: Float!
-	buffers: Float!
-	remote_total_cost: Float!
-	remote_comm_cost: Float!
-	stmtno: Int!
-	sectno: Int!
-	operator_id: Int!
-	explain_time: String!
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	explain_statement: EXPLAIN_STATEMENT!
-}
-type Query {
-	explain_predicate: EXPLAIN_PREDICATE
-}
-type EXPLAIN_PREDICATE {
-	explain_level: String!
-	how_applied: String!
-	when_evaluated: String!
-	relop_type: String!
-	subquery: String!
-	predicate_text: String
-	filter_factor: Float!
-	stmtno: Int!
-	sectno: Int!
-	operator_id: Int!
-	predicate_id: Int!
-	explain_time: String!
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	explain_statement: EXPLAIN_STATEMENT!
-}
-type Query {
-	explain_statement: EXPLAIN_STATEMENT
-}
-type EXPLAIN_STATEMENT {
-	snapshot: String
-	explain_level: String!
-	querytag: String!
-	statement_type: String!
-	updatable: String!
-	deletable: String!
-	statement_text: String!
-	total_cost: Float!
-	stmtno: Int!
-	sectno: Int!
-	queryno: Int!
-	query_degree: Int!
-	explain_time: String!
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	explain_instance: EXPLAIN_INSTANCE!
-}
-type Query {
-	explain_stream: EXPLAIN_STREAM
-}
-type EXPLAIN_STREAM {
-	source_type: String!
-	target_type: String!
-	single_node: String
-	explain_level: String!
-	column_names: String
-	partition_columns: String
-	stream_count: Float!
-	sectno: Int!
-	stream_id: Int!
-	source_id: Int!
-	target_id: Int!
-	predicate_id: Int!
-	stmtno: Int!
-	column_count: Int!
-	pmid: Int!
-	explain_time: String!
-	explain_requester: String!
-	source_name: String!
-	source_schema: String!
-	source_version: String!
-	object_schema: String
-	object_name: String
-	explain_statement: EXPLAIN_STATEMENT!
-}
-type Query {
-	fw_atom_entries: FW_ATOM_ENTRIES
-}
-type FW_ATOM_ENTRIES {
-	content: String!
-	subtitle: String
-	id: Int!
-	updated: String!
-	uri: String!
-	title: String!
-	author: String
-	link: String
-	version: String
-}
-type Query {
-	fw_atom_entryitemconnect: FW_ATOM_ENTRYITEMCONNECT
-}
-type FW_ATOM_ENTRYITEMCONNECT {
-	entryid: Int!
-	itemid: Int!
-	fw_atom_entries: FW_ATOM_ENTRIES!
-	fw_atom_items: FW_ATOM_ITEMS!
-}
-type Query {
-	fw_atom_items: FW_ATOM_ITEMS
-}
-type FW_ATOM_ITEMS {
-	uri: String
-	id: Int!
-	title: String!
-	updated: String
-	author: String
-	content: String
-	summary: String
-	link: String
-}
-type Query {
-	fw_atom_run: FW_ATOM_RUN
-}
-type FW_ATOM_RUN {
-	projid: Int!
-	entryid: Int!
-	rundate: String!
-	fw_projects: FW_PROJECTS!
-}
-type Query {
-	fw_checkofchange_help: FW_CHECKOFCHANGE_HELP
-}
-type FW_CHECKOFCHANGE_HELP {
-	content: String!
-}
-type Query {
-	fw_projects: FW_PROJECTS
-}
-type FW_PROJECTS {
-	standard: String!
-	descr: String
-	proj_start: String!
-	proj_end: String
-	id: Int!
-	udc: Int
-	name: String!
-	url: String!
-	goodtouse: String
-	language: String
-	ud_classification: UD_CLASSIFICATION!
-}
-type Query {
-	fw_rss_entries: FW_RSS_ENTRIES
-}
-type FW_RSS_ENTRIES {
-	image: String
-	descr: String!
-	content: String!
-	id: Int!
-	ttl: Int
-	pubdate: String
-	title: String
-	link: String
-	language: String
-	version: String
-	image_type: String
-}
-type Query {
-	fw_rss_entryitemconnect: FW_RSS_ENTRYITEMCONNECT
-}
-type FW_RSS_ENTRYITEMCONNECT {
-	entryid: Int!
-	itemid: Int!
-	fw_rss_entries: FW_RSS_ENTRIES!
-	fw_rss_items: FW_RSS_ITEMS!
-}
-type Query {
-	fw_rss_help: FW_RSS_HELP
-}
-type FW_RSS_HELP {
-	entryid: Int!
-	itemid: Int!
-}
-type Query {
-	fw_rss_items: FW_RSS_ITEMS
-}
-type FW_RSS_ITEMS {
-	id: Int!
-	title: String!
-	link: String
-	descr: String!
-	author: String
-	comments: String
-	guid: String
-}
-type Query {
-	fw_rss_run: FW_RSS_RUN
-}
-type FW_RSS_RUN {
-	projid: Int!
-	entryid: Int!
-	rundate: String!
-	fw_projects: FW_PROJECTS!
-	fw_rss_entries: FW_RSS_ENTRIES!
-}
-type Query {
-	languages: LANGUAGES
-}
-type LANGUAGES {
-	language_id: Int!
-	language_name: String!
-}
-type Query {
-	lw_entries: LW_ENTRIES
-}
-type LW_ENTRIES {
-	id: Int!
-	reply_to: Int
-	top_mess: Int
-	archivemail: String!
-	recipient: String
-	copy: String
-	content: String!
-	header: String!
-	hea_refer: String
-	project: Int
-	date_of_insertion: String!
-	sent: String
-	encoding: String
-	message_id: String
-	hea_reply: String
-	subject: String
-	sender: String
-	sender_email: String
-	lw_entries: LW_ENTRIES!
-	lw_entries: LW_ENTRIES!
-	lw_projects: LW_PROJECTS!
-}
-type Query {
-	lw_entries_tt: LW_ENTRIES_TT
-}
-type LW_ENTRIES_TT {
-	id: Int!
-	reply_to: Int
-	top_mess: Int
-	archivemail: String!
-	content: String!
-	header: String!
-	hea_refer: String
-	recipient: String
-	copy: String
-	project: Int
-	date_of_insertion: String!
-	sent: String
-	message_id: String
-	hea_reply: String
-	subject: String
-	sender: String
-	sender_email: String
-	encoding: String
-}
-type Query {
-	lw_mailanalysis: LW_MAILANALYSIS
-}
-type LW_MAILANALYSIS {
-	reply_to: Int
-	mail: Int!
-	top_mess: Int
-	hea_refer: String
-	hea_reply: String
-	recipient: String
-	copy: String
-	plaincontent: String
-	project: Int
-	received: String
-	sent: String
-	message_id: String!
-	subject: String
-	sender: String
-}
-type Query {
-	lw_person_addr: LW_PERSON_ADDR
-}
-type LW_PERSON_ADDR {
-	id: Int!
-	project: Int!
-	pname: String
-	paddr: String!
-}
-type Query {
-	lw_person_mail: LW_PERSON_MAIL
-}
-type LW_PERSON_MAIL {
-	id: Int!
-	mail: String
-	person: String
-	mail_expression: String!
-}
-type Query {
-	lw_projects: LW_PROJECTS
-}
-type LW_PROJECTS {
-	descr: String
-	proj_end: String
-	proj_start: String
-	id: Int!
-	udc: Int
-	crit_check: String
-	last_change: String
-	password: String
-	url: String
-	language: String
-	crit_sender: String
-	name: String!
-	crit_rec: String
-	crit_subject: String
-	ud_classification: UD_CLASSIFICATION!
-}
-type Query {
-	lw_projects_month_analysis: LW_PROJECTS_MONTH_ANALYSIS
-}
-type LW_PROJECTS_MONTH_ANALYSIS {
-	project: Int!
-	month: Int!
-	year: Int!
-	cnt_mails_per_month: Int
-	cnt_active_mail_senders: Int
-	lw_projects: LW_PROJECTS!
-}
-type Query {
-	lw_project_analysis: LW_PROJECT_ANALYSIS
-}
-type LW_PROJECT_ANALYSIS {
-	nrpeople: Int
-	nrtopmess: Int
-	nrthread: Int
-	last_email: Int
-	wrdpermail: Float
-	avr_mpd_variance: Float
-	avethrddepth: Float
-	avr_mail_per_day: Float
-	project: Int!
-	cnt_mails_today: Int
-	cnt_mails_total: Int
-	cnt_active_mail_senders: Int
-	largest_inactivity_gap: Int
-	lw_entries: LW_ENTRIES!
-	lw_projects: LW_PROJECTS!
-}
-type Query {
-	lw_project_analysis_temp: LW_PROJECT_ANALYSIS_TEMP
-}
-type LW_PROJECT_ANALYSIS_TEMP {
-	last_email: Int
-	avr_mail_per_day: Float
-	avr_mpd_variance: Float
-	project: Int!
-	cnt_mails_today: Int
-	cnt_mails_total: Int
-	cnt_active_mail_senders: Int
-	largest_inactivity_gap: Int
-}
-type Query {
-	lw_project_regex_check: LW_PROJECT_REGEX_CHECK
-}
-type LW_PROJECT_REGEX_CHECK {
-	project: Int!
-	last_check: String!
-	lw_projects: LW_PROJECTS!
-}
-type Query {
-	lw_project_word_of_day: LW_PROJECT_WORD_OF_DAY
-}
-type LW_PROJECT_WORD_OF_DAY {
-	language: String
-	word: String
-	day: String!
-	projid: Int!
-	count: Int
-	lw_projects: LW_PROJECTS!
-}
-type Query {
-	lw_thread_tree: LW_THREAD_TREE
-}
-type LW_THREAD_TREE {
-	thread: Int!
-	mail: Int
-	depth: Int!
-	order: Int!
-	lw_entries: LW_ENTRIES!
-	lw_entries: LW_ENTRIES!
-}
-type Query {
-	lw_url_references: LW_URL_REFERENCES
-}
-type LW_URL_REFERENCES {
-	mail: Int!
-	plain_link: String!
-	protocol: String
-	domain: String
-	path: String
-	query_string: String
-}
-type Query {
-	lw_used_mime_parts: LW_USED_MIME_PARTS
-}
-type LW_USED_MIME_PARTS {
-	mail: Int!
-	content: String
-	dfs_nr: Int!
-	size: Int!
-	mime_type: String
-}
-type Query {
-	lw_word_of_day: LW_WORD_OF_DAY
-}
-type LW_WORD_OF_DAY {
-	language: String!
-	word: String!
-	day: String!
-	count: Int!
-}
-type Query {
-	lw_wotd: LW_WOTD
-}
-type LW_WOTD {
-	ignore: String
-	date: String!
-	text_c: Int
-	word_c: Int
-	max_word: Int
-	id: Int!
-	text_total: Int
-	value: Int
-	word: String!
-}
-type Query {
-	mavis_projects: MAVIS_PROJECTS
-}
-type MAVIS_PROJECTS {
-	description: String
-	start: String
-	end: String
-	id: Int!
-	bezeichnung: String!
-	name: String!
-	url: String
-	udc: String
-	mitarbeiter: String
-	teilnehmer: String
-}
-type Query {
-	nw_entries: NW_ENTRIES
-}
-type NW_ENTRIES {
-	id: Int!
-	archivemail: String!
-	content: String!
-	header: String!
-	hea_refer: String
-	recipient: String
-	copy: String
-	project: Int
-	date_of_insertion: String!
-	sent: String
-	message_id: String
-	subject: String
-	sender_email: String
-	hea_reply: String
-	sender: String
-	encoding: String
-	nw_projects: NW_PROJECTS!
-}
-type Query {
-	nw_projects: NW_PROJECTS
-}
-type NW_PROJECTS {
-	descr: String
-	proj_end: String
-	proj_start: String
-	id: Int!
-	udc: Int
-	crit_check: String
-	last_change: String
-	name: String!
-	password: String
-	url: String
-	language: String!
-	crit_sender: String
-	crit_rec: String
-	crit_subject: String
-	ud_classification: UD_CLASSIFICATION!
-}
-type Query {
-	nw_project_regex_check: NW_PROJECT_REGEX_CHECK
-}
-type NW_PROJECT_REGEX_CHECK {
-	project: Int!
-	last_check: String!
-	nw_projects: NW_PROJECTS!
-}
-type Query {
-	nw_url_references: NW_URL_REFERENCES
-}
-type NW_URL_REFERENCES {
-	mail: Int!
-	plain_link: String!
-	protocol: String!
-	domain: String!
-	path: String!
-	query_string: String!
-	nw_entries: NW_ENTRIES!
-}
-type Query {
-	nw_used_mime_parts: NW_USED_MIME_PARTS
-}
-type NW_USED_MIME_PARTS {
-	content: String
-	mail: Int!
-	dfs_nr: Int!
-	size: Int!
-	mime_type: String!
-	nw_entries: NW_ENTRIES!
-}
-type Query {
-	pd_categories: PD_CATEGORIES
-}
-type PD_CATEGORIES {
-	pd_category_id: Int!
-	podcast_id: Int!
-	category_id: Int!
-	pd_podcasts: PD_PODCASTS!
-	ud_classification: UD_CLASSIFICATION!
-}
-type Query {
-	pd_episodes: PD_EPISODES
-}
-type PD_EPISODES {
-	episode_id: Int!
-	execution_id: Int!
-	episode_title: String
-	episode_description: String
-	length: Int!
-	type: String!
-	episode_url: String!
-	mp3_url: String!
-	duration: String
-	publication_date: String
-	guid: String
-	mp3_file_route_name: String
-	pd_executions: PD_EXECUTIONS!
-}
-type Query {
-	pd_executions: PD_EXECUTIONS
-}
-type PD_EXECUTIONS {
-	execution_id: Int!
-	podcast_id: Int!
-	execution_date: String!
-	xml_updated: Int!
-	xml_file_route_name: String!
-	xml_file_length: Int!
-	pd_podcasts: PD_PODCASTS!
-}
-type Query {
-	pd_hosts: PD_HOSTS
-}
-type PD_HOSTS {
-	host_id: Int!
-	host_name: String!
-	host_url: String!
-	host_insert_date: String
-}
-type Query {
-	pd_is_available: PD_IS_AVAILABLE
-}
-type PD_IS_AVAILABLE {
-	is_available_id: Int!
-	host_id: Int!
-	podcast_id: Int!
-	number_of_subscriptions: Int
-	chart: Int
-	host_podcast_url: String
-	pd_hosts: PD_HOSTS!
-	pd_podcasts: PD_PODCASTS!
-}
-type Query {
-	pd_languages: PD_LANGUAGES
-}
-type PD_LANGUAGES {
-	pd_language_id: Int!
-	podcast_id: Int!
-	language_id: Int!
-	languages: LANGUAGES!
-	pd_podcasts: PD_PODCASTS!
-}
-type Query {
-	pd_podcasts: PD_PODCASTS
-}
-type PD_PODCASTS {
-	podcast_id: Int!
-	podcast_title: String!
-	copyright: String!
-	rss_feed: String!
-	podcast_url: String
-	podcast_email: String
-	image_url: String
-	podcast_description: String
-	podcast_insert_date: String
-}
-type Query {
-	pd_tags: PD_TAGS
-}
-type PD_TAGS {
-	pd_tag_id: Int!
-	podcast_id: Int!
-	tag_id: Int!
-	pd_podcasts: PD_PODCASTS!
-	tags: TAGS!
-}
-type Query {
-	proj_correspondence: PROJ_CORRESPONDENCE
-}
-type PROJ_CORRESPONDENCE {
-	watcher_type: String!
-	id_mavis: Int!
-	id_watcher: Int!
-}
-type Query {
-	proj_lang: PROJ_LANG
-}
-type PROJ_LANG {
-	id: Int!
-	language: String!
-	mavis_projects: MAVIS_PROJECTS!
-}
-type Query {
-	regist_info: REGIST_INFO
-}
-type REGIST_INFO {
-	title: String
-	id: Int!
-	country: Int
-	event_id: Int
-	registdate: String
-	firstname: String
-	lastname: String
-	acatitle: String
-	attendance: String
-	company: String
-	department: String
-	address: String
-	city: String
-	postcode: String
-	phone: String
-	fax: String
-	email: String
-	comments: String
-	workshop: String
-	fee: String
-	username: String
-}
-type Query {
-	sub_udc: SUB_UDC
-}
-type SUB_UDC {
-	sub_udc_id: Int!
-	udc_id: Int!
-	sub_udc_name: String!
-	udc: UDC!
-}
-type Query {
-	sub_udc_relation: SUB_UDC_RELATION
-}
-type SUB_UDC_RELATION {
-	mavis_project_id: Int!
-	udc_id: Int!
-	sub_udc_id: Int!
-	mavis_projects: MAVIS_PROJECTS!
-	sub_udc: SUB_UDC!
-}
-type Query {
-	swapit_collections: SWAPIT_COLLECTIONS
-}
-type SWAPIT_COLLECTIONS {
-	start_date: String
-	end_date: String
-	id: Int!
-	docs_count: Int
-	description: String
-	name: String!
-	proj_ids: String!
-	language: String
-	coll_status: String
-	structuring_status: String
-}
-type Query {
-	swapit_stopwords: SWAPIT_STOPWORDS
-}
-type SWAPIT_STOPWORDS {
-	id: Int!
-	coll_id: Int!
-	words: String
-}
-type Query {
-	swapit_stopwords_old: SWAPIT_STOPWORDS_OLD
-}
-type SWAPIT_STOPWORDS_OLD {
-	words: String!
-	id: Int!
-	name: String!
-}
-type Query {
-	sw_analysis: SW_ANALYSIS
-}
-type SW_ANALYSIS {
-	file_extensions: String
-	mime_types: String
-	generators: String
-	form_field_names: String
-	link_relations: String
-	other_out_count: Int
-	other_int_out_count: Int
-	file_count: Int
-	total_size: Int
-	total_html_size: Int
-	total_img_size: Int
-	total_img_embedded: Int
-	total_script_size: Int
-	total_plain_size: Int
-	id: Int!
-	project: Int!
-	run_id: Int!
-	html_count: Int
-	img_count: Int
-	img_out_count: Int
-	img_int_out_count: Int
-	other_count: Int
-	total_mailto_links: Int
-	depth: Int
-	width: Int
-	total_comment_size: Int
-	total_link_size: Int
-	total_forms: Int
-	total_inputs: Int
-	max_html_size: Int
-	max_img_size: Int
-	max_page_size: Int
-	total_int_out_links: Int
-	total_out_links: Int
-	total_int_links: Int
-	total_ftp_links: Int
-	avr_comment_size: Float
-	avr_link_size: Float
-	avr_img_count: Float
-	avr_page_size: Float
-	avr_int_out_links: Float
-	avr_out_links: Float
-	avr_int_links: Float
-	avr_linked: Float
-	avr_ftp_links: Float
-	avr_mailto_links: Float
-	avr_forms: Float
-	avr_inputs: Float
-	avr_input_form: Float
-	avr_img_usage: Float
-	avr_html_size: Float
-	avr_img_size: Float
-	avr_img_embedded: Float
-	avr_plain_size: Float
-	avr_script_size: Float
-	date: String
-	mirror_date: String
-}
-type Query {
-	sw_analysis_dead_project: SW_ANALYSIS_DEAD_PROJECT
-}
-type SW_ANALYSIS_DEAD_PROJECT {
-	link_relations: String
-	file_extensions: String
-	mime_types: String
-	generators: String
-	form_field_names: String
-	total_link_size: Int
-	total_forms: Int
-	total_inputs: Int
-	max_html_size: Int
-	max_img_size: Int
-	max_page_size: Int
-	total_plain_size: Int
-	total_comment_size: Int
-	total_int_out_links: Int
-	total_out_links: Int
-	total_int_links: Int
-	total_ftp_links: Int
-	total_mailto_links: Int
-	depth: Int
-	width: Int
-	file_count: Int
-	total_size: Int
-	total_html_size: Int
-	total_img_size: Int
-	total_img_embedded: Int
-	total_script_size: Int
-	id: Int!
-	project: Int!
-	run_id: Int!
-	html_count: Int
-	img_count: Int
-	img_out_count: Int
-	img_int_out_count: Int
-	other_count: Int
-	other_out_count: Int
-	other_int_out_count: Int
-	avr_link_size: Float
-	avr_img_count: Float
-	avr_page_size: Float
-	avr_int_out_links: Float
-	avr_out_links: Float
-	avr_html_size: Float
-	avr_img_size: Float
-	avr_img_embedded: Float
-	avr_plain_size: Float
-	avr_script_size: Float
-	avr_comment_size: Float
-	avr_int_links: Float
-	avr_linked: Float
-	avr_ftp_links: Float
-	avr_mailto_links: Float
-	avr_forms: Float
-	avr_inputs: Float
-	avr_input_form: Float
-	avr_img_usage: Float
-	date: String
-	mirror_date: String
-}
-type Query {
-	sw_filenames: SW_FILENAMES
-}
-type SW_FILENAMES {
-	sw_filenames_key: Int!
-	filename: String!
-}
-type Query {
-	sw_projects: SW_PROJECTS
-}
-type SW_PROJECTS {
-	int_look_up: String!
-	check_period: String!
-	possible_false_screenshots: String
-	descr: String!
-	exclude: String
-	proj_start: String
-	proj_end: String
-	total_change: Int
-	udc: Int
-	id: Int!
-	start_url: String!
-	start_ip: String!
-	name: String!
-	language: String!
-	ud_classification: UD_CLASSIFICATION!
-}
-type Query {
-	sw_run_tasks: SW_RUN_TASKS
-}
-type SW_RUN_TASKS {
-	phase: String!
-	estimated_size: String!
-	project: Int!
-	run_id: Int!
-	generated: String
-	mirror_started: String
-	mirror_finished: String
-	ana_finished: String
-	comments: String
-}
-type Query {
-	sw_run_tasks_dead_project: SW_RUN_TASKS_DEAD_PROJECT
-}
-type SW_RUN_TASKS_DEAD_PROJECT {
-	phase: String!
-	estimated_size: String!
-	project: Int!
-	run_id: Int!
-	mirror_finished: String
-	ana_finished: String
-	generated: String
-	mirror_started: String
-	comments: String
-}
-type Query {
-	sw_screenshots: SW_SCREENSHOTS
-}
-type SW_SCREENSHOTS {
-	screenshot_flag: String!
-	category: String!
-	index_flag: String
-	date: String!
-	id: Int!
-	projid: Int!
-	difference: Int
-	filename: String
-}
-type Query {
-	sw_screenshots_dead_project: SW_SCREENSHOTS_DEAD_PROJECT
-}
-type SW_SCREENSHOTS_DEAD_PROJECT {
-	screenshot_flag: String!
-	category: String!
-	index_flag: String
-	date: String!
-	id: Int!
-	difference: Int
-	projid: Int!
-	filename: String
-}
-type Query {
-	sw_temp: SW_TEMP
-}
-type SW_TEMP {
-	screenshot_flag: String!
-	category: String!
-	index_flag: String
-	date: String!
-	id: Int!
-	projid: Int!
-	difference: Int
-	filename: String
-}
-type Query {
-	t20060606_084327: T20060606_084327
-}
-type T20060606_084327 {
-	descr: String!
-	comments: String
-	id: Int!
-	entry: Int!
-	title: String!
-	link: String
-	author: String
-	guid: String
-}
-type Query {
-	t20060606_084327_exception: T20060606_084327_EXCEPTION
-}
-type T20060606_084327_EXCEPTION {
-	descr: String!
-	comments: String
-	id: Int!
-	author: String
-	title: String!
-	link: String
-	guid: String
-}
-type Query {
-	t20080702_001348: T20080702_001348
-}
-type T20080702_001348 {
-	word_set: String
-	word_count: Int
-	res_code: Int!
-	id: Int!
-	project_id: Int!
-	perma_link: String!
-	content_chunk: String
-	title: String
-	trackback_url: String
-	mood: String
-	content: String
-	author_id: Int
-	insert_date: String!
-	commentlink: String
-	est_date: String
-}
-type Query {
-	t20080702_001348_exception: T20080702_001348_EXCEPTION
-}
-type T20080702_001348_EXCEPTION {
-	id: Int!
-	project_id: Int!
-	perma_link: String!
-	content_chunk: String
-	title: String
-	trackback_url: String
-	mood: String
-	content: String
-	author_id: Int
-	insert_date: String!
-	commentlink: String
-	est_date: String
-	res_code: Int!
-	word_set: String
-	word_count: Int
-}
-type Query {
-	t20080703_180534: T20080703_180534
-}
-type T20080703_180534 {
-	id: Int!
-	entry_id: Int!
-	url: String!
-	title_trackback: String
-}
-type Query {
-	t20080703_180534_exception: T20080703_180534_EXCEPTION
-}
-type T20080703_180534_EXCEPTION {
-	id: Int!
-	entry_id: Int!
-	url: String!
-	title_trackback: String
-}
-type Query {
-	tags: TAGS
-}
-type TAGS {
-	tag_id: Int!
-	tag_name: String!
-}
-type Query {
-	temp_lw_month_analysis: TEMP_LW_MONTH_ANALYSIS
-}
-type TEMP_LW_MONTH_ANALYSIS {
-	project: Int!
-	month: Int!
-	year: Int!
-	cnt_mails_per_month: Int
-	cnt_active_mail_senders: Int
-}
-type Query {
-	udc: UDC
-}
-type UDC {
-	id: Int!
-	name: String!
-}
-type Query {
-	ud_classification: UD_CLASSIFICATION
-}
-type UD_CLASSIFICATION {
-	id: Int!
-	descr: String!
-}
-type Query {
-	word_of_day_stopwords: WORD_OF_DAY_STOPWORDS
-}
-type WORD_OF_DAY_STOPWORDS {
-	language: String!
-	words: String!
-	id: Int!
-	name: String!
-}
-type Query {
-	sysattributes: SYSATTRIBUTES
-}
-type SYSATTRIBUTES {
-	unused2: String!
-	logged: String!
-	compact: String!
-	dl_features: String!
-	length: Int!
-	ordinal: Int!
-	scale: Int!
-	codepage: Int!
-	typeschema: String!
-	typename: String!
-	attr_name: String!
-	attr_typeschema: String!
-	attr_typename: String!
-	unused1: String
-	target_typeschema: String
-	target_typename: String
-	source_typeschema: String!
-	source_typename: String!
-	java_fieldname: String
-}
-type Query {
-	sysbufferpoolnodes: SYSBUFFERPOOLNODES
-}
-type SYSBUFFERPOOLNODES {
-	bufferpoolid: Int!
-	npages: Int!
-	nodenum: Int!
-}
-type Query {
-	sysbufferpools: SYSBUFFERPOOLS
-}
-type SYSBUFFERPOOLS {
-	estore: String!
-	bufferpoolid: Int!
-	npages: Int!
-	pagesize: Int!
-	numblockpages: Int!
-	blocksize: Int!
-	bpname: String!
-	ngname: String
-}
-type Query {
-	syschecks: SYSCHECKS
-}
-type SYSCHECKS {
-	type: String!
-	text: String!
-	percentvalid: Int!
-	create_time: String!
-	name: String!
-	definer: String!
-	tbname: String!
-	tbcreator: String!
-	func_path: String!
-	qualifier: String!
-}
-type Query {
-	syscodeproperties: SYSCODEPROPERTIES
-}
-type SYSCODEPROPERTIES {
-	sql_compiled_code: String
-	object_type: String!
-	debug_mode: String!
-	trace_level: String!
-	diagnostic_level: String!
-	debug_data: String
-	object_id: Int!
-	lib_id: Int
-	libversion: Int
-	checkout_userid: String
-	precompile_options: String
-	compile_options: String
-}
-type Query {
-	syscolauth: SYSCOLAUTH
-}
-type SYSCOLAUTH {
-	granteetype: String!
-	privtype: String!
-	grantable: String!
-	colno: Int!
-	grantor: String!
-	grantee: String!
-	creator: String!
-	tname: String!
-	colname: String!
-}
-type Query {
-	syscolchecks: SYSCOLCHECKS
-}
-type SYSCOLCHECKS {
-	usage: String!
-	constname: String!
-	tbname: String!
-	tbcreator: String!
-	colname: String!
-}
-type Query {
-	syscoldist: SYSCOLDIST
-}
-type SYSCOLDIST {
-	valcount: Int!
-	distcount: Int
-	type: String!
-	seqno: Int!
-	name: String!
-	tbname: String!
-	schema: String!
-	colvalue: String
-}
-type Query {
-	syscolgroupdist: SYSCOLGROUPDIST
-}
-type SYSCOLGROUPDIST {
-	type: String!
-	colgroupid: Int!
-	ordinal: Int!
-	seqno: Int!
-	colvalue: String!
-}
-type Query {
-	syscolgroupdistcounts: SYSCOLGROUPDISTCOUNTS
-}
-type SYSCOLGROUPDISTCOUNTS {
-	valcount: Int!
-	distcount: Int!
-	type: String!
-	colgroupid: Int!
-	seqno: Int!
-}
-type Query {
-	syscolgroups: SYSCOLGROUPS
-}
-type SYSCOLGROUPS {
-	colgroupcard: Int!
-	colgroupid: Int!
-	numfreq_values: Int!
-	numquantiles: Int!
-	colgroupschema: String!
-	colgroupname: String!
-}
-type Query {
-	syscolgroupscols: SYSCOLGROUPSCOLS
-}
-type SYSCOLGROUPSCOLS {
-	colgroupid: Int!
-	ordinal: Int!
-	colname: String!
-	tabschema: String!
-	tabname: String!
-}
-type Query {
-	syscoloptions: SYSCOLOPTIONS
-}
-type SYSCOLOPTIONS {
-	tabschema: String!
-	tabname: String!
-	colname: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	syscolproperties: SYSCOLPROPERTIES
-}
-type SYSCOLPROPERTIES {
-	dl_features: String!
-	special_props: String!
-	colname: String!
-	tabname: String!
-	tabschema: String!
-	target_typeschema: String
-	target_typename: String
-	scope_tabschema: String
-	scope_tabname: String
-}
-type Query {
-	syscolumns: SYSCOLUMNS
-}
-type SYSCOLUMNS {
-	colcard: Int!
-	numnulls: Int!
-	coltype: String!
-	nulls: String!
-	logged: String!
-	compact: String!
-	hidden: String!
-	generated: String!
-	identity: String!
-	compress: String!
-	avgdistinctperpage: Float
-	pagevarianceratio: Float
-	avgcollen: Int!
-	longlength: Int!
-	inline_length: Int!
-	datamodel: Int!
-	codepage: Int!
-	dbcscodepg: Int!
-	length: Int!
-	scale: Int!
-	colno: Int!
-	keyseq: Int
-	nquantiles: Int!
-	nmostfreq: Int!
-	composite_codepage: Int!
-	partkeyseq: Int
-	sub_count: Int!
-	sub_delim_length: Int!
-	name: String!
-	tbname: String!
-	tbcreator: String!
-	remarks: String
-	high2key: String
-	low2key: String
-	typename: String!
-	typeschema: String!
-	default: String
-	source_tabschema: String
-	source_tabname: String
-}
-type Query {
-	syscoluse: SYSCOLUSE
-}
-type SYSCOLUSE {
-	type: String!
-	dimension: Int!
-	colseq: Int!
-	tabschema: String!
-	tabname: String!
-	colname: String!
-}
-type Query {
-	syscomments: SYSCOMMENTS
-}
-type SYSCOMMENTS {
-	objectid: Int!
-	remarks: String!
-}
-type Query {
-	sysconstdep: SYSCONSTDEP
-}
-type SYSCONSTDEP {
-	btype: String!
-	bname: String!
-	bcreator: String!
-	dtbname: String!
-	dtbcreator: String!
-	dconstname: String!
-}
-type Query {
-	sysdatatypes: SYSDATATYPES
-}
-type SYSDATATYPES {
-	packed_desc: String
-	type_desc: String
-	metatype: String!
-	instantiable: String!
-	with_func_access: String!
-	final: String!
-	sqlj_representation: String
-	length: Int!
-	inline_length: Int!
-	natural_inline_length: Int
-	typeid: Int!
-	sourcetypeid: Int
-	scale: Int!
-	codepage: Int!
-	attrcount: Int!
-	create_time: String!
-	alter_time: String!
-	name: String!
-	schema: String!
-	definer: String!
-	sourcetype: String
-	sourceschema: String
-	remarks: String
-	jarschema: String
-	jar_id: String
-	class: String
-}
-type Query {
-	sysdbauth: SYSDBAUTH
-}
-type SYSDBAUTH {
-	dbadmauth: String!
-	createtabauth: String!
-	bindaddauth: String!
-	connectauth: String!
-	nofenceauth: String!
-	granteetype: String!
-	implschemaauth: String!
-	loadauth: String!
-	externalroutineauth: String!
-	quiesceconnectauth: String!
-	securityadmauth: String!
-	libraryadmauth: String!
-	grantor: String!
-	grantee: String!
-}
-type Query {
-	sysdependencies: SYSDEPENDENCIES
-}
-type SYSDEPENDENCIES {
-	btype: String!
-	dtype: String!
-	bunique_id: String
-	tabauth: Int
-	bname: String!
-	bschema: String!
-	dname: String!
-	dschema: String!
-}
-type Query {
-	syseventmonitors: SYSEVENTMONITORS
-}
-type SYSEVENTMONITORS {
-	packed_desc: String!
-	target_type: String!
-	io_mode: String
-	write_mode: String
-	autostart: String!
-	monscope: String!
-	maxfiles: Int
-	maxfilesize: Int
-	buffersize: Int
-	evmon_activates: Int!
-	nodenum: Int!
-	name: String!
-	definer: String!
-	target: String!
-	remarks: String
-}
-type Query {
-	sysevents: SYSEVENTS
-}
-type SYSEVENTS {
-	filter: String
-	name: String!
-	type: String!
-}
-type Query {
-	syseventtables: SYSEVENTTABLES
-}
-type SYSEVENTTABLES {
-	pctdeactivate: Int!
-	evmonname: String!
-	logical_group: String!
-	tabname: String!
-	tabschema: String!
-}
-type Query {
-	sysfuncmapoptions: SYSFUNCMAPOPTIONS
-}
-type SYSFUNCMAPOPTIONS {
-	function_mapping: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	sysfuncmapparmoptions: SYSFUNCMAPPARMOPTIONS
-}
-type SYSFUNCMAPPARMOPTIONS {
-	location: String!
-	ordinal: Int!
-	function_mapping: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	sysfuncmappings: SYSFUNCMAPPINGS
-}
-type SYSFUNCMAPPINGS {
-	funcid: Int
-	create_time: String!
-	function_mapping: String!
-	funcschema: String
-	funcname: String
-	specificname: String
-	definer: String!
-	servername: String
-	servertype: String
-	serverversion: String
-	wrapname: String
-	remarks: String
-}
-type Query {
-	syshierarchies: SYSHIERARCHIES
-}
-type SYSHIERARCHIES {
-	metatype: String!
-	sub_schema: String!
-	sub_name: String!
-	super_schema: String!
-	super_name: String!
-	root_schema: String!
-	root_name: String!
-}
-type Query {
-	sysindexauth: SYSINDEXAUTH
-}
-type SYSINDEXAUTH {
-	controlauth: String!
-	granteetype: String!
-	grantor: String!
-	grantee: String!
-	name: String!
-	creator: String!
-}
-type Query {
-	sysindexcoluse: SYSINDEXCOLUSE
-}
-type SYSINDEXCOLUSE {
-	colorder: String!
-	colseq: Int!
-	indschema: String!
-	indname: String!
-	colname: String!
-}
-type Query {
-	sysindexes: SYSINDEXES
-}
-type SYSINDEXES {
-	firstkeycard: Int!
-	fullkeycard: Int!
-	first2keycard: Int!
-	first3keycard: Int!
-	first4keycard: Int!
-	numrids: Int!
-	numrids_deleted: Int!
-	num_empty_leafs: Int!
-	index_desc: String
-	uniquerule: String!
-	made_unique: String!
-	indextype: String!
-	entrytype: String!
-	reverse_scans: String!
-	iearguments: String
-	clusterfactor: Float!
-	average_sequence_gap: Float!
-	average_sequence_fetch_gap: Float!
-	average_sequence_pages: Float!
-	average_sequence_fetch_pages: Float!
-	average_random_pages: Float!
-	average_random_fetch_pages: Float!
-	nleaf: Int!
-	sequential_pages: Int!
-	density: Int!
-	index_objectid: Int!
-	tbspaceid: Int!
-	os_ptr_size: Int!
-	colcount: Int!
-	iid: Int!
-	nlevels: Int!
-	clusterratio: Int!
-	user_defined: Int!
-	system_required: Int!
-	pctfree: Int!
-	unique_colcount: Int!
-	minpctused: Int!
-	internal_format: Int!
-	create_time: String!
-	stats_time: String
-	name: String!
-	creator: String!
-	tbname: String!
-	tbcreator: String!
-	colnames: String!
-	page_fetch_pairs: String!
-	remarks: String
-	definer: String!
-	ieschema: String
-	iename: String
-}
-type Query {
-	sysindexexploitrules: SYSINDEXEXPLOITRULES
-}
-type SYSINDEXEXPLOITRULES {
-	exact: String!
-	funcid: Int!
-	specid: Int!
-	ruleid: Int!
-	searchmethodid: Int!
-	ieschema: String!
-	iename: String!
-	searchkey: String!
-	searchargument: String!
-}
-type Query {
-	sysindexextensionmethods: SYSINDEXEXTENSIONMETHODS
-}
-type SYSINDEXEXTENSIONMETHODS {
-	methodid: Int!
-	methodname: String!
-	ieschema: String!
-	iename: String!
-	rtfuncschema: String!
-	rtfuncname: String!
-	rtspecificname: String!
-	cwfuncschema: String
-	cwfuncname: String
-	cwspecificname: String
-	remarks: String
-}
-type Query {
-	sysindexextensionparms: SYSINDEXEXTENSIONPARMS
-}
-type SYSINDEXEXTENSIONPARMS {
-	parmtype: String!
-	length: Int!
-	ordinal: Int!
-	scale: Int!
-	codepage: Int!
-	ieschema: String!
-	iename: String!
-	parmname: String!
-	typeschema: String!
-	typename: String!
-}
-type Query {
-	sysindexextensions: SYSINDEXEXTENSIONS
-}
-type SYSINDEXEXTENSIONS {
-	index_desc: String!
-	text: String!
-	create_time: String!
-	ieschema: String!
-	iename: String!
-	definer: String!
-	ktfuncschema: String!
-	ktfuncname: String!
-	ktspecificname: String!
-	remarks: String
-}
-type Query {
-	sysindexoptions: SYSINDEXOPTIONS
-}
-type SYSINDEXOPTIONS {
-	indschema: String!
-	indname: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	sysjarcontents: SYSJARCONTENTS
-}
-type SYSJARCONTENTS {
-	class_source: String
-	jarschema: String!
-	jar_id: String!
-	class: String!
-}
-type Query {
-	sysjarobjects: SYSJAROBJECTS
-}
-type SYSJAROBJECTS {
-	jar_data: String
-	alteredts: String!
-	createdts: String!
-	jarschema: String!
-	jar_id: String!
-	definer: String!
-}
-type Query {
-	syskeycoluse: SYSKEYCOLUSE
-}
-type SYSKEYCOLUSE {
-	colseq: Int!
-	constname: String!
-	tbname: String!
-	tbcreator: String!
-	colname: String!
-}
-type Query {
-	syslibraries: SYSLIBRARIES
-}
-type SYSLIBRARIES {
-	lib_id: Int!
-	libversion_count: Int!
-	active_version: Int!
-	system_required: Int!
-	libschema: String!
-	libname: String!
-	definer: String!
-}
-type Query {
-	syslibraryauth: SYSLIBRARYAUTH
-}
-type SYSLIBRARYAUTH {
-	granteetype: String!
-	usageauth: String!
-	alterauth: String!
-	grantor: String!
-	grantee: String!
-	libschema: String!
-	libname: String!
-}
-type Query {
-	syslibrarybindfiles: SYSLIBRARYBINDFILES
-}
-type SYSLIBRARYBINDFILES {
-	bindfile_body: String!
-	lib_id: Int!
-	libversion: Int!
-	package_schema: String!
-	package_name: String!
-	package_version: String!
-	bindfile_path: String!
-}
-type Query {
-	syslibraryversions: SYSLIBRARYVERSIONS
-}
-type SYSLIBRARYVERSIONS {
-	version_body: String!
-	stale: String
-	lib_id: Int!
-	libversion: Int!
-	checksum: Int!
-	bindfiles_count: Int!
-	create_time: String!
-	definer: String!
-	version_path: String!
-}
-type Query {
-	sysnamemappings: SYSNAMEMAPPINGS
-}
-type SYSNAMEMAPPINGS {
-	type: String!
-	logical_schema: String!
-	logical_name: String!
-	logical_colname: String
-	impl_schema: String!
-	impl_name: String!
-	impl_colname: String
-}
-type Query {
-	sysnodegroupdef: SYSNODEGROUPDEF
-}
-type SYSNODEGROUPDEF {
-	in_use: String!
-	nodenum: Int!
-	ngname: String!
-}
-type Query {
-	sysnodegroups: SYSNODEGROUPS
-}
-type SYSNODEGROUPS {
-	pmap_id: Int!
-	rebalance_pmap_id: Int!
-	ctime: String!
-	name: String!
-	definer: String!
-	remarks: String
-}
-type Query {
-	syspartitionmaps: SYSPARTITIONMAPS
-}
-type SYSPARTITIONMAPS {
-	partitionmap: String!
-	pmap_id: Int!
-}
-type Query {
-	syspassthruauth: SYSPASSTHRUAUTH
-}
-type SYSPASSTHRUAUTH {
-	granteetype: String!
-	grantor: String!
-	grantee: String!
-	servername: String!
-}
-type Query {
-	sysplan: SYSPLAN
-}
-type SYSPLAN {
-	sect_info: String!
-	host_vars: String
-	trf_grp_packed_desc: String
-	packed_desc: String
-	valid: String!
-	unique_id: String!
-	format: String!
-	isolation: String
-	block: String
-	standards_level: String
-	explain_level: String!
-	explain_mode: String!
-	explain_snapshot: String!
-	sqlwarn: String!
-	sqlrules: String!
-	insert_buf: String!
-	multinode_plans: String!
-	degree: String!
-	sqlmathwarn: String!
-	intra_parallel: String!
-	validate: String!
-	dynamicrules: String!
-	sqlerror: String!
-	federated: String!
-	reoptvar: String!
-	refreshage: Float!
-	queryopt: Int!
-	os_ptr_size: Int!
-	totalsect: Int!
-	codepage: Int!
-	rds_level: Int!
-	explicit_bind_time: String!
-	last_bind_time: String!
-	pkg_create_time: String!
-	name: String!
-	creator: String!
-	boundby: String!
-	func_path: String!
-	remarks: String
-	sqlrules_string: String!
-	definer: String!
-	default_schema: String!
-	transformgroup: String
-	pkgversion: String!
-}
-type Query {
-	sysplanauth: SYSPLANAUTH
-}
-type SYSPLANAUTH {
-	controlauth: String!
-	bindauth: String!
-	executeauth: String!
-	granteetype: String!
-	grantor: String!
-	grantee: String!
-	name: String!
-	creator: String!
-}
-type Query {
-	sysplandep: SYSPLANDEP
-}
-type SYSPLANDEP {
-	colusage: String
-	btype: String!
-	dunique_id: String
-	tabauth: Int
-	tabusage: Int!
-	bname: String!
-	bcreator: String!
-	dname: String!
-	dcreator: String!
-	binder: String
-}
-type Query {
-	syspredicatespecs: SYSPREDICATESPECS
-}
-type SYSPREDICATESPECS {
-	contextop: String!
-	contextexp: String!
-	filtertext: String
-	funcid: Int!
-	specid: Int!
-}
-type Query {
-	sysprocoptions: SYSPROCOPTIONS
-}
-type SYSPROCOPTIONS {
-	procschema: String!
-	procname: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	sysprocparmoptions: SYSPROCPARMOPTIONS
-}
-type SYSPROCPARMOPTIONS {
-	ordinal: Int!
-	procschema: String!
-	procname: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	sysrels: SYSRELS
-}
-type SYSRELS {
-	deleterule: String!
-	updaterule: String!
-	colcount: Int!
-	timestamp: String!
-	creator: String!
-	tbname: String!
-	relname: String!
-	reftbname: String!
-	reftbcreator: String!
-	fkcolnames: String!
-	pkcolnames: String!
-	refkeyname: String!
-	definer: String!
-}
-type Query {
-	sysroutineauth: SYSROUTINEAUTH
-}
-type SYSROUTINEAUTH {
-	granteetype: String!
-	routinetype: String!
-	executeauth: String!
-	grant_time: String!
-	grantor: String!
-	grantee: String!
-	schema: String!
-	specificname: String
-	typeschema: String
-	typename: String
-}
-type Query {
-	sysroutineparms: SYSROUTINEPARMS
-}
-type SYSROUTINEPARMS {
-	rowtype: String!
-	locator: String!
-	routinetype: String!
-	length: Int!
-	cast_function_id: Int
-	routine_id: Int!
-	ordinal: Int!
-	scale: Int!
-	codepage: Int!
-	target_typeid: Int
-	typeid: Int
-	routinename: String!
-	routineschema: String!
-	specificname: String!
-	typename: String!
-	typeschema: String!
-	parmname: String
-	target_typeschema: String
-	target_typename: String
-	scope_tabschema: String
-	scope_tabname: String
-	transform_grpname: String
-	remarks: String
-}
-type Query {
-	sysroutinepropertiesjava: SYSROUTINEPROPERTIESJAVA
-}
-type SYSROUTINEPROPERTIESJAVA {
-	routine_id: Int!
-	class: String
-	jar_id: String
-	jarschema: String
-	jar_signature: String
-}
-type Query {
-	sysroutines: SYSROUTINES
-}
-type SYSROUTINES {
-	cardinality: Int!
-	internal_desc: String!
-	origin: String!
-	function_type: String!
-	deterministic: String!
-	external_action: String!
-	fenced: String!
-	null_call: String!
-	cast_function: String!
-	assign_function: String!
-	scratchpad: String!
-	final_call: String!
-	language: String!
-	parallel: String!
-	sql_data_access: String!
-	dbinfo: String!
-	parameter_style: String!
-	methodimplemented: String!
-	methodeffect: String!
-	type_preserving: String!
-	with_func_access: String!
-	spec_reg: String!
-	federated: String!
-	routinetype: String!
-	threadsafe: String!
-	program_type: String!
-	valid: String!
-	commit_on_return: String!
-	namespace: String!
-	methodproperty: String!
-	newsavepointlevel: String!
-	text: String
-	ios_per_invoc: Float!
-	insts_per_invoc: Float!
-	ios_per_argbyte: Float!
-	insts_per_argbyte: Float!
-	initial_ios: Float!
-	initial_insts: Float!
-	internal_prec2: Float!
-	selectivity: Float!
-	routine_id: Int!
-	internal_prec1: Int!
-	overridden_methodid: Int
-	lib_id: Int
-	sourceroutineid: Int
-	text_body_offset: Int!
-	return_type: Int!
-	parm_count: Int!
-	percent_argbytes: Int!
-	result_cols: Int!
-	scratchpad_length: Int!
-	subject_typeid: Int
-	result_sets: Int!
-	createdts: String!
-	alteredts: String!
-	routinename: String!
-	routineschema: String!
-	definer: String!
-	specificname: String!
-	parm_signature: String!
-	implementation: String
-	sourcespecific: String
-	sourceschema: String
-	remarks: String
-	func_path: String
-	subject_typeschema: String
-	subject_typename: String
-	qualifier: String!
-}
-type Query {
-	sysschemaauth: SYSSCHEMAAUTH
-}
-type SYSSCHEMAAUTH {
-	granteetype: String!
-	createinauth: String!
-	dropinauth: String!
-	alterinauth: String!
-	grantor: String!
-	grantee: String!
-	schemaname: String!
-}
-type Query {
-	sysschemata: SYSSCHEMATA
-}
-type SYSSCHEMATA {
-	create_time: String!
-	name: String!
-	owner: String!
-	definer: String!
-	remarks: String
-}
-type Query {
-	syssection: SYSSECTION
-}
-type SYSSECTION {
-	section: String
-	section_info: String
-	valid: String!
-	unique_id: String!
-	sectno: Int!
-	plname: String!
-	plcreator: String!
-}
-type Query {
-	syssequenceauth: SYSSEQUENCEAUTH
-}
-type SYSSEQUENCEAUTH {
-	granteetype: String!
-	usageauth: String!
-	alterauth: String!
-	seqid: Int!
-	grantor: String!
-	grantee: String!
-}
-type Query {
-	syssequences: SYSSEQUENCES
-}
-type SYSSEQUENCES {
-	seq_desc: String
-	cycle: String!
-	order: String!
-	origin: String!
-	seqtype: String!
-	lastassignedval: Float
-	increment: Float!
-	start: Float!
-	maxvalue: Float!
-	minvalue: Float!
-	seqid: Int!
-	cache: Int!
-	datatypeid: Int!
-	sourcetypeid: Int!
-	precision: Int!
-	create_time: String!
-	alter_time: String!
-	seqschema: String!
-	seqname: String!
-	definer: String!
-	owner: String!
-}
-type Query {
-	sysserveroptions: SYSSERVEROPTIONS
-}
-type SYSSERVEROPTIONS {
-	create_time: String!
-	wrapname: String
-	servername: String
-	servertype: String
-	serverversion: String
-	option: String!
-	setting: String!
-	serveroptionkey: String!
-	remarks: String
-}
-type Query {
-	sysservers: SYSSERVERS
-}
-type SYSSERVERS {
-	server_desc: String
-	wrapname: String!
-	servername: String!
-	servertype: String
-	serverversion: String
-	remarks: String
-}
-type Query {
-	sysstmt: SYSSTMT
-}
-type SYSSTMT {
-	host_vars: String
-	unique_id: String!
-	text: String!
-	stmtno: Int!
-	sectno: Int!
-	plname: String!
-	plcreator: String!
-}
-type Query {
-	systabauth: SYSTABAUTH
-}
-type SYSTABAUTH {
-	controlauth: String!
-	alterauth: String!
-	deleteauth: String!
-	indexauth: String!
-	insertauth: String!
-	selectauth: String!
-	updateauth: String!
-	refauth: String!
-	granteetype: String!
-	tabauth: Int!
-	grantor: String!
-	grantee: String!
-	tcreator: String!
-	ttname: String!
-}
-type Query {
-	systabconst: SYSTABCONST
-}
-type SYSTABCONST {
-	constraintyp: String!
-	enforced: String!
-	checkexistingdata: String!
-	enablequeryopt: String!
-	name: String!
-	definer: String!
-	tbname: String!
-	tbcreator: String!
-	remarks: String
-}
-type Query {
-	systables: SYSTABLES
-}
-type SYSTABLES {
-	card: Int!
-	active_blocks: Int!
-	packed_desc: String
-	view_desc: String
-	rel_desc: String
-	check_desc: String
-	trig_desc: String
-	remote_desc: String
-	ast_desc: String
-	type: String!
-	data_capture: String!
-	status: String!
-	const_checked: String!
-	log_attribute: String!
-	append_mode: String!
-	partition_mode: String!
-	refresh: String!
-	locksize: String!
-	volatile: String!
-	clustered: String
-	droprule: String!
-	row_format: String!
-	compression: String!
-	access_mode: String!
-	statistics_profile: String
-	npages: Int!
-	fpages: Int!
-	overflow: Int!
-	colcount: Int!
-	fid: Int!
-	tid: Int!
-	parents: Int
-	children: Int
-	selfrefs: Int
-	keycolumns: Int
-	keyobid: Int
-	keyunique: Int!
-	checkcount: Int!
-	pmap_id: Int
-	pctfree: Int!
-	maxfreespacesearch: Int!
-	ctime: String!
-	stats_time: String
-	refresh_time: String
-	name: String!
-	creator: String!
-	remarks: String
-	base_name: String
-	base_schema: String
-	tbspace: String
-	index_tbspace: String
-	long_tbspace: String
-	definer: String!
-	rowtypeschema: String
-	rowtypename: String
-	property: String!
-}
-type Query {
-	systablespaces: SYSTABLESPACES
-}
-type SYSTABLESPACES {
-	tbspacetype: String!
-	datatype: String!
-	drop_recovery: String!
-	overhead: Float!
-	transferrate: Float!
-	tbspaceid: Int!
-	extentsize: Int!
-	prefetchsize: Int!
-	bufferpoolid: Int!
-	pagesize: Int!
-	create_time: String!
-	tbspace: String!
-	definer: String!
-	remarks: String
-	ngname: String!
-}
-type Query {
-	systaboptions: SYSTABOPTIONS
-}
-type SYSTABOPTIONS {
-	tabschema: String!
-	tabname: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	systbspaceauth: SYSTBSPACEAUTH
-}
-type SYSTBSPACEAUTH {
-	granteetype: String!
-	useauth: String!
-	tbspaceid: Int!
-	grantor: String!
-	grantee: String!
-	tbspace: String!
-}
-type Query {
-	systransforms: SYSTRANSFORMS
-}
-type SYSTRANSFORMS {
-	fromsql_format: String!
-	tosql_format: String!
-	origin: String!
-	fromsql_funcid: Int
-	tosql_funcid: Int
-	fromsql_length: Int!
-	typeid: Int!
-	groupname: String!
-	remarks: String
-}
-type Query {
-	systriggers: SYSTRIGGERS
-}
-type SYSTRIGGERS {
-	trigtime: String!
-	trigevent: String!
-	granularity: String!
-	valid: String!
-	text: String!
-	create_time: String!
-	name: String!
-	schema: String!
-	definer: String!
-	tbname: String!
-	tbcreator: String!
-	func_path: String!
-	remarks: String
-	qualifier: String!
-}
-type Query {
-	systypemappings: SYSTYPEMAPPINGS
-}
-type SYSTYPEMAPPINGS {
-	bit_data: String
-	remote_meta_type: String
-	remote_s_opr_p: String
-	remote_bit_data: String
-	user_defined: String!
-	mappingdirection: String!
-	s_opr_p: String
-	upper_len: Int
-	remote_lower_len: Int
-	remote_upper_len: Int
-	lower_len: Int
-	typeid: Int!
-	sourcetypeid: Int!
-	upper_scale: Int
-	remote_lower_scale: Int
-	remote_upper_scale: Int
-	lower_scale: Int
-	create_time: String!
-	type_mapping: String!
-	typeschema: String
-	typename: String!
-	definer: String!
-	wrapname: String
-	servername: String
-	servertype: String
-	serverversion: String
-	remote_typeschema: String
-	remote_typename: String!
-	remarks: String
-}
-type Query {
-	sysuserauth: SYSUSERAUTH
-}
-type SYSUSERAUTH {
-	auth_desc: String!
-	granteetype: String!
-	grantee: String!
-	tabschema: String!
-	tabname: String!
-}
-type Query {
-	sysuseroptions: SYSUSEROPTIONS
-}
-type SYSUSEROPTIONS {
-	servername: String!
-	authid: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	sysversions: SYSVERSIONS
-}
-type SYSVERSIONS {
-	versionnumber: Int!
-	version_timestamp: String!
-	authid: String!
-}
-type Query {
-	sysviewdep: SYSVIEWDEP
-}
-type SYSVIEWDEP {
-	btype: String!
-	dtype: String!
-	outer_from: String!
-	tabauth: Int
-	bname: String!
-	bcreator: String!
-	dname: String!
-	dcreator: String!
-	vcauthid: String
-}
-type Query {
-	sysviews: SYSVIEWS
-}
-type SYSVIEWS {
-	check: String!
-	valid: String!
-	readonly: String!
-	text: String!
-	name: String!
-	creator: String!
-	func_path: String!
-	definer: String!
-	qualifier: String!
-}
-type Query {
-	syswrapoptions: SYSWRAPOPTIONS
-}
-type SYSWRAPOPTIONS {
-	wrapname: String!
-	option: String!
-	setting: String!
-}
-type Query {
-	syswrappers: SYSWRAPPERS
-}
-type SYSWRAPPERS {
-	wraptype: String!
-	wrapversion: Int!
-	wrapname: String!
-	library: String!
-	remarks: String
-}
-type Query {
-	sysxmlobjectauth: SYSXMLOBJECTAUTH
-}
-type SYSXMLOBJECTAUTH {
-	objectid: Int!
-	granteetype: String!
-	privilege_type: String!
-	is_grantable: String!
-	grantor: String!
-	grantee: String!
-}
-type Query {
-	sysxmlobjectauthperf: SYSXMLOBJECTAUTHPERF
-}
-type SYSXMLOBJECTAUTHPERF {
-	objectid: Int!
-	auth_desc: String!
-	granteetype: String!
-	grantee: String!
-}
-type Query {
-	sysxmlobjectproperties: SYSXMLOBJECTPROPERTIES
-}
-type SYSXMLOBJECTPROPERTIES {
-	objectid: Int!
-	option: String!
-	setting: String
-}
-type Query {
-	sysxmlobjectreldep: SYSXMLOBJECTRELDEP
-}
-type SYSXMLOBJECTRELDEP {
-	objectid: Int!
-	dtype: String!
-	btype: String!
-	tabauth: Int!
-	bschema: String!
-	bname: String!
-}
-type Query {
-	sysxmlobjects: SYSXMLOBJECTS
-}
-type SYSXMLOBJECTS {
-	objectid: Int!
-	objecttype: String!
-	links_count: Int!
-	create_time: String!
-	alter_time: String
-	definer: String!
-}
-type Query {
-	sysxmlobjectxmldep: SYSXMLOBJECTXMLDEP
-}
-type SYSXMLOBJECTXMLDEP {
-	objectid: Int!
-	bobjectid: Int!
-	dtype: String!
-	btype: String!
-	objectauths: Int!
-}
-type Query {
-	sysxmlphysicalcollections: SYSXMLPHYSICALCOLLECTIONS
-}
-type SYSXMLPHYSICALCOLLECTIONS {
-	objectid: Int!
-	primaryuse: String!
-	storage: String!
-	collectiontype: String!
-	tbspaceid: Int
-	bufferpoolid: Int
-	dbpgname: String
-}
-type Query {
-	sysxmlqueries: SYSXMLQUERIES
-}
-type SYSXMLQUERIES {
-	objectid: Int!
-	xmlquerytext: String!
-}
-type Query {
-	sysxmlrelationships: SYSXMLRELATIONSHIPS
-}
-type SYSXMLRELATIONSHIPS {
-	relationshipid: Int!
-	parentid: Int
-	childid: Int!
-	referenced_relationshipid: Int
-	relationshiptype: String!
-	create_time: String!
-	alter_time: String
-	linkedname: String!
-	definer: String!
-}
-type Query {
-	sysxmlrsproperties: SYSXMLRSPROPERTIES
-}
-type SYSXMLRSPROPERTIES {
-	relationshipid: Int!
-	option: String!
-	setting: String
-}
-type Query {
-	sysxmlstats: SYSXMLSTATS
-}
-type SYSXMLSTATS {
-	objectid: Int
-	objecttype: String!
-	statistictype: String!
-	value: String
-}
-type Query {
-	altobj_info: ALTOBJ_INFO
-}
-type ALTOBJ_INFO {
-	exec_mode: String!
-	sql_stmt: String!
-	alter_id: Int!
-	sql_code: Int
-	exec_seq: Int!
-	creation_time: String
-	sql_operation: String!
-	obj_type: String!
-	obj_schema: String!
-	obj_name: String!
-	sql_state: String
-	sql_errmc: String
-}
-type Query {
-	am_base_tasks: AM_BASE_TASKS
-}
-type AM_BASE_TASKS {
-	need_lock_chains: String!
-	appl_filter: String
-	id: Int!
-	name: String!
-}
-type Query {
-	am_base_task_rpts: AM_BASE_TASK_RPTS
-}
-type AM_BASE_TASK_RPTS {
-	task_id: Int!
-	report_id: Int!
-	am_base_tasks: AM_BASE_TASKS!
-}
-type Query {
-	db2look_info: DB2LOOK_INFO
-}
-type DB2LOOK_INFO {
-	sql_stmt: String
-	op_token: Int!
-	op_sequence: Int!
-	creation_time: String
-	sql_operation: String!
-	obj_type: String!
-	obj_schema: String!
-	obj_name: String!
-	obj_definer: String!
-}
-type Query {
-	fed_cache_mqts: FED_CACHE_MQTS
-}
-type FED_CACHE_MQTS {
-	nn_created: String
-	tabschema: String
-	tabname: String
-	nn_name: String
-	nn_schema: String
-	repl_product: String
-	state: String
-}
-type Query {
-	fed_cache_options: FED_CACHE_OPTIONS
-}
-type FED_CACHE_OPTIONS {
-	mqt_schema: String
-	mqt_name: String
-	option: String
-	setting: String
-}
-type Query {
-	hmon_atm_info: HMON_ATM_INFO
-}
-type HMON_ATM_INFO {
-	exec_count: Int!
-	stats_flag: String!
-	stats_lock: String!
-	signal: String!
-	leo_tab: String!
-	stats_notify: String!
-	reorg_flag: String!
-	reorg_lock: String!
-	reorg_notify: String!
-	stats_opts: Int!
-	last_wait: Int!
-	to_wait: Int!
-	reorg_avg_runtime: Int
-	stats_state: Int!
-	reorg_state: Int!
-	create_time: String!
-	stats_time: String
-	reorg_time: String
-	schema: String!
-	name: String!
-	stats_detail: String
-	stats_history: String
-	reorg_detail: String
-	reorg_history: String
-}
-type Query {
-	hmon_collection: HMON_COLLECTION
-}
-type HMON_COLLECTION {
-	hi_id: Int!
-	notify: String!
-	obj_state: Int!
-	obj_refresh_time: String!
-	obj_name1: String!
-	obj_name2: String!
-	obj_name3: String!
-	obj_detail: String
-	history: String
-}
-type Query {
-	policy: POLICY
-}
-type POLICY {
-	policy: String
-	update_time: String!
-	med: String!
-	decision: String!
-	name: String!
-}
-type Query {
-	stmg_container: STMG_CONTAINER
-}
-type STMG_CONTAINER {
-	tablespace_id: Int
-	container_id: Int
-	total_pages: Int
-	usable_pages: Int
-	accessible: Int
-	stripe_set: Int
-	filesystem_id: Int
-	filesystem_device_type: Int
-	filesystem_total_size: Int
-	filesystem_free_size: Int
-	container_type: String
-	partition_num: Int
-	stmg_timestamp: String!
-	complete_timestamp: String
-	obj_id: String!
-	filesystem_nodename: String
-	filesystem_mount_point: String
-	filesystem_type_name: String
-	remarks: String
-	stmg_object: STMG_OBJECT!
-}
-type Query {
-	stmg_curr_threshold: STMG_CURR_THRESHOLD
-}
-type STMG_CURR_THRESHOLD {
-	stmg_th_type: Int!
-	obj_type: Int!
-	warning_threshold: Int
-	alarm_threshold: Int
-	obj_name: String!
-	obj_schema: String!
-	stmg_object_type: STMG_OBJECT_TYPE!
-	stmg_threshold_registry: STMG_THRESHOLD_REGISTRY!
-}
-type Query {
-	stmg_database: STMG_DATABASE
-}
-type STMG_DATABASE {
-	stmg_timestamp: String!
-	complete_timestamp: String
-	obj_id: String!
-	remarks: String
-	stmg_object: STMG_OBJECT!
-}
-type Query {
-	stmg_dbpartition: STMG_DBPARTITION
-}
-type STMG_DBPARTITION {
-	host_system_size: Int
-	est_data_size: Int
-	in_use: String
-	partition_num: Int!
-	stmg_timestamp: String!
-	complete_timestamp: String
-	obj_id: String!
-	dbpg_name: String
-	host_name: String
-	remarks: String
-	stmg_object: STMG_OBJECT!
-}
-type Query {
-	stmg_dbpgroup: STMG_DBPGROUP
-}
-type STMG_DBPGROUP {
-	target_level: Int
-	total_size: Int
-	data_size: Int
-	partition_count: Int
-	data_skew: Int
-	percent_used: Int
-	stmg_timestamp: String!
-	complete_timestamp: String
-	obj_id: String!
-	remarks: String
-	stmg_object: STMG_OBJECT!
-}
-type Query {
-	stmg_dbsize_info: STMG_DBSIZE_INFO
-}
-type STMG_DBSIZE_INFO {
-	db_size: Int!
-	db_capacity: Int!
-	snapshot_timestamp: String!
-}
-type Query {
-	stmg_hist_threshold: STMG_HIST_THRESHOLD
-}
-type STMG_HIST_THRESHOLD {
-	stmg_th_type: Int!
-	warning_threshold: Int
-	alarm_threshold: Int
-	threshold_exceeded: Int
-	stmg_timestamp: String!
-	obj_id: String!
-	stmg_object: STMG_OBJECT!
-	stmg_threshold_registry: STMG_THRESHOLD_REGISTRY!
-}
-type Query {
-	stmg_index: STMG_INDEX
-}
-type STMG_INDEX {
-	estimated_size: Int
-	firstkeycard: Int
-	first2keycard: Int
-	first3keycard: Int
-	first4keycard: Int
-	fullkeycard: Int
-	clusterfactor: Int
-	colcount: Int
-	nleaf: Int
-	sequential_pages: Int
-	density: Int
-	nlevels: Int
-	clusterratio: Int
-	stmg_timestamp: String!
-	complete_timestamp: String
-	obj_id: String!
-	dbpg_name: String
-	tb_schema: String
-	tb_name: String
-	remarks: String
-	stmg_object: STMG_OBJECT!
-}
-type Query {
-	stmg_object: STMG_OBJECT
-}
-type STMG_OBJECT {
-	obj_type: Int!
-	stmg_timestamp: String!
-	root_id: String!
-	obj_schema: String!
-	obj_name: String!
-	dbpg_name: String
-	ts_name: String
-	obj_id: String!
-	stmg_object_type: STMG_OBJECT_TYPE!
-	stmg_root_object: STMG_ROOT_OBJECT!
-}
-type Query {
-	stmg_object_type: STMG_OBJECT_TYPE
-}
-type STMG_OBJECT_TYPE {
-	obj_type: Int!
-	type_name: String!
-}
-type Query {
-	stmg_root_object: STMG_ROOT_OBJECT
-}
-type STMG_ROOT_OBJECT {
-	obj_type: Int!
-	stmg_timestamp: String!
-	root_id: String!
-	stmg_object_type: STMG_OBJECT_TYPE!
-}
-type Query {
-	stmg_table: STMG_TABLE
-}
-type STMG_TABLE {
-	total_row_count: Int
-	avg_row_count: Int
-	target_level: Int
-	avg_row_length: Int
-	estimated_size: Int
-	npages: Int
-	colcount: Int
-	fpages: Int
-	overflow: Int
-	data_skew: Int
-	stmg_timestamp: String!
-	complete_timestamp: String
-	obj_id: String!
-	dbpg_name: String
-	main_tbspace: String
-	index_tbspace: String
-	long_tbspace: String
-	remarks: String
-	stmg_object: STMG_OBJECT!
-}
-type Query {
-	stmg_tablespace: STMG_TABLESPACE
-}
-type STMG_TABLESPACE {
-	total_size: Int
-	data_size: Int
-	data_page: Int
-	type: String
-	datatype: String
-	overhead: Float
-	transfer_rate: Float
-	extent_size: Int
-	prefetch_size: Int
-	bufferpool_id: Int
-	page_size: Int
-	percent_used: Int
-	stmg_timestamp: String!
-	complete_timestamp: String
-	obj_id: String!
-	remarks: String
-	stmg_object: STMG_OBJECT!
-}
-type Query {
-	stmg_tbpartition: STMG_TBPARTITION
-}
-type STMG_TBPARTITION {
-	row_count: Int
-	partition_num: Int!
-	stmg_timestamp: String!
-	complete_timestamp: String
-	obj_id: String!
-	dbpg_name: String
-	remarks: String
-	stmg_object: STMG_OBJECT!
-}
-type Query {
-	stmg_threshold_registry: STMG_THRESHOLD_REGISTRY
-}
-type STMG_THRESHOLD_REGISTRY {
-	enabled: String!
-	stmg_th_type: Int!
-	stmg_th_name: String
-}
-schema {
-	query: Query
+Yºschema {
+query: Query
+mutation: Mutation
+}
+type Query { 
+sw_filenames(sw_filenames_key: ID): [SW_FILENAMES] 
+sw_analysis(id: ID): [SW_ANALYSIS] 
+sw_analysis_dead_project(id: ID): [SW_ANALYSIS_DEAD_PROJECT] 
+lw_mailanalysis(mail: ID): [LW_MAILANALYSIS] 
+sw_run_tasks(project: ID, run_id: ID): [SW_RUN_TASKS] 
+sw_run_tasks_dead_project(project: ID, run_id: ID): [SW_RUN_TASKS_DEAD_PROJECT] 
+proj_correspondence(id_mavis: ID, id_watcher: ID, watcher_type: ID): [PROJ_CORRESPONDENCE] 
+mavis_projects(id: ID): [MAVIS_PROJECTS] 
+sw_temp(id: ID): [SW_TEMP] 
+sw_screenshots(id: ID): [SW_SCREENSHOTS] 
+sw_screenshots_dead_project(id: ID): [SW_SCREENSHOTS_DEAD_PROJECT] 
+nw_entries(id: ID): [NW_ENTRIES] 
+nw_used_mime_parts(dfs_nr: ID, mail: ID): [NW_USED_MIME_PARTS] 
+nw_url_references(mail: ID, plain_link: ID): [NW_URL_REFERENCES] 
+lw_url_references(mail: ID, plain_link: ID): [LW_URL_REFERENCES] 
+nw_projects(id: ID): [NW_PROJECTS] 
+ud_classification(id: ID): [UD_CLASSIFICATION] 
+sw_projects(id: ID): [SW_PROJECTS] 
+fw_projects(id: ID): [FW_PROJECTS] 
+lw_project_word_of_day(day: ID, projid: ID): [LW_PROJECT_WORD_OF_DAY] 
+lw_person_mail(id: ID): [LW_PERSON_MAIL] 
+swapit_stopwords_old(id: ID): [SWAPIT_STOPWORDS_OLD] 
+word_of_day_stopwords(id: ID): [WORD_OF_DAY_STOPWORDS] 
+egraeculi(mailid: ID, url: ID): [EGRAECULI] 
+lw_word_of_day(day: ID, language: ID): [LW_WORD_OF_DAY] 
+lw_projects_month_analysis(month: ID, project: ID, year: ID): [LW_PROJECTS_MONTH_ANALYSIS] 
+lw_thread_tree: [LW_THREAD_TREE] 
+nw_project_regex_check(last_check: ID, project: ID): [NW_PROJECT_REGEX_CHECK] 
+lw_project_regex_check(last_check: ID, project: ID): [LW_PROJECT_REGEX_CHECK] 
+t20060606_084327(id: ID): [T20060606_084327] 
+fw_atom_entries(id: ID): [FW_ATOM_ENTRIES] 
+lw_projects(id: ID): [LW_PROJECTS] 
+proj_lang: [PROJ_LANG] 
+udc(id: ID): [UDC] 
+sub_udc(sub_udc_id: ID, udc_id: ID): [SUB_UDC] 
+sub_udc_relation(mavis_project_id: ID, sub_udc_id: ID, udc_id: ID): [SUB_UDC_RELATION] 
+fw_rss_run(entryid: ID, projid: ID, rundate: ID): [FW_RSS_RUN] 
+fw_atom_run(entryid: ID, projid: ID, rundate: ID): [FW_ATOM_RUN] 
+lw_project_analysis_temp(project: ID): [LW_PROJECT_ANALYSIS_TEMP] 
+lw_entries(id: ID): [LW_ENTRIES] 
+lw_used_mime_parts(dfs_nr: ID, mail: ID): [LW_USED_MIME_PARTS] 
+fw_atom_entryitemconnect(entryid: ID, itemid: ID): [FW_ATOM_ENTRYITEMCONNECT] 
+fw_rss_entryitemconnect(entryid: ID, itemid: ID): [FW_RSS_ENTRYITEMCONNECT] 
+fw_rss_items(id: ID): [FW_RSS_ITEMS] 
+t20060606_084327_exception: [T20060606_084327_EXCEPTION] 
+fw_atom_items(id: ID): [FW_ATOM_ITEMS] 
+fw_rss_entries(id: ID): [FW_RSS_ENTRIES] 
+lw_entries_tt: [LW_ENTRIES_TT] 
+temp_lw_month_analysis(month: ID, project: ID, year: ID): [TEMP_LW_MONTH_ANALYSIS] 
+explain_instance(explain_requester: ID, explain_time: ID, source_name: ID, source_schema: ID, source_version: ID): [EXPLAIN_INSTANCE] 
+explain_statement(explain_level: ID, explain_requester: ID, explain_time: ID, sectno: ID, source_name: ID, source_schema: ID, source_version: ID, stmtno: ID): [EXPLAIN_STATEMENT] 
+explain_argument: [EXPLAIN_ARGUMENT] 
+explain_object: [EXPLAIN_OBJECT] 
+explain_operator: [EXPLAIN_OPERATOR] 
+explain_predicate: [EXPLAIN_PREDICATE] 
+explain_stream: [EXPLAIN_STREAM] 
+advise_instance(start_time: ID): [ADVISE_INSTANCE] 
+advise_index: [ADVISE_INDEX] 
+advise_workload: [ADVISE_WORKLOAD] 
+advise_mqt: [ADVISE_MQT] 
+advise_partition: [ADVISE_PARTITION] 
+advise_table: [ADVISE_TABLE] 
+regist_info(id: ID): [REGIST_INFO] 
+event(id: ID): [EVENT] 
+lw_project_analysis(project: ID): [LW_PROJECT_ANALYSIS] 
+lw_person_addr(id: ID): [LW_PERSON_ADDR] 
+country(id: ID): [COUNTRY] 
+contacts(id: ID): [CONTACTS] 
+bw_author(id: ID): [BW_AUTHOR] 
+bw_comment(id: ID): [BW_COMMENT] 
+bw_multimedia(id: ID): [BW_MULTIMEDIA] 
+bw_references(id: ID): [BW_REFERENCES] 
+bw_trackbacks(id: ID): [BW_TRACKBACKS] 
+bw_entries(id: ID): [BW_ENTRIES] 
+bw_projects(id: ID): [BW_PROJECTS] 
+lw_wotd(id: ID): [LW_WOTD] 
+swapit_collections(id: ID): [SWAPIT_COLLECTIONS] 
+swapit_stopwords(id: ID): [SWAPIT_STOPWORDS] 
+fw_checkofchange_help: [FW_CHECKOFCHANGE_HELP] 
+table_metadata: [TABLE_METADATA]
+} 
+ type SW_FILENAMES { 
+ sw_filenames_key: ID!
+ filename: String!
+} 
+ type SW_ANALYSIS { 
+ id: ID!
+ project: Int!
+ run_id: Int!
+ date: String
+ mirror_date: String
+ html_count: Int
+ img_count: Int
+ img_out_count: Int
+ img_int_out_count: Int
+ other_count: Int
+ other_out_count: Int
+ other_int_out_count: Int
+ file_count: Int
+ total_size: Int
+ total_html_size: Int
+ total_img_size: Int
+ total_img_embedded: Int
+ total_script_size: Int
+ total_plain_size: Int
+ total_comment_size: Int
+ total_link_size: Int
+ total_forms: Int
+ total_inputs: Int
+ max_html_size: Int
+ max_img_size: Int
+ max_page_size: Int
+ total_int_out_links: Int
+ total_out_links: Int
+ total_int_links: Int
+ total_ftp_links: Int
+ total_mailto_links: Int
+ depth: Int
+ width: Int
+ avr_html_size: Float
+ avr_img_size: Float
+ avr_img_embedded: Float
+ avr_plain_size: Float
+ avr_script_size: Float
+ avr_comment_size: Float
+ avr_link_size: Float
+ avr_img_count: Float
+ avr_page_size: Float
+ avr_int_out_links: Float
+ avr_out_links: Float
+ avr_int_links: Float
+ avr_linked: Float
+ avr_ftp_links: Float
+ avr_mailto_links: Float
+ avr_forms: Float
+ avr_inputs: Float
+ avr_input_form: Float
+ avr_img_usage: Float
+ file_extensions: String
+ mime_types: String
+ generators: String
+ form_field_names: String
+ link_relations: String
+} 
+ type SW_ANALYSIS_DEAD_PROJECT { 
+ id: ID!
+ mime_types: String
+ project: Int!
+ run_id: Int!
+ date: String
+ mirror_date: String
+ html_count: Int
+ img_count: Int
+ img_out_count: Int
+ img_int_out_count: Int
+ other_count: Int
+ other_out_count: Int
+ other_int_out_count: Int
+ file_count: Int
+ total_size: Int
+ total_html_size: Int
+ total_img_size: Int
+ total_img_embedded: Int
+ total_script_size: Int
+ total_plain_size: Int
+ total_comment_size: Int
+ total_link_size: Int
+ total_forms: Int
+ total_inputs: Int
+ max_html_size: Int
+ max_img_size: Int
+ max_page_size: Int
+ total_int_out_links: Int
+ total_out_links: Int
+ total_int_links: Int
+ total_ftp_links: Int
+ total_mailto_links: Int
+ depth: Int
+ width: Int
+ avr_html_size: Float
+ avr_img_size: Float
+ avr_img_embedded: Float
+ avr_plain_size: Float
+ avr_script_size: Float
+ avr_comment_size: Float
+ avr_link_size: Float
+ avr_img_count: Float
+ avr_page_size: Float
+ avr_int_out_links: Float
+ avr_out_links: Float
+ avr_int_links: Float
+ avr_linked: Float
+ avr_ftp_links: Float
+ avr_mailto_links: Float
+ avr_forms: Float
+ avr_inputs: Float
+ avr_input_form: Float
+ avr_img_usage: Float
+ file_extensions: String
+ generators: String
+ form_field_names: String
+ link_relations: String
+} 
+ type LW_MAILANALYSIS { 
+ mail: ID!
+ project: Int
+ message_id: String!
+ hea_refer: String
+ hea_reply: String
+ subject: String
+ sender: String
+ recipient: String
+ copy: String
+ received: String
+ sent: String
+ plaincontent: String
+ reply_to: BigInteger
+ top_mess: BigInteger
+} 
+ type SW_RUN_TASKS { 
+ project: ID!
+ run_id: ID!
+ phase: String!
+ estimated_size: String!
+ comments: String
+ generated: String
+ mirror_started: String
+ mirror_finished: String
+ ana_finished: String
+} 
+ type SW_RUN_TASKS_DEAD_PROJECT { 
+ project: ID!
+ run_id: ID!
+ phase: String!
+ estimated_size: String!
+ comments: String
+ generated: String
+ mirror_started: String
+ mirror_finished: String
+ ana_finished: String
+} 
+ type PROJ_CORRESPONDENCE { 
+ id_mavis: ID!
+ id_watcher: ID!
+ watcher_type: ID!
+} 
+ type MAVIS_PROJECTS { 
+ id: ID!
+ bezeichnung: String!
+ name: String!
+ url: String
+ start: String
+ udc: String
+ mitarbeiter: String
+ teilnehmer: String
+ end: String
+ description: String
+} 
+ type SW_TEMP { 
+ id: ID!
+ projid: Int!
+ date: String!
+ filename: String
+ screenshot_flag: String!
+ category: String!
+ index_flag: String
+ difference: Int
+} 
+ type SW_SCREENSHOTS { 
+ id: ID!
+ projid: Int!
+ date: String!
+ filename: String
+ screenshot_flag: String!
+ category: String!
+ index_flag: String
+ difference: Int
+} 
+ type SW_SCREENSHOTS_DEAD_PROJECT { 
+ id: ID!
+ projid: Int!
+ date: String!
+ filename: String
+ screenshot_flag: String!
+ category: String!
+ index_flag: String
+ difference: Int
+} 
+ type NW_ENTRIES { 
+ id: ID!
+ content: String!
+ header: String!
+ date_of_insertion: String!
+ archivemail: String!
+ project: Int
+ message_id: String
+ subject: String
+ sender: String
+ recipient: String
+ copy: String
+ sent: String
+ hea_refer: String
+ hea_reply: String
+ sender_email: String
+ encoding: String
+} 
+ type NW_USED_MIME_PARTS { 
+ content: String
+ mail: ID!
+ dfs_nr: ID!
+ mime_type: String!
+ size: Int!
+} 
+ type NW_URL_REFERENCES { 
+ mail: ID!
+ plain_link: ID!
+ protocol: String!
+ domain: String!
+ path: String!
+ query_string: String!
+} 
+ type LW_URL_REFERENCES { 
+ mail: ID!
+ plain_link: ID!
+ protocol: String
+ domain: String
+ path: String
+ query_string: String
+} 
+ type NW_PROJECTS { 
+ id: ID!
+ descr: String
+ name: String!
+ password: String
+ url: String
+ language: String!
+ crit_sender: String
+ crit_rec: String
+ crit_subject: String
+ proj_start: String
+ proj_end: String
+ udc: Int
+ crit_check: String
+ last_change: String
+} 
+ type UD_CLASSIFICATION { 
+ id: ID!
+ descr: String!
+} 
+ type SW_PROJECTS { 
+ id: ID!
+ name: String!
+ descr: String!
+ start_url: String!
+ proj_start: String
+ proj_end: String
+ int_look_up: String!
+ exclude: String
+ check_period: String!
+ start_ip: String!
+ possible_false_screenshots: String
+ total_change: Int
+ udc: Int
+ language: String!
+} 
+ type FW_PROJECTS { 
+ id: ID!
+ name: String!
+ descr: String
+ url: String!
+ proj_start: String!
+ proj_end: String
+ udc: Int
+ standard: String!
+ language: String
+ goodtouse: String
+} 
+ type LW_PROJECT_WORD_OF_DAY { 
+ projid: ID!
+ day: ID!
+ word: String
+ count: Int
+ language: String
+} 
+ type LW_PERSON_MAIL { 
+ id: ID!
+ person: String
+ mail_expression: String!
+ mail: String
+} 
+ type SWAPIT_STOPWORDS_OLD { 
+ id: ID!
+ name: String!
+ words: String!
+} 
+ type WORD_OF_DAY_STOPWORDS { 
+ id: ID!
+ name: String!
+ words: String!
+ language: String!
+} 
+ type EGRAECULI { 
+ mailid: ID!
+ swprojid: Int
+ swprojname: String
+ url: ID!
+} 
+ type LW_WORD_OF_DAY { 
+ day: ID!
+ word: String!
+ count: Int!
+ language: ID!
+} 
+ type LW_PROJECTS_MONTH_ANALYSIS { 
+ project: ID!
+ month: ID!
+ year: ID!
+ cnt_mails_per_month: Int
+ cnt_active_mail_senders: Int
+} 
+ type LW_THREAD_TREE { 
+ thread: BigInteger!
+ mail: BigInteger
+ depth: Int!
+ order: Int!
+} 
+ type NW_PROJECT_REGEX_CHECK { 
+ project: ID!
+ last_check: ID!
+} 
+ type LW_PROJECT_REGEX_CHECK { 
+ project: ID!
+ last_check: ID!
+} 
+ type T20060606_084327 { 
+ id: ID!
+ entry: Int!
+ title: String!
+ link: String
+ descr: String!
+ author: String
+ comments: String
+ guid: String
+} 
+ type FW_ATOM_ENTRIES { 
+ id: ID!
+ uri: String!
+ title: String!
+ updated: String!
+ author: String
+ link: String
+ content: String!
+ subtitle: String
+ version: String
+} 
+ type LW_PROJECTS { 
+ id: ID!
+ name: String!
+ descr: String
+ password: String
+ url: String
+ language: String
+ crit_sender: String
+ crit_rec: String
+ crit_subject: String
+ proj_start: String
+ proj_end: String
+ udc: Int
+ crit_check: String
+ last_change: String
+} 
+ type PROJ_LANG { 
+ id: Int!
+ language: String!
+} 
+ type UDC { 
+ id: ID!
+ name: String!
+} 
+ type SUB_UDC { 
+ udc_id: ID!
+ sub_udc_id: ID!
+ sub_udc_name: String!
+} 
+ type SUB_UDC_RELATION { 
+ mavis_project_id: ID!
+ udc_id: ID!
+ sub_udc_id: ID!
+} 
+ type FW_RSS_RUN { 
+ projid: ID!
+ entryid: ID!
+ rundate: ID!
+} 
+ type FW_ATOM_RUN { 
+ projid: ID!
+ entryid: ID!
+ rundate: ID!
+} 
+ type LW_PROJECT_ANALYSIS_TEMP { 
+ project: ID!
+ cnt_mails_today: Int
+ cnt_mails_total: Int
+ cnt_active_mail_senders: Int
+ last_email: BigInteger
+ largest_inactivity_gap: Int
+ avr_mail_per_day: String
+ avr_mpd_variance: String
+} 
+ type LW_ENTRIES { 
+ copy: String
+ content: String!
+ id: ID!
+ project: Int
+ header: String!
+ date_of_insertion: String!
+ archivemail: String!
+ message_id: String
+ hea_refer: String
+ hea_reply: String
+ subject: String
+ sender: String
+ recipient: String
+ sent: String
+ reply_to: BigInteger
+ top_mess: BigInteger
+ sender_email: String
+ encoding: String
+} 
+ type LW_USED_MIME_PARTS { 
+ mail: ID!
+ dfs_nr: ID!
+ mime_type: String
+ size: Int!
+ content: String
+} 
+ type FW_ATOM_ENTRYITEMCONNECT { 
+ entryid: ID!
+ itemid: ID!
+} 
+ type FW_RSS_ENTRYITEMCONNECT { 
+ entryid: ID!
+ itemid: ID!
+} 
+ type FW_RSS_ITEMS { 
+ descr: String!
+ id: ID!
+ title: String!
+ link: String
+ author: String
+ comments: String
+ guid: String
+} 
+ type T20060606_084327_EXCEPTION { 
+ id: Int!
+ title: String!
+ link: String
+ descr: String!
+ author: String
+ comments: String
+ guid: String
+} 
+ type FW_ATOM_ITEMS { 
+ id: ID!
+ uri: String
+ title: String!
+ updated: String
+ author: String
+ content: String
+ summary: String
+ link: String
+} 
+ type FW_RSS_ENTRIES { 
+ id: ID!
+ title: String
+ descr: String!
+ link: String
+ language: String
+ pubdate: String
+ ttl: Int
+ content: String!
+ version: String
+ image: String
+ image_type: String
+} 
+ type LW_ENTRIES_TT { 
+ id: BigInteger!
+ project: Int
+ content: String!
+ header: String!
+ date_of_insertion: String!
+ archivemail: String!
+ message_id: String
+ hea_refer: String
+ hea_reply: String
+ subject: String
+ sender: String
+ recipient: String
+ copy: String
+ sent: String
+ reply_to: BigInteger
+ top_mess: BigInteger
+ sender_email: String
+ encoding: String
+} 
+ type TEMP_LW_MONTH_ANALYSIS { 
+ project: ID!
+ month: ID!
+ year: ID!
+ cnt_mails_per_month: Int
+ cnt_active_mail_senders: Int
+} 
+ type EXPLAIN_INSTANCE { 
+ explain_requester: ID!
+ explain_time: ID!
+ source_name: ID!
+ source_schema: ID!
+ source_version: ID!
+ explain_option: String!
+ snapshot_taken: String!
+ db2_version: String!
+ sql_type: String!
+ queryopt: Int!
+ block: String!
+ isolation: String!
+ buffpage: Int!
+ avg_appls: Int!
+ sortheap: Int!
+ locklist: Int!
+ maxlocks: Int!
+ locks_avail: Int!
+ cpu_speed: String!
+ remarks: String
+ dbheap: Int!
+ comm_speed: String!
+ parallelism: String!
+ datajoiner: String!
+} 
+ type EXPLAIN_STATEMENT { 
+ explain_requester: ID!
+ explain_time: ID!
+ source_name: ID!
+ source_schema: ID!
+ source_version: ID!
+ explain_level: ID!
+ stmtno: ID!
+ sectno: ID!
+ queryno: Int!
+ querytag: String!
+ statement_type: String!
+ updatable: String!
+ deletable: String!
+ total_cost: String!
+ statement_text: String!
+ snapshot: String
+ query_degree: Int!
+} 
+ type EXPLAIN_ARGUMENT { 
+ explain_requester: String!
+ explain_time: String!
+ source_name: String!
+ source_schema: String!
+ source_version: String!
+ explain_level: String!
+ stmtno: Int!
+ sectno: Int!
+ operator_id: Int!
+ argument_type: String!
+ argument_value: String
+ long_argument_value: String
+} 
+ type EXPLAIN_OBJECT { 
+ explain_requester: String!
+ explain_time: String!
+ source_name: String!
+ source_schema: String!
+ source_version: String!
+ explain_level: String!
+ stmtno: Int!
+ sectno: Int!
+ object_schema: String!
+ object_name: String!
+ object_type: String!
+ create_time: String
+ statistics_time: String
+ column_count: Int!
+ row_count: BigInteger!
+ width: Int!
+ pages: Int!
+ distinct: String!
+ tablespace_name: String
+ overhead: String!
+ transfer_rate: String!
+ prefetchsize: Int!
+ extentsize: Int!
+ cluster: String!
+ nleaf: Int!
+ nlevels: Int!
+ fullkeycard: BigInteger!
+ overflow: Int!
+ firstkeycard: BigInteger!
+ first2keycard: BigInteger!
+ first3keycard: BigInteger!
+ first4keycard: BigInteger!
+ sequential_pages: Int!
+ density: Int!
+ stats_src: String!
+ average_sequence_gap: String!
+ average_sequence_fetch_gap: String!
+ average_sequence_pages: String!
+ average_sequence_fetch_pages: String!
+ average_random_pages: String!
+ average_random_fetch_pages: String!
+ numrids: BigInteger!
+ numrids_deleted: BigInteger!
+ num_empty_leafs: BigInteger!
+ active_blocks: BigInteger!
+} 
+ type EXPLAIN_OPERATOR { 
+ explain_requester: String!
+ explain_time: String!
+ source_name: String!
+ source_schema: String!
+ source_version: String!
+ explain_level: String!
+ stmtno: Int!
+ sectno: Int!
+ operator_id: Int!
+ operator_type: String!
+ total_cost: String!
+ io_cost: String!
+ cpu_cost: String!
+ first_row_cost: String!
+ re_total_cost: String!
+ re_io_cost: String!
+ re_cpu_cost: String!
+ comm_cost: String!
+ first_comm_cost: String!
+ buffers: String!
+ remote_total_cost: String!
+ remote_comm_cost: String!
+} 
+ type EXPLAIN_PREDICATE { 
+ explain_requester: String!
+ explain_time: String!
+ source_name: String!
+ source_schema: String!
+ source_version: String!
+ explain_level: String!
+ stmtno: Int!
+ sectno: Int!
+ operator_id: Int!
+ predicate_id: Int!
+ how_applied: String!
+ when_evaluated: String!
+ relop_type: String!
+ subquery: String!
+ filter_factor: String!
+ predicate_text: String
+} 
+ type EXPLAIN_STREAM { 
+ explain_requester: String!
+ explain_time: String!
+ source_name: String!
+ source_schema: String!
+ source_version: String!
+ explain_level: String!
+ stmtno: Int!
+ sectno: Int!
+ stream_id: Int!
+ source_type: String!
+ source_id: Int!
+ target_type: String!
+ target_id: Int!
+ object_schema: String
+ object_name: String
+ stream_count: String!
+ column_count: Int!
+ predicate_id: Int!
+ column_names: String
+ pmid: Int!
+ single_node: String
+ partition_columns: String
+} 
+ type ADVISE_INSTANCE { 
+ start_time: ID!
+ end_time: String!
+ mode: String!
+ wkld_compression: String!
+ status: String!
+} 
+ type ADVISE_INDEX { 
+ colnames: String!
+ explain_requester: String!
+ explain_time: String!
+ source_name: String!
+ source_schema: String!
+ source_version: String!
+ explain_level: String!
+ stmtno: Int!
+ sectno: Int!
+ queryno: Int!
+ querytag: String!
+ name: String!
+ creator: String!
+ tbname: String!
+ tbcreator: String!
+ uniquerule: String!
+ colcount: Int!
+ iid: Int!
+ nleaf: Int!
+ nlevels: Int!
+ firstkeycard: BigInteger!
+ fullkeycard: BigInteger!
+ clusterratio: Int!
+ clusterfactor: String!
+ userdefined: Int!
+ system_required: Int!
+ create_time: String!
+ stats_time: String
+ page_fetch_pairs: String!
+ remarks: String
+ packed_desc: String
+ definer: String!
+ converted: String!
+ sequential_pages: Int!
+ density: Int!
+ first2keycard: BigInteger!
+ first3keycard: BigInteger!
+ first4keycard: BigInteger!
+ pctfree: Int!
+ unique_colcount: Int!
+ minpctused: Int!
+ reverse_scans: String!
+ use_index: String
+ creation_text: String!
+ run_id: String
+ indextype: String!
+ exists: String!
+ ridtoblock: String!
+} 
+ type ADVISE_WORKLOAD { 
+ workload_name: String!
+ statement_no: Int!
+ statement_text: String!
+ statement_tag: String!
+ frequency: Int!
+ importance: String!
+ weight: String!
+ cost_before: String
+ cost_after: String
+ compilable: String
+} 
+ type ADVISE_MQT { 
+ iid: Int!
+ explain_requester: String!
+ explain_time: String!
+ source_name: String!
+ source_schema: String!
+ source_version: String!
+ explain_level: String!
+ stmtno: Int!
+ sectno: Int!
+ name: String!
+ creator: String!
+ create_time: String!
+ stats_time: String
+ numrows: String!
+ numcols: Int!
+ rowsize: String!
+ benefit: String!
+ use_mqt: String
+ mqt_source: String
+ query_text: String!
+ creation_text: String!
+ sample_text: String!
+ colstats: String!
+ extra_info: String!
+ tbspace: String!
+ run_id: String
+ refresh_type: String!
+ exists: String!
+} 
+ type ADVISE_PARTITION { 
+ explain_requester: String!
+ explain_time: String!
+ source_name: String!
+ source_schema: String!
+ source_version: String!
+ explain_level: String!
+ stmtno: Int!
+ sectno: Int!
+ queryno: Int!
+ querytag: String!
+ tbname: String!
+ tbcreator: String!
+ pmid: Int!
+ tbspace: String!
+ colnames: String!
+ colcount: Int!
+ replicate: String!
+ cost: String!
+ useit: String
+ run_id: String
+} 
+ type ADVISE_TABLE { 
+ run_id: String
+ table_name: String!
+ table_schema: String!
+ tablespace: String!
+ selection_flag: String!
+ table_exists: String!
+ use_table: String!
+ gen_columns: String!
+ organize_by: String!
+ creation_text: String!
+ alter_command: String!
+ diskuse: String!
+} 
+ type REGIST_INFO { 
+ id: ID!
+ firstname: String
+ lastname: String
+ title: String
+ acatitle: String
+ attendance: String
+ company: String
+ department: String
+ address: String
+ city: String
+ postcode: String
+ country: Int
+ phone: String
+ fax: String
+ email: String
+ comments: String
+ workshop: String
+ fee: String
+ registdate: String
+ event_id: Int
+ username: String
+} 
+ type EVENT { 
+ id: ID!
+ title: String
+ start: String
+ end: String
+} 
+ type LW_PROJECT_ANALYSIS { 
+ project: ID!
+ cnt_mails_today: Int
+ cnt_mails_total: Int
+ cnt_active_mail_senders: Int
+ last_email: BigInteger
+ largest_inactivity_gap: Int
+ avr_mail_per_day: String
+ avr_mpd_variance: String
+ nrtopmess: BigInteger
+ nrthread: BigInteger
+ avethrddepth: String
+ wrdpermail: String
+ nrpeople: BigInteger
+} 
+ type LW_PERSON_ADDR { 
+ id: ID!
+ pname: String
+ paddr: String!
+ project: BigInteger!
+} 
+ type COUNTRY { 
+ id: ID!
+ code: String
+ caption: String
+ abbrcaption: String
+} 
+ type CONTACTS { 
+ id: ID!
+ name: String
+ created_on: String
+ updated_on: String
+} 
+ type BW_AUTHOR { 
+ authorname: String!
+ id: ID!
+ authorurl: String
+} 
+ type BW_COMMENT { 
+ id: ID!
+ entry_id: Int!
+ content_chunk: String!
+ author_id: Int!
+ date: String!
+} 
+ type BW_MULTIMEDIA { 
+ id: ID!
+ entry_id: Int!
+ multimedia: String!
+ mime: String!
+} 
+ type BW_REFERENCES { 
+ id: ID!
+ entry_id: Int!
+ url: String!
+ type: Int
+} 
+ type BW_TRACKBACKS { 
+ id: ID!
+ entry_id: Int!
+ url: String!
+ title_trackback: String
+} 
+ type BW_ENTRIES { 
+ id: ID!
+ project_id: Int!
+ content_chunk: String!
+ perma_link: String
+ title: String
+ trackback_url: String
+ mood: String
+ content: String
+ author_id: Int
+ date: String!
+ commentlink: String
+} 
+ type BW_PROJECTS { 
+ id: ID!
+ url: String!
+ name: String
+ category: Int
+ language: String
+ fw_project: Int
+ proj_start: String
+ proj_end: String
+ descr: String
+ proj_update: String
+} 
+ type LW_WOTD { 
+ id: ID!
+ date: String!
+ word: String!
+ ignore: String
+ value: Int
+ text_c: Int
+ word_c: Int
+ max_word: Int
+ text_total: Int
+} 
+ type SWAPIT_COLLECTIONS { 
+ id: ID!
+ name: String!
+ description: String
+ proj_ids: String!
+ language: String
+ docs_count: Int
+ start_date: String
+ end_date: String
+ coll_status: String
+ structuring_status: String
+} 
+ type SWAPIT_STOPWORDS { 
+ id: ID!
+ coll_id: Int!
+ words: String
+} 
+ type FW_CHECKOFCHANGE_HELP { 
+ content: String!
+} 
+type TABLE_METADATA {
+name: String!
+columns: [String]
 }
