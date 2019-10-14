@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>MobSOS Community Analytics</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css" media="all">
+	<script type="text/javascript" src="js/apiCall.js"></script>
+</head>
+<body>
+<h1>MobSOS Community Analytics</h1>
+<div>
+	<h2>las2peer Community<h2>
+	<button id="hidelas2peer" onclick='javascript:toggleVisibility("las2peerForm")'>&#9660;</button> <br>
+	<form method="POST" action="" id="las2peerForm">
+		<label>Username:<br><input type = "text" name="Username" id="Username0"  required></label> <br>
+		<label>Password:<br><input type = "password" name="Password" id="Password0" required></label> <br>
+		<label>Database Type:<br>
+		<select name="DatabaseType" id="DatabaseType0"  required>
+			<option value="DB2">DB2</option>
+			<option value="MySQL">MySQL</option>
+			<option value="firebird">Firebird</option>
+			<option value="mssql">MsSQL</option>
+			<option value="postgresql">PostgreSQL</option>
+			<option value="derby">Derby</option>
+			<option value="oracle">Oracle</option></label>
+		</select> <br>
+		<label>Database Name:<br><input type="text" name="DatabaseName" id="DatabaseName0" required></label> <br>
+		<label>Database Host:<br><input type="text" name="DatabaseHost" id="DatabaseHost0" required></label> <br>
+		<label>Database Port:<br><input type="number" name="DatabasePort" id="DatabasePort0" min="0" required></label> <br>
+		<input type="submit" value="Execute" id="submit0" title="Execute Query"> <br>
+	</form>
+</div>
+<div>
+	<h2>External Community<h2>
+	<button id="hideexternal" onclick='javascript:toggleVisibility("externalForm")'>&#9660;</button> <br>
+	<form method="POST" action="" id="externalForm">
+		<label>Username:<br><input type = "text" name="Username" id="Username1" required></label> <br>
+		<label>Password:<br><input type = "password" name="Password" id="Password1" required></label> <br>
+		<label>Database Type:<br>
+		<select name="Database Type" id="DatabaseType1" required>
+			<option value="DB2">DB2</option>
+			<option value="MySQL">MySQL</option>
+			<option value="firebird">Firebird</option>
+			<option value="mssql">MsSQL</option>
+			<option value="postgresql">PostgreSQL</option>
+			<option value="derby">Derby</option>
+			<option value="oracle">Oracle</option></label>
+		</select> <br>
+		<label>Database Name:<br><input type="text" name="DatabaseName" id="DatabaseName1" required></label> <br>
+		<label>Database Host:<br><input type="text" name="DatabaseHost" id="DatabaseHost1" required></label> <br>
+		<label>Database Port:<br><input type="number" name="DatabasePort" id="DatabasePort1" min="0" required></label> <br>
+		<input type="submit" value="Execute" id="submit1" title="Execute Query"> <br>
+	</form>
+</div>
+<div>
+	<h2>Query<h2>
+	<form method="POST" action="javascript:query()" id="queryForm">
+		<label>Request:<br><input type="text" name="Request" id="Request" required></label> <br>
+		<label> Request Type: <br>
+		<select name="Request" id="RequestType" required>
+			<option value="query">Query</option>
+			<option value="mutation">Mutation</option></label>
+		</select> <br>
+		<label>Visualization Type:<br>
+		<select name="Visualization" id="Visualization" required>
+			<option value="CSV">CSV</option>
+			<option value="JSON">JSON</option>
+			<option value="HTMLTABLE">HTMLTABLE</option>
+			<option value="XML">XML</option>
+			<option value="GOOGLEPIECHART">GOOGLEPIECHART</option>
+			<option value="GOOGLEBARCHART">GOOGLEBARCHART</option>
+			<option value="GOOGLELINECHART">GOOGLELINECHART</option>
+			<option value="GOOGLETIMELINECHART">GOOGLETIMELINECHART</option>
+			<option value="GOOGLERADARCHART">GOOGLERADARCHART</option>
+			<option value="GOOGLETABLE">GOOGLETABLE</option>
+			<option value="GRAPH">GRAPH</option></label>
+		</select> <br>
+		<input type="submit" value="Execute" id="submit2" title="Execute Query"> <br>
+	</form>
+</div>
+<p id="Result">Test</p>
+</body>
+</html>

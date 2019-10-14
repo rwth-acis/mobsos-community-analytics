@@ -1,0 +1,47 @@
+body {
+	background-color: #EEEEEE;
+	font-size: 100.0%;
+    font-family: sans-serif;
+	padding: 50px;
+}
+h1 {
+	color: #000000;
+}
+h2 {
+	color: #000000;
+	display: inline;
+}
+button {
+	display: inline;
+}
+input {
+  width: 50%;
+  padding: 12px 20px 12px 12px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+select {
+  width: 50%;
+  padding: 12px 20px 12px 12px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+#las2peerForm {
+	margin: auto;
+	display: inline;
+	color: #000000;
+}
+#externalForm {
+	margin: auto;
+	color: #000000;
+}
+#queryForm {
+	margin: auto;
+	color: #000000
+}
+#Result {
+	visibility: hidden;
+}
