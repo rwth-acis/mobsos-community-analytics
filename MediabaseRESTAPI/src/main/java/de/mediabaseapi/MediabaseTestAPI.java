@@ -269,7 +269,7 @@ public class MediabaseTestAPI{
 		     return Response.status(450).build();
 		 } catch (JSONException exc) {
 			 System.out.println("JSON error: " + exc.toString());
-			 return Response.status(480).build();
+			 return Response.status(480).entity("Data is not in valid JSON format").build();
 			 
 		 }
 	 }
