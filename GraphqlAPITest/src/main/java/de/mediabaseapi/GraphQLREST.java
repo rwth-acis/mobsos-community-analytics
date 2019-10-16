@@ -80,9 +80,12 @@ public class GraphQLREST {
 	@GET
 	public Response queryExecute(@QueryParam("input") String input) {
 		
+		if (input == null) {
+			return Response.status(460).entity("No graphQL call present in request").build();
+		}
 		GraphQL graphQL = (GraphQL) context.getAttribute("graphqlBuild");
 		ExecutionResult executionResult = graphQL.execute(input);
-		return Response.status(200).entity(executionResult.getData().toString()).build();
+		return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(executionResult.getData().toString()).build();
 	}
 	
 	public GraphQLSchema buildSchema() {

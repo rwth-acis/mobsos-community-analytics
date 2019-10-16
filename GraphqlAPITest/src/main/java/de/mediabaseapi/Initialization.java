@@ -62,7 +62,7 @@ public class Initialization implements ServletContextListener{
 	public void contextInitialized(ServletContextEvent event) {
 		ServletContext sc = event.getServletContext();
 		sc.setAttribute("graphqlBuild", GraphQL.newGraphQL(buildRESTSchema()).build());
-		System.out.println("ServletContextListener started");	
+		System.out.println("ServletContextListener started");
 	}
 	
 	public GraphQLSchema buildRESTSchema() {
@@ -80,9 +80,7 @@ public class Initialization implements ServletContextListener{
 			Properties prop = new Properties();
 			prop.load(input);
 			    con = DriverManager.getConnection(prop.getProperty("db.url"), prop.getProperty("db.user"), prop.getProperty("db.password"));
-		        //GraphQLSchema graphQLSchema = builderRuntimeWiring.generateSchema(con);
-			    // build GraphQL API form schema
-			   System.out.println("testing");
+			   System.out.println("building GraphQL schema...");
 		       GraphQLSchema graphQLSchema = generateRESTSchema(con, "DB2INFO5");
 		       return graphQLSchema;
 		} catch (SQLException exc) {
@@ -129,9 +127,11 @@ public class Initialization implements ServletContextListener{
 			int primaryKeyCount = 0;
 			int foreignKeyCount = 0;
 			String querySchema = "schema {" + "\r\n" + "query: Query" + "\r\n";
-			//querySchema = querySchema + "mutation: Mutation" + "\r\n";
+			querySchema = querySchema + "mutation: Mutation" + "\r\n";
 			querySchema = querySchema + "}";
 			querySchema = querySchema + "type Query { " + "\r\n";
+			querySchema = querySchema + "database_metadata(schema: String): [String]" + "\r\n";
+			querySchema = querySchema + "table_metadata(schema: String, name: String): [TABLE_METADATA]" + "\r\n";
 			RuntimeWiring.Builder runtimeWiring = RuntimeWiring.newRuntimeWiring();
 			
 			
@@ -222,11 +222,14 @@ public class Initialization implements ServletContextListener{
 					schema = schema + "} " + "\r\n";
 				}
 			}
-			// add table metadatatype and add to queries
-			schema = schema + "type TABLE_METADATA {" + "\r\n" + "name: String!" + "\r\n" + "columns: [String]" + "\r\n" + "}";
-			querySchema = querySchema + "table_metadata: [TABLE_METADATA]" + "\r\n" + "} " + "\r\n";
-			//querySchema = "schema { query: Query} type Query { bw_entries(id: ID): [BW_ENTRIES] } ";
-			schema = querySchema + schema;
+			// add table metadatatype and database metadata
+			schema = schema + "type TABLE_METADATA {" + "\r\n" + "schema: String!" + "\r\n" + "name: String!" + "\r\n" + "columns: [String]" + "\r\n" + "}";
+			querySchema = querySchema + "} " + "\r\n";
+			String mutationSchema = "type Mutation {" + "\r\n";
+			mutationSchema = mutationSchema + "putEntry(schema: String, tableName: String, data: String): String" + "\r\n";
+			mutationSchema = mutationSchema + "deleteEntry(schema: String, tableName: String, condition: String): String" + "\r\n";
+			mutationSchema = mutationSchema + "}" + "\r\n";
+			schema = querySchema + schema + mutationSchema;
 		    // close resultset
 		    rs.close();
 		    
@@ -240,14 +243,36 @@ public class Initialization implements ServletContextListener{
 		    }
 		    br.close();
 		    
-		    // build runtime wiring for the query types
+		    // build runtime wiring for the query types of each table
 		    for (String name: tableNames) {
 		    	runtimeWiring = runtimeWiring.type("Query",
 		    			typeWiring -> typeWiring.dataFetcher(name.toLowerCase(), createRESTQueryDataFetcher(name, dbSchema)));
 		    }
-//		    runtimeWiring = runtimeWiring.type("Query", 
-//		    		typeWiring -> typeWiring.dataFetcher("table_metadata", 
-//		    				createGeneralDataFetcher()));
+		    
+		    // build runtime wiring for metadata on table
+		    List<String> metadataFields = new ArrayList<>();
+		    metadataFields.add("schema");
+		    metadataFields.add("name");
+		    metadataFields.add("columns");
+		    for (String field: metadataFields) {
+		    	runtimeWiring = runtimeWiring.type("TABLE_METADATA", typeWiring -> typeWiring
+						.dataFetcher(field, 
+						createRESTTypeDataFetcher("TABLE_METADATA", field, dbSchema)));
+		    }
+		    
+		    runtimeWiring = runtimeWiring.type("Query", 
+		    		typeWiring -> typeWiring.dataFetcher("database_metadata", createTableNameDataFetcher()));
+		    
+		    runtimeWiring = runtimeWiring.type("Query", 
+		    		typeWiring -> typeWiring.dataFetcher("table_metadata", createTableDataFetcher()));
+		    	    
+		    // build runtime wiring for the mutation types
+		    runtimeWiring = runtimeWiring.type("Mutation",
+		    		typeWiring -> typeWiring.dataFetcher("putEntry", createPutEntryDataFetcher()));
+		    
+		    runtimeWiring = runtimeWiring.type("Mutation",
+		    		typeWiring -> typeWiring.dataFetcher("deleteEntry", createDeleteEntryDataFetcher()));
+
 		    // close SQL-query
 		    stmt.close();
 		    
@@ -267,10 +292,90 @@ public class Initialization implements ServletContextListener{
 		}
 	}
 	
-	private DataFetcher<List<Map<String, Object>>> createGeneralDataFetcher() {
-		return new DataFetcher<List<Map<String, Object>>>() {
+	private DataFetcher<String> createPutEntryDataFetcher() {
+		return new DataFetcher<String>() {
 			@Override
-			public List<Map<String, Object>> get(DataFetchingEnvironment environment) {
+			public String get(DataFetchingEnvironment environment) {
+				String schema = environment.getArgument("schema");
+				String tableName = environment.getArgument("tableName");
+				String data = environment.getArgument("data");
+				String urlString = restAPI + "data/" + schema + "/" + tableName;
+				String responseData = "";
+				
+				try {
+					URL url = new URL(urlString);
+					System.out.println(url.toString());
+					HttpURLConnection con = (HttpURLConnection) url.openConnection();
+					con.setRequestMethod("PUT");
+					con.setRequestProperty("Content-Type", "application/json");
+					con.setDoOutput(true);
+		            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+		            wr.writeBytes(data);
+		            wr.flush();
+		            wr.close();
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine;
+					while ((inputLine = in.readLine()) != null) {
+							responseData = responseData + inputLine;
+						}
+						
+					in.close();
+					return responseData;
+				} catch (JSONException exc) {
+					System.out.println("JSONException: " + exc.toString());
+					return null;
+				}
+				catch (IOException exc) {
+					System.out.println("IOException: " + exc.toString());
+					return null;
+				}
+			}
+		};
+	}
+	
+	private DataFetcher<String> createDeleteEntryDataFetcher() {
+		return new DataFetcher<String>() {
+			@Override
+			public String get(DataFetchingEnvironment environment) {
+				String schema = environment.getArgument("schema");
+				String tableName = environment.getArgument("tableName");
+				String condition = environment.getArgument("condition");
+				System.out.println(condition);
+				String urlString = restAPI + "data/" + schema + "/" + tableName;
+				urlString = urlString + "?condition=" + condition;
+				String responseData = "";
+				
+				try {
+					URL url = new URL(urlString);
+					System.out.println(url.toString());
+					HttpURLConnection con = (HttpURLConnection) url.openConnection();
+					con.setRequestMethod("DELETE");
+					con.setRequestProperty("Content-Type", "application/json");
+					con.setDoOutput(false);
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine;
+					while ((inputLine = in.readLine()) != null) {
+							responseData = responseData + inputLine;
+						}
+						
+					in.close();
+					return responseData;
+				} catch (JSONException exc) {
+					System.out.println("JSONException: " + exc.toString());
+					return null;
+				}
+				catch (IOException exc) {
+					System.out.println("IOException: " + exc.toString());
+					return null;
+				}
+			}
+		};
+	}
+	
+	private DataFetcher<List<String>> createTableNameDataFetcher() {
+		return new DataFetcher<List<String>>() {
+			@Override
+			public List<String> get(DataFetchingEnvironment environment) {
 				
 				String urlString = restAPI + "metadata/" + schema;
 				String parameters = "?views=true";
@@ -283,16 +388,61 @@ public class Initialization implements ServletContextListener{
 					con.setDoOutput(false);
 					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 					String inputLine;
-					List<Map<String, Object>> objectList = new ArrayList<Map<String, Object>>();
+					List<String> output = new ArrayList<>();
 					
 					while ((inputLine = in.readLine()) != null) {
 						System.out.println(inputLine);
 						JSONArray jsonArray = new JSONArray(inputLine);
 						for (int i = 0; i < jsonArray.length(); i++) {
-							objectList.add(toMap((JSONObject) jsonArray.get(i)));							
-						}
-						
+							output.add(((JSONObject) jsonArray.get(i)).getString("name"));
+							//objectList.add(toMap((JSONObject) jsonArray.get(i)));						
+						}	
 					}
+					in.close();
+					return output;
+				} catch (JSONException exc) {
+					System.out.println("JSONException: " + exc.toString());
+					return null;
+				}
+				catch (IOException exc) {
+					System.out.println("IOException: " + exc.toString());
+					return null;
+				}
+			}
+ 		};
+	}
+	
+	private DataFetcher<List<Map<String, Object>>> createTableDataFetcher() {
+		return new DataFetcher<List<Map<String, Object>>>() {
+			@Override
+			public List<Map<String, Object>> get(DataFetchingEnvironment environment) {
+				
+				String schema = environment.getArgument("schema");
+				String tableName = environment.getArgument("name");
+				String urlString = restAPI + "metadata/" + schema + "/" + tableName;
+				
+				try {
+					URL url = new URL(urlString);
+					System.out.println(url.toString());
+					HttpURLConnection con = (HttpURLConnection) url.openConnection();
+					con.setRequestMethod("GET");
+					con.setDoOutput(false);
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine;
+					List<Map<String, Object>> objectList = new ArrayList<Map<String, Object>>();
+					Map<String, Object> map = new HashMap<>();
+					map.put("name" , tableName);
+					map.put("schema", schema);
+					List<String> columns = new ArrayList<>();
+					
+					while ((inputLine = in.readLine()) != null) {
+						JSONArray jsonArray = new JSONArray(inputLine);
+						for (int i = 0; i < jsonArray.length(); i++) {
+							columns.add(((JSONObject) jsonArray.get(i)).getString("colname"));							
+						}
+					}
+					map.put("columns", columns);
+					objectList.add(map);
 					in.close();
 					return objectList;
 				} catch (JSONException exc) {
@@ -400,6 +550,7 @@ public class Initialization implements ServletContextListener{
 			@Override
 			public Object get(DataFetchingEnvironment environment) {
 					Map<String, Object> output = environment.getSource();
+					System.out.println("in type data fetcher" + output.toString());
 					return DataFetcherResult.newResult().data(output.get(colname.toLowerCase())).build();
 			}
 		};	

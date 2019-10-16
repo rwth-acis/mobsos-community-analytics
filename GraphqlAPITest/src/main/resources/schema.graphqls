@@ -1,8 +1,9 @@
-Yºschema {
+Z¶schema {
 query: Query
 mutation: Mutation
-}
-type Query { 
+}type Query { 
+database_metadata(schema: String): [String]
+table_metadata(schema: String, name: String): [TABLE_METADATA]
 sw_filenames(sw_filenames_key: ID): [SW_FILENAMES] 
 sw_analysis(id: ID): [SW_ANALYSIS] 
 sw_analysis_dead_project(id: ID): [SW_ANALYSIS_DEAD_PROJECT] 
@@ -82,7 +83,6 @@ lw_wotd(id: ID): [LW_WOTD]
 swapit_collections(id: ID): [SWAPIT_COLLECTIONS] 
 swapit_stopwords(id: ID): [SWAPIT_STOPWORDS] 
 fw_checkofchange_help: [FW_CHECKOFCHANGE_HELP] 
-table_metadata: [TABLE_METADATA]
 } 
  type SW_FILENAMES { 
  sw_filenames_key: ID!
@@ -1071,6 +1071,10 @@ table_metadata: [TABLE_METADATA]
  content: String!
 } 
 type TABLE_METADATA {
+schema: String!
 name: String!
 columns: [String]
+}type Mutation {
+putEntry(schema: String, tableName: String, data: String): String
+deleteEntry(schema: String, tableName: String, condition: String): String
 }

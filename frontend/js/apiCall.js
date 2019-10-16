@@ -8,15 +8,19 @@ function query() {
 		}
 	}
 	var requestType = document.getElementById("RequestType").value;
-	var path = "http://localhost:8080/GraphqlAPITest/graphql/graphql/testing/" + requestType;
+	var path = document.getElementById("APIHost").value;
 	var input = document.getElementById("Request").value;
-	//request.open("GET", path + input, true);
+	// replace curly parentheses in accordance with RFC 1738
+	input = input.replace(/{/g, "%7B");
+	input = input.replace(/}/g, "%7D");
+	path = path + "?input=" + input
 	document.getElementById("Result").style.visibility = "visible";
 	document.getElementById("Result").innerHTML = "running...";
-	request.open("GET", "http://localhost:8080/GraphqlAPITest/graphql/graphql/testing/query%7Bbw_author%7Bid,authorurl%7D%7D", true);
+	request.open("GET", path, true);
 	document.getElementById("Result").innerHTML = "still running...";
 	request.send();
 	document.getElementById("Result").innerHTML = "further running...";
+	document.getElementById("QueryCheck").innerHTML = path;
 };
 
 function toggleVisibility(id) {
