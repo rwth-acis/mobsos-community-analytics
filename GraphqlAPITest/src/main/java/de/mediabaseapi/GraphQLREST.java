@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -44,9 +45,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.Gson;
+
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.GraphQLError;
 import graphql.execution.DataFetcherResult;
 import graphql.execution.instrumentation.tracing.TracingInstrumentation;
 import graphql.schema.DataFetcher;
@@ -65,11 +69,12 @@ import i5.las2peer.restMapper.annotations.ServicePath;
 import graphql.schema.idl.RuntimeWiring.Builder;
 
 
-@Path("/graphqlrest")
-@ServicePath("/graphqlrest")
-// extends RESTService
-public class GraphQLREST {
 
+//@ServicePath("/graphqlrest")
+@Path("/graphqlrest")
+// extends RESTService
+public class GraphQLREST{
+	
 	private String restAPI = "http://localhost:8080/MediabaseRESTAPI/rest/mediabase/";
 	private String propertyFile = "src/main/resources/config.properties";
 	private String schemaFile = "src/main/resources/schema.graphqls";
@@ -85,7 +90,59 @@ public class GraphQLREST {
 		}
 		GraphQL graphQL = (GraphQL) context.getAttribute("graphqlBuild");
 		ExecutionResult executionResult = graphQL.execute(input);
-		return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(executionResult.getData().toString()).build();
+		List<GraphQLError> errors = executionResult.getErrors();
+		System.out.println(errors.toString());
+		if (errors.isEmpty()) {
+			//LinkedHashMap<String, Object> test = new LinkedHashMap<>(executionResult.getData());
+			//System.out.println("LinkedHashMap: " + test.get("bw_author").getClass().toString());
+			Object result = executionResult.getData();
+			if (result instanceof LinkedHashMap) {
+				JSONObject json = new JSONObject((Map<?, ?>)executionResult.getData());
+				return Response.status(200).header("Access-Control-Allow-Origin", "*")
+						.entity(json.toString()).build();
+			}
+			System.out.println("Execution Result: " + executionResult.getData().toString());
+			System.out.println("Execution Result Datatype: " + executionResult.getData().getClass().toString());
+			return Response.status(444).header("Access-Control-Allow-Origin", "*")
+					.entity("Format Error").build();
+		} else {
+			for (GraphQLError error: errors) {
+				if (error.getErrorType().toString().equals("ValidationError")) {
+					return Response.status(450).entity("GraphQL Input not correct").build();
+				}
+			}
+			return Response.status(550).header("Access-Control-Allow-Origin", "*").entity("Internal GraphQL ServerError").build();
+		}
+	}
+	
+	public JSONObject mapToJSON(LinkedHashMap<Object, Object> map) {
+		if (map.isEmpty()) {
+			return null;
+		}
+		JSONObject json = new JSONObject();
+		Gson gson = new Gson();
+		System.out.println("gson: " + gson.toJson(map, map.getClass()));
+		List<Object> keys = new ArrayList<>(map.keySet());
+		json.put(keys.get(0).toString(), map.get(keys.get(0)));
+		ArrayList<Object> test = (ArrayList<Object>) map.get(keys.get(0));
+		for (Object entry: test) {
+			System.out.println("Class Test: " + entry.getClass() + " Entry: " + entry.toString());
+			if (entry instanceof LinkedHashMap) {
+				LinkedHashMap<Object, Object> lhm = (LinkedHashMap<Object, Object>) entry;
+				System.out.println("LHM: " + lhm.toString());
+				List<Object> secKeys = new ArrayList<>(lhm.keySet());
+				for (Object secKey: secKeys) {
+					//System.out.println("3: "+ (int)((LinkedHashMap) entry).get("id"));
+					System.out.println("2. Class Test: " + lhm.get(secKey).getClass());
+					System.out.println("2. Entry: " + lhm.get(secKey).toString());
+				}
+			}
+		}
+		System.out.println("Testing: " + map.get(keys.get(0)).getClass());
+		System.out.println("Testing JSON: " + new JSONObject(map).toString());	
+		System.out.println("Map to JSON: " + json.toString());
+		json = new JSONObject(map);
+		return json;
 	}
 	
 	public GraphQLSchema buildSchema() {

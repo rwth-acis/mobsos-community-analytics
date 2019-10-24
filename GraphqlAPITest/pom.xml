@@ -15,13 +15,13 @@
   	</repository>
   </repositories>
   
-  <!-- added for Spring boot -->
+  <!-- added for Spring boot 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.0.0.RELEASE</version>
-    <relativePath /> <!-- lookup parent from repository -->
-</parent>
+    <relativePath />
+</parent>   -->
   
   <dependencies>
   
@@ -47,6 +47,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <version>4.12</version>
       </dependency>
     
     <!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
@@ -59,11 +60,13 @@
     <dependency>
     	<groupId>javax.xml.bind</groupId>
     	<artifactId>jaxb-api</artifactId>
+    	<version>2.3.0</version>
     	</dependency>
     <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
  
@@ -150,7 +153,15 @@
 		    <groupId>org.glassfish.jaxb</groupId>
 		    <artifactId>jaxb-runtime</artifactId>
 		    <version>2.3.0-b170127.1453</version>
-		</dependency>		
+		</dependency>
+
+		<!--  gson -->		
+		<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.5</version>
+</dependency>
+	
   </dependencies>
   <build>
     <finalName>GraphqlAPITest</finalName>

@@ -226,7 +226,10 @@ public class Initialization implements ServletContextListener{
 			schema = schema + "type TABLE_METADATA {" + "\r\n" + "schema: String!" + "\r\n" + "name: String!" + "\r\n" + "columns: [String]" + "\r\n" + "}";
 			querySchema = querySchema + "} " + "\r\n";
 			String mutationSchema = "type Mutation {" + "\r\n";
-			mutationSchema = mutationSchema + "putEntry(schema: String, tableName: String, data: String): String" + "\r\n";
+			
+			for (String name: tableNames) {
+				mutationSchema = mutationSchema + name.toLowerCase() + "(schema: String, tableName: String, data: String): " + name + "\r\n";
+			}
 			mutationSchema = mutationSchema + "deleteEntry(schema: String, tableName: String, condition: String): String" + "\r\n";
 			mutationSchema = mutationSchema + "}" + "\r\n";
 			schema = querySchema + schema + mutationSchema;
@@ -247,6 +250,8 @@ public class Initialization implements ServletContextListener{
 		    for (String name: tableNames) {
 		    	runtimeWiring = runtimeWiring.type("Query",
 		    			typeWiring -> typeWiring.dataFetcher(name.toLowerCase(), createRESTQueryDataFetcher(name, dbSchema)));
+			    runtimeWiring = runtimeWiring.type("Mutation",
+			    		typeWiring -> typeWiring.dataFetcher(name.toLowerCase(), createPutEntryDataFetcher(name)));
 		    }
 		    
 		    // build runtime wiring for metadata on table
@@ -266,10 +271,7 @@ public class Initialization implements ServletContextListener{
 		    runtimeWiring = runtimeWiring.type("Query", 
 		    		typeWiring -> typeWiring.dataFetcher("table_metadata", createTableDataFetcher()));
 		    	    
-		    // build runtime wiring for the mutation types
-		    runtimeWiring = runtimeWiring.type("Mutation",
-		    		typeWiring -> typeWiring.dataFetcher("putEntry", createPutEntryDataFetcher()));
-		    
+		    // build runtime wiring for the mutation types		    
 		    runtimeWiring = runtimeWiring.type("Mutation",
 		    		typeWiring -> typeWiring.dataFetcher("deleteEntry", createDeleteEntryDataFetcher()));
 
@@ -292,12 +294,12 @@ public class Initialization implements ServletContextListener{
 		}
 	}
 	
-	private DataFetcher<String> createPutEntryDataFetcher() {
-		return new DataFetcher<String>() {
+	private DataFetcher<Map<String, Object>> createPutEntryDataFetcher(String typeName) {
+		return new DataFetcher<Map<String, Object>>() {
 			@Override
-			public String get(DataFetchingEnvironment environment) {
+			public Map<String, Object> get(DataFetchingEnvironment environment) {
 				String schema = environment.getArgument("schema");
-				String tableName = environment.getArgument("tableName");
+				String tableName = typeName;
 				String data = environment.getArgument("data");
 				String urlString = restAPI + "data/" + schema + "/" + tableName;
 				String responseData = "";
@@ -318,9 +320,12 @@ public class Initialization implements ServletContextListener{
 					while ((inputLine = in.readLine()) != null) {
 							responseData = responseData + inputLine;
 						}
+					JSONObject json = new JSONObject(data);
+					Map<String, Object> map = toMap(json);
 						
 					in.close();
-					return responseData;
+					System.out.println("Map: " + map.toString());
+					return map;
 				} catch (JSONException exc) {
 					System.out.println("JSONException: " + exc.toString());
 					return null;
@@ -515,16 +520,22 @@ public class Initialization implements ServletContextListener{
 					String inputLine;
 					List<Map<String, Object>> objectList = new ArrayList<Map<String, Object>>();
 					
+					JSONArray jsonArray = new JSONArray();
 					while ((inputLine = in.readLine()) != null) {
 						System.out.println(inputLine);
-						JSONArray jsonArray = new JSONArray(inputLine);
+						jsonArray = new JSONArray(inputLine);
+						System.out.println("jsonArray: " + jsonArray.toString());
 						for (int i = 0; i < jsonArray.length(); i++) {
 							objectList.add(toMap((JSONObject) jsonArray.get(i)));							
 						}
-						
 					}
 					in.close();
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put(tableName.toLowerCase(), (Object) jsonArray);
+					System.out.println("JSONObject: " + jsonObject.getJSONArray(tableName.toLowerCase()).get(0));
 					return objectList;
+					//return jsonArray;
+					//return jsonObject;
 				} catch (JSONException exc) {
 					System.out.println("JSONException: " + exc.toString());
 					return null;
@@ -549,9 +560,16 @@ public class Initialization implements ServletContextListener{
 		return new DataFetcher<Object> () {
 			@Override
 			public Object get(DataFetchingEnvironment environment) {
-					Map<String, Object> output = environment.getSource();
-					System.out.println("in type data fetcher" + output.toString());
-					return DataFetcherResult.newResult().data(output.get(colname.toLowerCase())).build();
+				Map<String, Object> output = environment.getSource();
+				//JSONObject json = environment.getSource();
+				//System.out.println("in type data fetcher" + output.toString());
+				return DataFetcherResult.newResult().data(output.get(colname.toLowerCase())).build();
+				//System.out.println("in type data fetcher " + json.toString());
+				//JSONObject test = new JSONObject();
+				//test.put(colname.toLowerCase(), json.get(colname.toLowerCase()));
+				//System.out.println("testing: " + test.toString());
+				//return DataFetcherResult.newResult().data(json.get(colname.toLowerCase())).build();
+				//return DataFetcherResult.newResult().data(test.get(colname.toLowerCase())).build();
 			}
 		};	
 	}
