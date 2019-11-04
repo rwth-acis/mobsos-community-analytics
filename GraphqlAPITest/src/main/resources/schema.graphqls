@@ -1,1080 +1,400 @@
-Z¶schema {
+schema {
 query: Query
 mutation: Mutation
 }type Query { 
-database_metadata(schema: String): [String]
-table_metadata(schema: String, name: String): [TABLE_METADATA]
-sw_filenames(sw_filenames_key: ID): [SW_FILENAMES] 
-sw_analysis(id: ID): [SW_ANALYSIS] 
-sw_analysis_dead_project(id: ID): [SW_ANALYSIS_DEAD_PROJECT] 
-lw_mailanalysis(mail: ID): [LW_MAILANALYSIS] 
-sw_run_tasks(project: ID, run_id: ID): [SW_RUN_TASKS] 
-sw_run_tasks_dead_project(project: ID, run_id: ID): [SW_RUN_TASKS_DEAD_PROJECT] 
-proj_correspondence(id_mavis: ID, id_watcher: ID, watcher_type: ID): [PROJ_CORRESPONDENCE] 
-mavis_projects(id: ID): [MAVIS_PROJECTS] 
-sw_temp(id: ID): [SW_TEMP] 
-sw_screenshots(id: ID): [SW_SCREENSHOTS] 
-sw_screenshots_dead_project(id: ID): [SW_SCREENSHOTS_DEAD_PROJECT] 
-nw_entries(id: ID): [NW_ENTRIES] 
-nw_used_mime_parts(dfs_nr: ID, mail: ID): [NW_USED_MIME_PARTS] 
-nw_url_references(mail: ID, plain_link: ID): [NW_URL_REFERENCES] 
-lw_url_references(mail: ID, plain_link: ID): [LW_URL_REFERENCES] 
-nw_projects(id: ID): [NW_PROJECTS] 
-ud_classification(id: ID): [UD_CLASSIFICATION] 
-sw_projects(id: ID): [SW_PROJECTS] 
-fw_projects(id: ID): [FW_PROJECTS] 
-lw_project_word_of_day(day: ID, projid: ID): [LW_PROJECT_WORD_OF_DAY] 
-lw_person_mail(id: ID): [LW_PERSON_MAIL] 
-swapit_stopwords_old(id: ID): [SWAPIT_STOPWORDS_OLD] 
-word_of_day_stopwords(id: ID): [WORD_OF_DAY_STOPWORDS] 
-egraeculi(mailid: ID, url: ID): [EGRAECULI] 
-lw_word_of_day(day: ID, language: ID): [LW_WORD_OF_DAY] 
-lw_projects_month_analysis(month: ID, project: ID, year: ID): [LW_PROJECTS_MONTH_ANALYSIS] 
-lw_thread_tree: [LW_THREAD_TREE] 
-nw_project_regex_check(last_check: ID, project: ID): [NW_PROJECT_REGEX_CHECK] 
-lw_project_regex_check(last_check: ID, project: ID): [LW_PROJECT_REGEX_CHECK] 
-t20060606_084327(id: ID): [T20060606_084327] 
-fw_atom_entries(id: ID): [FW_ATOM_ENTRIES] 
-lw_projects(id: ID): [LW_PROJECTS] 
-proj_lang: [PROJ_LANG] 
-udc(id: ID): [UDC] 
-sub_udc(sub_udc_id: ID, udc_id: ID): [SUB_UDC] 
-sub_udc_relation(mavis_project_id: ID, sub_udc_id: ID, udc_id: ID): [SUB_UDC_RELATION] 
-fw_rss_run(entryid: ID, projid: ID, rundate: ID): [FW_RSS_RUN] 
-fw_atom_run(entryid: ID, projid: ID, rundate: ID): [FW_ATOM_RUN] 
-lw_project_analysis_temp(project: ID): [LW_PROJECT_ANALYSIS_TEMP] 
-lw_entries(id: ID): [LW_ENTRIES] 
-lw_used_mime_parts(dfs_nr: ID, mail: ID): [LW_USED_MIME_PARTS] 
-fw_atom_entryitemconnect(entryid: ID, itemid: ID): [FW_ATOM_ENTRYITEMCONNECT] 
-fw_rss_entryitemconnect(entryid: ID, itemid: ID): [FW_RSS_ENTRYITEMCONNECT] 
-fw_rss_items(id: ID): [FW_RSS_ITEMS] 
-t20060606_084327_exception: [T20060606_084327_EXCEPTION] 
-fw_atom_items(id: ID): [FW_ATOM_ITEMS] 
-fw_rss_entries(id: ID): [FW_RSS_ENTRIES] 
-lw_entries_tt: [LW_ENTRIES_TT] 
-temp_lw_month_analysis(month: ID, project: ID, year: ID): [TEMP_LW_MONTH_ANALYSIS] 
-explain_instance(explain_requester: ID, explain_time: ID, source_name: ID, source_schema: ID, source_version: ID): [EXPLAIN_INSTANCE] 
-explain_statement(explain_level: ID, explain_requester: ID, explain_time: ID, sectno: ID, source_name: ID, source_schema: ID, source_version: ID, stmtno: ID): [EXPLAIN_STATEMENT] 
-explain_argument: [EXPLAIN_ARGUMENT] 
-explain_object: [EXPLAIN_OBJECT] 
-explain_operator: [EXPLAIN_OPERATOR] 
-explain_predicate: [EXPLAIN_PREDICATE] 
-explain_stream: [EXPLAIN_STREAM] 
-advise_instance(start_time: ID): [ADVISE_INSTANCE] 
-advise_index: [ADVISE_INDEX] 
-advise_workload: [ADVISE_WORKLOAD] 
-advise_mqt: [ADVISE_MQT] 
-advise_partition: [ADVISE_PARTITION] 
-advise_table: [ADVISE_TABLE] 
-regist_info(id: ID): [REGIST_INFO] 
-event(id: ID): [EVENT] 
-lw_project_analysis(project: ID): [LW_PROJECT_ANALYSIS] 
-lw_person_addr(id: ID): [LW_PERSON_ADDR] 
-country(id: ID): [COUNTRY] 
-contacts(id: ID): [CONTACTS] 
-bw_author(id: ID): [BW_AUTHOR] 
-bw_comment(id: ID): [BW_COMMENT] 
-bw_multimedia(id: ID): [BW_MULTIMEDIA] 
-bw_references(id: ID): [BW_REFERENCES] 
-bw_trackbacks(id: ID): [BW_TRACKBACKS] 
-bw_entries(id: ID): [BW_ENTRIES] 
-bw_projects(id: ID): [BW_PROJECTS] 
-lw_wotd(id: ID): [LW_WOTD] 
-swapit_collections(id: ID): [SWAPIT_COLLECTIONS] 
-swapit_stopwords(id: ID): [SWAPIT_STOPWORDS] 
-fw_checkofchange_help: [FW_CHECKOFCHANGE_HELP] 
-} 
- type SW_FILENAMES { 
- sw_filenames_key: ID!
- filename: String!
-} 
- type SW_ANALYSIS { 
- id: ID!
- project: Int!
- run_id: Int!
- date: String
- mirror_date: String
- html_count: Int
- img_count: Int
- img_out_count: Int
- img_int_out_count: Int
- other_count: Int
- other_out_count: Int
- other_int_out_count: Int
- file_count: Int
- total_size: Int
- total_html_size: Int
- total_img_size: Int
- total_img_embedded: Int
- total_script_size: Int
- total_plain_size: Int
- total_comment_size: Int
- total_link_size: Int
- total_forms: Int
- total_inputs: Int
- max_html_size: Int
- max_img_size: Int
- max_page_size: Int
- total_int_out_links: Int
- total_out_links: Int
- total_int_links: Int
- total_ftp_links: Int
- total_mailto_links: Int
- depth: Int
- width: Int
- avr_html_size: Float
- avr_img_size: Float
- avr_img_embedded: Float
- avr_plain_size: Float
- avr_script_size: Float
- avr_comment_size: Float
- avr_link_size: Float
- avr_img_count: Float
- avr_page_size: Float
- avr_int_out_links: Float
- avr_out_links: Float
- avr_int_links: Float
- avr_linked: Float
- avr_ftp_links: Float
- avr_mailto_links: Float
- avr_forms: Float
- avr_inputs: Float
- avr_input_form: Float
- avr_img_usage: Float
- file_extensions: String
- mime_types: String
- generators: String
- form_field_names: String
- link_relations: String
-} 
- type SW_ANALYSIS_DEAD_PROJECT { 
- id: ID!
- mime_types: String
- project: Int!
- run_id: Int!
- date: String
- mirror_date: String
- html_count: Int
- img_count: Int
- img_out_count: Int
- img_int_out_count: Int
- other_count: Int
- other_out_count: Int
- other_int_out_count: Int
- file_count: Int
- total_size: Int
- total_html_size: Int
- total_img_size: Int
- total_img_embedded: Int
- total_script_size: Int
- total_plain_size: Int
- total_comment_size: Int
- total_link_size: Int
- total_forms: Int
- total_inputs: Int
- max_html_size: Int
- max_img_size: Int
- max_page_size: Int
- total_int_out_links: Int
- total_out_links: Int
- total_int_links: Int
- total_ftp_links: Int
- total_mailto_links: Int
- depth: Int
- width: Int
- avr_html_size: Float
- avr_img_size: Float
- avr_img_embedded: Float
- avr_plain_size: Float
- avr_script_size: Float
- avr_comment_size: Float
- avr_link_size: Float
- avr_img_count: Float
- avr_page_size: Float
- avr_int_out_links: Float
- avr_out_links: Float
- avr_int_links: Float
- avr_linked: Float
- avr_ftp_links: Float
- avr_mailto_links: Float
- avr_forms: Float
- avr_inputs: Float
- avr_input_form: Float
- avr_img_usage: Float
- file_extensions: String
- generators: String
- form_field_names: String
- link_relations: String
-} 
- type LW_MAILANALYSIS { 
- mail: ID!
- project: Int
- message_id: String!
- hea_refer: String
- hea_reply: String
- subject: String
- sender: String
- recipient: String
- copy: String
- received: String
- sent: String
- plaincontent: String
- reply_to: BigInteger
- top_mess: BigInteger
-} 
- type SW_RUN_TASKS { 
- project: ID!
- run_id: ID!
- phase: String!
- estimated_size: String!
- comments: String
- generated: String
- mirror_started: String
- mirror_finished: String
- ana_finished: String
-} 
- type SW_RUN_TASKS_DEAD_PROJECT { 
- project: ID!
- run_id: ID!
- phase: String!
- estimated_size: String!
- comments: String
- generated: String
- mirror_started: String
- mirror_finished: String
- ana_finished: String
-} 
- type PROJ_CORRESPONDENCE { 
- id_mavis: ID!
- id_watcher: ID!
- watcher_type: ID!
-} 
- type MAVIS_PROJECTS { 
- id: ID!
- bezeichnung: String!
- name: String!
- url: String
- start: String
- udc: String
- mitarbeiter: String
- teilnehmer: String
- end: String
- description: String
-} 
- type SW_TEMP { 
- id: ID!
- projid: Int!
- date: String!
- filename: String
- screenshot_flag: String!
- category: String!
- index_flag: String
- difference: Int
-} 
- type SW_SCREENSHOTS { 
- id: ID!
- projid: Int!
- date: String!
- filename: String
- screenshot_flag: String!
- category: String!
- index_flag: String
- difference: Int
-} 
- type SW_SCREENSHOTS_DEAD_PROJECT { 
- id: ID!
- projid: Int!
- date: String!
- filename: String
- screenshot_flag: String!
- category: String!
- index_flag: String
- difference: Int
-} 
- type NW_ENTRIES { 
- id: ID!
- content: String!
- header: String!
- date_of_insertion: String!
- archivemail: String!
- project: Int
- message_id: String
- subject: String
- sender: String
- recipient: String
- copy: String
- sent: String
- hea_refer: String
- hea_reply: String
- sender_email: String
- encoding: String
-} 
- type NW_USED_MIME_PARTS { 
- content: String
- mail: ID!
- dfs_nr: ID!
- mime_type: String!
- size: Int!
-} 
- type NW_URL_REFERENCES { 
- mail: ID!
- plain_link: ID!
- protocol: String!
- domain: String!
- path: String!
- query_string: String!
-} 
- type LW_URL_REFERENCES { 
- mail: ID!
- plain_link: ID!
- protocol: String
- domain: String
- path: String
- query_string: String
-} 
- type NW_PROJECTS { 
- id: ID!
- descr: String
- name: String!
- password: String
- url: String
- language: String!
- crit_sender: String
- crit_rec: String
- crit_subject: String
- proj_start: String
- proj_end: String
- udc: Int
- crit_check: String
- last_change: String
-} 
- type UD_CLASSIFICATION { 
- id: ID!
- descr: String!
-} 
- type SW_PROJECTS { 
- id: ID!
- name: String!
- descr: String!
- start_url: String!
- proj_start: String
- proj_end: String
- int_look_up: String!
- exclude: String
- check_period: String!
- start_ip: String!
- possible_false_screenshots: String
- total_change: Int
- udc: Int
- language: String!
-} 
- type FW_PROJECTS { 
- id: ID!
- name: String!
- descr: String
- url: String!
- proj_start: String!
- proj_end: String
- udc: Int
- standard: String!
- language: String
- goodtouse: String
-} 
- type LW_PROJECT_WORD_OF_DAY { 
- projid: ID!
- day: ID!
- word: String
- count: Int
- language: String
-} 
- type LW_PERSON_MAIL { 
- id: ID!
- person: String
- mail_expression: String!
- mail: String
-} 
- type SWAPIT_STOPWORDS_OLD { 
- id: ID!
- name: String!
- words: String!
-} 
- type WORD_OF_DAY_STOPWORDS { 
- id: ID!
- name: String!
- words: String!
- language: String!
-} 
- type EGRAECULI { 
- mailid: ID!
- swprojid: Int
- swprojname: String
- url: ID!
-} 
- type LW_WORD_OF_DAY { 
- day: ID!
- word: String!
- count: Int!
- language: ID!
-} 
- type LW_PROJECTS_MONTH_ANALYSIS { 
- project: ID!
- month: ID!
- year: ID!
- cnt_mails_per_month: Int
- cnt_active_mail_senders: Int
-} 
- type LW_THREAD_TREE { 
- thread: BigInteger!
- mail: BigInteger
- depth: Int!
- order: Int!
-} 
- type NW_PROJECT_REGEX_CHECK { 
- project: ID!
- last_check: ID!
-} 
- type LW_PROJECT_REGEX_CHECK { 
- project: ID!
- last_check: ID!
-} 
- type T20060606_084327 { 
- id: ID!
- entry: Int!
- title: String!
- link: String
- descr: String!
- author: String
- comments: String
- guid: String
-} 
- type FW_ATOM_ENTRIES { 
- id: ID!
- uri: String!
- title: String!
- updated: String!
- author: String
- link: String
- content: String!
- subtitle: String
- version: String
-} 
- type LW_PROJECTS { 
- id: ID!
- name: String!
- descr: String
- password: String
- url: String
- language: String
- crit_sender: String
- crit_rec: String
- crit_subject: String
- proj_start: String
- proj_end: String
- udc: Int
- crit_check: String
- last_change: String
-} 
- type PROJ_LANG { 
- id: Int!
- language: String!
-} 
- type UDC { 
- id: ID!
- name: String!
-} 
- type SUB_UDC { 
- udc_id: ID!
- sub_udc_id: ID!
- sub_udc_name: String!
-} 
- type SUB_UDC_RELATION { 
- mavis_project_id: ID!
- udc_id: ID!
- sub_udc_id: ID!
-} 
- type FW_RSS_RUN { 
- projid: ID!
- entryid: ID!
- rundate: ID!
-} 
- type FW_ATOM_RUN { 
- projid: ID!
- entryid: ID!
- rundate: ID!
-} 
- type LW_PROJECT_ANALYSIS_TEMP { 
- project: ID!
- cnt_mails_today: Int
- cnt_mails_total: Int
- cnt_active_mail_senders: Int
- last_email: BigInteger
- largest_inactivity_gap: Int
- avr_mail_per_day: String
- avr_mpd_variance: String
-} 
- type LW_ENTRIES { 
- copy: String
- content: String!
- id: ID!
- project: Int
- header: String!
- date_of_insertion: String!
- archivemail: String!
- message_id: String
- hea_refer: String
- hea_reply: String
- subject: String
- sender: String
- recipient: String
- sent: String
- reply_to: BigInteger
- top_mess: BigInteger
- sender_email: String
- encoding: String
-} 
- type LW_USED_MIME_PARTS { 
- mail: ID!
- dfs_nr: ID!
- mime_type: String
- size: Int!
- content: String
-} 
- type FW_ATOM_ENTRYITEMCONNECT { 
- entryid: ID!
- itemid: ID!
-} 
- type FW_RSS_ENTRYITEMCONNECT { 
- entryid: ID!
- itemid: ID!
-} 
- type FW_RSS_ITEMS { 
- descr: String!
- id: ID!
- title: String!
- link: String
- author: String
- comments: String
- guid: String
-} 
- type T20060606_084327_EXCEPTION { 
- id: Int!
- title: String!
- link: String
- descr: String!
- author: String
- comments: String
- guid: String
-} 
- type FW_ATOM_ITEMS { 
- id: ID!
- uri: String
- title: String!
- updated: String
- author: String
- content: String
- summary: String
- link: String
-} 
- type FW_RSS_ENTRIES { 
- id: ID!
- title: String
- descr: String!
- link: String
- language: String
- pubdate: String
- ttl: Int
- content: String!
- version: String
- image: String
- image_type: String
-} 
- type LW_ENTRIES_TT { 
- id: BigInteger!
- project: Int
- content: String!
- header: String!
- date_of_insertion: String!
- archivemail: String!
- message_id: String
- hea_refer: String
- hea_reply: String
- subject: String
- sender: String
- recipient: String
- copy: String
- sent: String
- reply_to: BigInteger
- top_mess: BigInteger
- sender_email: String
- encoding: String
-} 
- type TEMP_LW_MONTH_ANALYSIS { 
- project: ID!
- month: ID!
- year: ID!
- cnt_mails_per_month: Int
- cnt_active_mail_senders: Int
-} 
- type EXPLAIN_INSTANCE { 
- explain_requester: ID!
- explain_time: ID!
- source_name: ID!
- source_schema: ID!
- source_version: ID!
- explain_option: String!
- snapshot_taken: String!
- db2_version: String!
- sql_type: String!
- queryopt: Int!
- block: String!
- isolation: String!
- buffpage: Int!
- avg_appls: Int!
- sortheap: Int!
- locklist: Int!
- maxlocks: Int!
- locks_avail: Int!
- cpu_speed: String!
- remarks: String
- dbheap: Int!
- comm_speed: String!
- parallelism: String!
- datajoiner: String!
-} 
- type EXPLAIN_STATEMENT { 
- explain_requester: ID!
- explain_time: ID!
- source_name: ID!
- source_schema: ID!
- source_version: ID!
- explain_level: ID!
- stmtno: ID!
- sectno: ID!
- queryno: Int!
- querytag: String!
- statement_type: String!
- updatable: String!
- deletable: String!
- total_cost: String!
- statement_text: String!
- snapshot: String
- query_degree: Int!
-} 
- type EXPLAIN_ARGUMENT { 
- explain_requester: String!
- explain_time: String!
- source_name: String!
- source_schema: String!
- source_version: String!
- explain_level: String!
- stmtno: Int!
- sectno: Int!
- operator_id: Int!
- argument_type: String!
- argument_value: String
- long_argument_value: String
-} 
- type EXPLAIN_OBJECT { 
- explain_requester: String!
- explain_time: String!
- source_name: String!
- source_schema: String!
- source_version: String!
- explain_level: String!
- stmtno: Int!
- sectno: Int!
- object_schema: String!
- object_name: String!
- object_type: String!
- create_time: String
- statistics_time: String
- column_count: Int!
- row_count: BigInteger!
- width: Int!
- pages: Int!
- distinct: String!
- tablespace_name: String
- overhead: String!
- transfer_rate: String!
- prefetchsize: Int!
- extentsize: Int!
- cluster: String!
- nleaf: Int!
- nlevels: Int!
- fullkeycard: BigInteger!
- overflow: Int!
- firstkeycard: BigInteger!
- first2keycard: BigInteger!
- first3keycard: BigInteger!
- first4keycard: BigInteger!
- sequential_pages: Int!
- density: Int!
- stats_src: String!
- average_sequence_gap: String!
- average_sequence_fetch_gap: String!
- average_sequence_pages: String!
- average_sequence_fetch_pages: String!
- average_random_pages: String!
- average_random_fetch_pages: String!
- numrids: BigInteger!
- numrids_deleted: BigInteger!
- num_empty_leafs: BigInteger!
- active_blocks: BigInteger!
-} 
- type EXPLAIN_OPERATOR { 
- explain_requester: String!
- explain_time: String!
- source_name: String!
- source_schema: String!
- source_version: String!
- explain_level: String!
- stmtno: Int!
- sectno: Int!
- operator_id: Int!
- operator_type: String!
- total_cost: String!
- io_cost: String!
- cpu_cost: String!
- first_row_cost: String!
- re_total_cost: String!
- re_io_cost: String!
- re_cpu_cost: String!
- comm_cost: String!
- first_comm_cost: String!
- buffers: String!
- remote_total_cost: String!
- remote_comm_cost: String!
-} 
- type EXPLAIN_PREDICATE { 
- explain_requester: String!
- explain_time: String!
- source_name: String!
- source_schema: String!
- source_version: String!
- explain_level: String!
- stmtno: Int!
- sectno: Int!
- operator_id: Int!
- predicate_id: Int!
- how_applied: String!
- when_evaluated: String!
- relop_type: String!
- subquery: String!
- filter_factor: String!
- predicate_text: String
-} 
- type EXPLAIN_STREAM { 
- explain_requester: String!
- explain_time: String!
- source_name: String!
- source_schema: String!
- source_version: String!
- explain_level: String!
- stmtno: Int!
- sectno: Int!
- stream_id: Int!
- source_type: String!
- source_id: Int!
- target_type: String!
- target_id: Int!
- object_schema: String
- object_name: String
- stream_count: String!
- column_count: Int!
- predicate_id: Int!
- column_names: String
- pmid: Int!
- single_node: String
- partition_columns: String
-} 
- type ADVISE_INSTANCE { 
- start_time: ID!
- end_time: String!
- mode: String!
- wkld_compression: String!
- status: String!
-} 
- type ADVISE_INDEX { 
- colnames: String!
- explain_requester: String!
- explain_time: String!
- source_name: String!
- source_schema: String!
- source_version: String!
- explain_level: String!
- stmtno: Int!
- sectno: Int!
- queryno: Int!
- querytag: String!
- name: String!
- creator: String!
- tbname: String!
- tbcreator: String!
- uniquerule: String!
- colcount: Int!
- iid: Int!
- nleaf: Int!
- nlevels: Int!
- firstkeycard: BigInteger!
- fullkeycard: BigInteger!
- clusterratio: Int!
- clusterfactor: String!
- userdefined: Int!
- system_required: Int!
- create_time: String!
- stats_time: String
- page_fetch_pairs: String!
- remarks: String
- packed_desc: String
- definer: String!
- converted: String!
- sequential_pages: Int!
- density: Int!
- first2keycard: BigInteger!
- first3keycard: BigInteger!
- first4keycard: BigInteger!
- pctfree: Int!
- unique_colcount: Int!
- minpctused: Int!
- reverse_scans: String!
- use_index: String
- creation_text: String!
- run_id: String
- indextype: String!
- exists: String!
- ridtoblock: String!
-} 
- type ADVISE_WORKLOAD { 
- workload_name: String!
- statement_no: Int!
- statement_text: String!
- statement_tag: String!
- frequency: Int!
- importance: String!
- weight: String!
- cost_before: String
- cost_after: String
- compilable: String
-} 
- type ADVISE_MQT { 
- iid: Int!
- explain_requester: String!
- explain_time: String!
- source_name: String!
- source_schema: String!
- source_version: String!
- explain_level: String!
- stmtno: Int!
- sectno: Int!
- name: String!
- creator: String!
- create_time: String!
- stats_time: String
- numrows: String!
- numcols: Int!
- rowsize: String!
- benefit: String!
- use_mqt: String
- mqt_source: String
- query_text: String!
- creation_text: String!
- sample_text: String!
- colstats: String!
- extra_info: String!
- tbspace: String!
- run_id: String
- refresh_type: String!
- exists: String!
-} 
- type ADVISE_PARTITION { 
- explain_requester: String!
- explain_time: String!
- source_name: String!
- source_schema: String!
- source_version: String!
- explain_level: String!
- stmtno: Int!
- sectno: Int!
- queryno: Int!
- querytag: String!
- tbname: String!
- tbcreator: String!
- pmid: Int!
- tbspace: String!
- colnames: String!
- colcount: Int!
- replicate: String!
- cost: String!
- useit: String
- run_id: String
-} 
- type ADVISE_TABLE { 
- run_id: String
- table_name: String!
- table_schema: String!
- tablespace: String!
- selection_flag: String!
- table_exists: String!
- use_table: String!
- gen_columns: String!
- organize_by: String!
- creation_text: String!
- alter_command: String!
- diskuse: String!
-} 
- type REGIST_INFO { 
- id: ID!
- firstname: String
- lastname: String
- title: String
- acatitle: String
- attendance: String
- company: String
- department: String
- address: String
- city: String
- postcode: String
- country: Int
- phone: String
- fax: String
- email: String
- comments: String
- workshop: String
- fee: String
- registdate: String
- event_id: Int
- username: String
-} 
- type EVENT { 
- id: ID!
- title: String
- start: String
- end: String
-} 
- type LW_PROJECT_ANALYSIS { 
- project: ID!
- cnt_mails_today: Int
- cnt_mails_total: Int
- cnt_active_mail_senders: Int
- last_email: BigInteger
- largest_inactivity_gap: Int
- avr_mail_per_day: String
- avr_mpd_variance: String
- nrtopmess: BigInteger
- nrthread: BigInteger
- avethrddepth: String
- wrdpermail: String
- nrpeople: BigInteger
-} 
- type LW_PERSON_ADDR { 
- id: ID!
- pname: String
- paddr: String!
- project: BigInteger!
-} 
- type COUNTRY { 
- id: ID!
- code: String
- caption: String
- abbrcaption: String
-} 
- type CONTACTS { 
- id: ID!
- name: String
- created_on: String
- updated_on: String
-} 
- type BW_AUTHOR { 
- authorname: String!
- id: ID!
- authorurl: String
-} 
- type BW_COMMENT { 
- id: ID!
- entry_id: Int!
- content_chunk: String!
- author_id: Int!
- date: String!
-} 
- type BW_MULTIMEDIA { 
- id: ID!
- entry_id: Int!
- multimedia: String!
- mime: String!
-} 
- type BW_REFERENCES { 
- id: ID!
- entry_id: Int!
- url: String!
- type: Int
-} 
- type BW_TRACKBACKS { 
- id: ID!
- entry_id: Int!
- url: String!
- title_trackback: String
-} 
- type BW_ENTRIES { 
- id: ID!
- project_id: Int!
- content_chunk: String!
- perma_link: String
- title: String
- trackback_url: String
- mood: String
- content: String
- author_id: Int
- date: String!
- commentlink: String
-} 
- type BW_PROJECTS { 
- id: ID!
- url: String!
- name: String
- category: Int
- language: String
- fw_project: Int
- proj_start: String
- proj_end: String
- descr: String
- proj_update: String
-} 
- type LW_WOTD { 
- id: ID!
- date: String!
- word: String!
- ignore: String
- value: Int
- text_c: Int
- word_c: Int
- max_word: Int
- text_total: Int
-} 
- type SWAPIT_COLLECTIONS { 
- id: ID!
- name: String!
- description: String
- proj_ids: String!
- language: String
- docs_count: Int
- start_date: String
- end_date: String
- coll_status: String
- structuring_status: String
-} 
- type SWAPIT_STOPWORDS { 
- id: ID!
- coll_id: Int!
- words: String
-} 
- type FW_CHECKOFCHANGE_HELP { 
- content: String!
-} 
-type TABLE_METADATA {
-schema: String!
-name: String!
-columns: [String]
-}type Mutation {
-putEntry(schema: String, tableName: String, data: String): String
-deleteEntry(schema: String, tableName: String, condition: String): String
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String}
+schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
+}schema {
+query: Query
+mutation: Mutation
+}type Query { 
+}type Mutation { 
+addDatabase(name: String!, url: String!, user: String!, password:String!): String 
+deleteDatabase(name: String!): String 
 }
