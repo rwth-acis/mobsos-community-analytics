@@ -74,15 +74,22 @@ public class Initialization implements ServletContextListener{
 
 	}
 	
+	/**
+	 * Executes when server is shut down
+	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
 		System.out.println("ServletContextListener destroyed");
 	}
 
+	/**
+	 * Executes when server is started
+	 * Clears schema files and initializes variables used by services
+	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		try {
-			// reset schema files
+			// clear schema files
 			FileChannel.open(Paths.get(querySchemaFile), StandardOpenOption.WRITE).truncate(0).close();
 			FileChannel.open(Paths.get(mutationSchemaFile), StandardOpenOption.WRITE).truncate(0).close();
 			FileChannel.open(Paths.get(typeSchemaFile), StandardOpenOption.WRITE).truncate(0).close();

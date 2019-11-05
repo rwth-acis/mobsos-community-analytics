@@ -91,7 +91,7 @@ public class GraphQLREST{
 	private String querySchemaFile = "src/main/resources/querySchema.graphqls";
 	private String mutationSchemaFile = "src/main/resources/mutationSchema.graphqls";
 	private String typeSchemaFile = "src/main/resources/typeSchema.graphqls";
-	private String databaseSchema = "DB2INFO5";
+	//private String databaseSchema = "DB2INFO5";
 	
 	
 	@Context ServletContext context;
@@ -111,11 +111,8 @@ public class GraphQLREST{
 			for (int i = index; i < (array[0].length() - 1); i++) {
 				testing = testing + array[0].charAt(i);
 			}
-			String name = testing;
-			System.out.println("Name: " + name);
 			if (!(Boolean)context.getAttribute("AddedDatabase")) {
 				context.setAttribute("RuntimeWiring", initialRuntimeWiring());
-				//String schema = initialSchema();
 				String querySchema = initialQuerySchema();
 				String mutationSchema = initialMutationSchema();
 				
@@ -136,56 +133,9 @@ public class GraphQLREST{
 			    writer.close();
 			    
 			    context.setAttribute("AddedDatabase", true);
-			    
-//				BufferedReader br = new BufferedReader(new FileReader(schemaFile));
-//			    if (br.readLine() == null) {
-//			    	FileOutputStream out = new FileOutputStream(schemaFile);
-//				    DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(out));
-//				    outStream.writeUTF(schema);
-//				    outStream.close();
-//			    }
-//			    br.close();
-			} 
-			if (input.contains("addDatabase")) {
-				System.out.println("Add database");
-//				DataInputStream reader = new DataInputStream(new FileInputStream(schemaFile));
-//			    String prevSchema = reader.readUTF();
-//			    reader.close();
-				//BufferedReader reader = new BufferedReader(new FileReader(schemaFile));
-				//StringBuffer stringBuffer = new StringBuffer("");
-				// for reading one line
-				//String line = null;
-				// keep reading till readLine returns null
-				//while ((line = reader.readLine()) != null) {
-				    // keep appending last line read to buffer
-				   // stringBuffer.append(line + "\r\n");
-				//}
-			    //reader.close();
-			    //String prevSchema = stringBuffer.toString();
-			    //System.out.println("PrevSchema: " + prevSchema);
-			    //String schema = updateSchema(name, prevSchema);
-			    //BufferedReader br = new BufferedReader(new FileReader(schemaFile));
-		    	//FileOutputStream out = new FileOutputStream(schemaFile);
-			    //DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(out));
-			    //outStream.writeUTF(schema);
-			    //outStream.close();
-			    //br.close();
-
 			}
 			SchemaParser schemaParser = new SchemaParser();
 	        SchemaGenerator schemaGenerator = new SchemaGenerator();
-	        //DataInputStream reader = new DataInputStream(new FileInputStream(schemaFile));
-		    //String schema = reader.readUTF();
-		    //BufferedReader reader = new BufferedReader(new FileReader(schemaFile));
-			//StringBuffer stringBuffer = new StringBuffer("");
-			// for reading one line
-			//String line = null;
-			// keep reading till readLine returns null
-			//while ((line = reader.readLine()) != null) {
-			    // keep appending last line read to buffer
-			  //  stringBuffer.append(line + "\r\n");
-			//}
-		    //reader.close();
 		    
 		    BufferedReader reader = new BufferedReader(new FileReader(querySchemaFile));
 			StringBuilder schemaBuilder = new StringBuilder();
@@ -230,11 +180,13 @@ public class GraphQLREST{
 			List<GraphQLError> errors = executionResult.getErrors();
 			
 			if (input.contains("addDatabase")) {
-				updateQuerySchema(name);
-				updateMutationSchema(name);
-				updateTypeSchema(name);
+				String name = getInputProperty(input, "name");
+				String dbSchema = getInputProperty(input, "dbSchema");
+				updateQuerySchema(name, dbSchema);
+				updateMutationSchema(name, dbSchema);
+				updateTypeSchema(name, dbSchema);
 
-				test = updateRuntimeWiring(name,
+				test = updateRuntimeWiring(name, dbSchema, 
 						(RuntimeWiring.Builder)context.getAttribute("RuntimeWiring"));
 				context.setAttribute("RuntimeWiring", test);
 			}
@@ -267,55 +219,21 @@ public class GraphQLREST{
 					.entity("Schemafile Error").build();
 		}		
 	}
-//	@Context ServletContext context;
-//
-//	@Path("/graphql")
-//	@GET
-//	public Response queryExecute(@QueryParam("input") String input) {
-//		
-//		if (input == null) {
-//			return Response.status(460).entity("No graphQL call present in request").build();
-//		}
-//		GraphQL graphQL = (GraphQL) context.getAttribute("graphqlBuild");
-//		ExecutionResult executionResult = graphQL.execute(input);
-//		List<GraphQLError> errors = executionResult.getErrors();
-//		System.out.println(errors.toString());
-//		if (errors.isEmpty()) {
-//			//LinkedHashMap<String, Object> test = new LinkedHashMap<>(executionResult.getData());
-//			//System.out.println("LinkedHashMap: " + test.get("bw_author").getClass().toString());
-//			Object result = executionResult.getData();
-//			if (result instanceof LinkedHashMap) {
-//				JSONObject json = new JSONObject((Map<?, ?>)executionResult.getData());
-//				return Response.status(200).header("Access-Control-Allow-Origin", "*")
-//						.entity(json.toString()).build();
-//			}
-//			System.out.println("Execution Result: " + executionResult.getData().toString());
-//			System.out.println("Execution Result Datatype: " + executionResult.getData().getClass().toString());
-//			return Response.status(444).header("Access-Control-Allow-Origin", "*")
-//					.entity("Format Error").build();
-//		} else {
-//			for (GraphQLError error: errors) {
-//				if (error.getErrorType().toString().equals("ValidationError")) {
-//					return Response.status(450).entity("GraphQL Input not correct").build();
-//				}
-//			}
-//			return Response.status(550).header("Access-Control-Allow-Origin", "*").entity("Internal GraphQL ServerError").build();
-//		}
-//	}
 	
 	public String initialQuerySchema() {
 		return "schema {" + "\r\n" + "query: Query" + "\r\n"
 				+ "mutation: Mutation" + "\r\n}"
-				+ "type Query { \r\n}";
+				+ "type Query { customQuery(name: String!, dbSchema: String!, query: String!): String \r\n}";
 	}
 	
 	public String initialMutationSchema() {
 		return "type Mutation { " + "\r\n"
-				+ "addDatabase(name: String!, url: String!, user: String!, password:String!): String \r\n"
+				+ "addDatabase(name: String!, url: String!, dbSchema: String!, user: String!,"
+				+ " password:String!): String \r\n"
 				+ "deleteDatabase(name: String!): String \r\n}";
 	}
 	
-	public void updateQuerySchema(String name) throws IOException {
+	public void updateQuerySchema(String name, String databaseSchema) throws IOException {
 		URL url = new URL(restAPI + "metadata/" + name + "/" + databaseSchema);
 		System.out.println("URL: " + url.toString());
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -402,7 +320,7 @@ public class GraphQLREST{
 
 	}
 	
-	public void updateMutationSchema(String name) throws IOException {
+	public void updateMutationSchema(String name, String databaseSchema) throws IOException {
 		
 		URL url = new URL(restAPI + "metadata/" + name + "/" + databaseSchema);
 		System.out.println("URL: " + url.toString());
@@ -452,7 +370,7 @@ public class GraphQLREST{
 
 	}
 	
-	public void updateTypeSchema (String name) throws IOException {
+	public void updateTypeSchema (String name, String databaseSchema) throws IOException {
 		URL url = new URL(restAPI + "metadata/" + name + "/" + databaseSchema);
 		System.out.println("URL: " + url.toString());
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -597,6 +515,8 @@ public class GraphQLREST{
 	
 	public RuntimeWiring.Builder initialRuntimeWiring() {
 		RuntimeWiring.Builder runtimeWiring = RuntimeWiring.newRuntimeWiring();
+		runtimeWiring = runtimeWiring.type("Query",
+				typeWiring -> typeWiring.dataFetcher("customQuery", createCustomDataFetcher()));
 		runtimeWiring = runtimeWiring.type("Mutation",
 	    		typeWiring -> typeWiring.dataFetcher("addDatabase", createAddDBDataFetcher()));
 		runtimeWiring = runtimeWiring.type("Mutation",
@@ -604,17 +524,55 @@ public class GraphQLREST{
 		return runtimeWiring;
 	}
 	
+	private DataFetcher<String> createCustomDataFetcher () {
+		return new DataFetcher<String>() {
+			@Override
+			public String get(DataFetchingEnvironment environment) {
+				String name = environment.getArgument("name");
+				String dbSchema = environment.getArgument("dbSchema");
+				String query = environment.getArgument("query");
+				String modQuery = query.replaceAll(" ", "%20");
+				String urlString = restAPI + "data/query/" + name + "/" + dbSchema + "?query=" + modQuery;
+				System.out.println("In data fetcher, URL: " + urlString);
+				String responseData = "";
+				
+				try {
+					URL url = new URL(urlString);
+					System.out.println(url.toString());
+					HttpURLConnection con = (HttpURLConnection) url.openConnection();
+					con.setRequestMethod("GET");
+					con.setDoOutput(true);
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine;
+					while ((inputLine = in.readLine()) != null) {
+							responseData = responseData + inputLine;
+						}
+					in.close();
+					
+					return responseData;
+				} catch (JSONException exc) {
+					System.out.println("JSONException: " + exc.toString());
+					return null;
+				}
+				catch (IOException exc) {
+					System.out.println("IOException: " + exc.toString());
+					return null;
+				}
+			}
+		};
+	}
 	private DataFetcher<String> createAddDBDataFetcher() {
 		return new DataFetcher<String>() {
 			@Override
 			public String get(DataFetchingEnvironment environment) {
 				String name = environment.getArgument("name");
 				String dburl = environment.getArgument("url");
+				String dbSchema = environment.getArgument("dbSchema");
 				String user = environment.getArgument("user");
 				String password = environment.getArgument("password");
 				String urlString = restAPI + "database/" + name;
-				String data = "{" + "\"url\":\"" + dburl + "\", \"user\":\"" + user +
-						"\", \"password\":\"" + password + "\"}";
+				String data = "{" + "\"url\":\"" + dburl + "\", \"dbSchema\":\"" + dbSchema +
+						"\", \"user\":\"" + user + "\", \"password\":\"" + password + "\"}";
 				String responseData = "";
 				
 				try {
@@ -635,23 +593,6 @@ public class GraphQLREST{
 						}
 					in.close();
 					
-//					BufferedReader reader = new BufferedReader(new FileReader(schemaFile));
-//					StringBuffer stringBuffer = new StringBuffer("");
-//					String line = null;
-//					while ((line = reader.readLine()) != null) {
-//					    stringBuffer.append(stringBuffer);
-//					}
-//				    reader.close();
-//				    String prevSchema = stringBuffer.toString();
-//				    System.out.println("PrevSchema: " + prevSchema);
-//				    String schema = updateSchema(name, prevSchema);
-				    //BufferedReader br = new BufferedReader(new FileReader(schemaFile));
-			    	//FileOutputStream out = new FileOutputStream(schemaFile);
-				    //DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(out));
-				    //outStream.writeUTF(schema);
-				    //outStream.close();
-				    //br.close();
-					//globalRW = updateRuntimeWiring(name, globalRW);
 					return responseData;
 				} catch (JSONException exc) {
 					System.out.println("JSONException: " + exc.toString());
@@ -701,7 +642,8 @@ public class GraphQLREST{
 		};
 	}
 	
-	public RuntimeWiring.Builder updateRuntimeWiring(String name, RuntimeWiring.Builder runtimeWiring)
+	public RuntimeWiring.Builder updateRuntimeWiring(String name, String databaseSchema,
+			RuntimeWiring.Builder runtimeWiring)
 			throws IOException {
 		
 		RuntimeWiring.Builder newRuntimeWiring = runtimeWiring;
@@ -788,7 +730,24 @@ public class GraphQLREST{
 		return newRuntimeWiring;
 	}
 	
-	public String updateSchema(String name, String schema) throws IOException {
+	/**
+	 * Extract String for a given value from GraphQL input format
+	 * @param input	String from which name attribute is extracted
+	 * @param name	name of attribute
+	 * @return		String value of attribute
+	 */
+	public String getInputProperty(String input, String name) {
+		 int nameIndex = input.indexOf(name);
+		 String nameSub = input.substring(nameIndex + 1);
+		 int quotesIndex = nameSub.indexOf("\"");
+		 String resSub = nameSub.substring(quotesIndex + 1);
+		 int subnext = resSub.indexOf("\"");
+		 return resSub.substring(0, subnext);
+	 }
+	
+	// ------------------------------------------------------------------------
+	
+	public String updateSchema(String name, String databaseSchema) throws IOException {
 		URL url = new URL(restAPI + "metadata/" + name + "/" + databaseSchema);
 		System.out.println("URL: " + url.toString());
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
