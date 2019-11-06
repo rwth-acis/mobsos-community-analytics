@@ -34,6 +34,7 @@ import i5.las2peer.restMapper.RESTService;
 import i5.las2peer.restMapper.annotations.ServicePath;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.jaxrs.PATCH;
@@ -54,6 +55,7 @@ public class MediabaseTestAPI{
 	 @Path("/database/list")
 	 @GET
 	 public Response getDatabaseNames() {
+		 
 		 if (nameList.isEmpty()) {
 			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
 					 .entity("No databases.").build();
@@ -66,7 +68,11 @@ public class MediabaseTestAPI{
 	 @Path("/database/list/{name}")
 	 @POST
 	 //@DELETE
+	 @ApiOperation(value = "Retrieves entry from database.")
+	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful deletion."),
+							 @ApiResponse(code = 500, message = "Error when handling properties file.")})
 	 public Response deleteDatabase(@PathParam("name") String name) {
+		 
 		 try {
 			 InputStream input = new FileInputStream(filePath);
 			 Properties prop = new Properties();
@@ -81,36 +87,34 @@ public class MediabaseTestAPI{
 			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
 					 .entity("Deletion successful").build();
 		 } catch (IOException exc) {
-			 return Response.status(477).header("Access-Control-Allow-Origin", "*").build();
+			 return Response.status(500).header("Access-Control-Allow-Origin", "*").build();
 		 }
 	 }
 	 
 	 @POST
 	 @Path("/database/{name}")
-	 //@Consumes("MediaType.APPLICATION_JSON")
-	 //@ApiOperation(value = "Adds database properties, so that API calls can access it")
-//	 @ApiResponses(value = { @ApiResponse (code = 200,
-//			 							message = "Database added"),
-//			 				@ApiResponse(code = 477,
-//			 							message = "Input is not in correct JSON format")})
+	 @ApiOperation(value = "Adds database with then can be queried.")
+	 @ApiResponses(value = { @ApiResponse(code = 210, message = "Database was already registered."),
+			 				 @ApiResponse(code = 201, message = "Database was added successfully."),
+			 				 @ApiResponse(code = 406, message = "Name of database is already in use."),
+			 				 @ApiResponse(code = 422, message = "Properties are not provided in required format"),
+			 				 @ApiResponse(code = 500, message = "Error when handling properties file.")})
 	 public Response addDatabase(@PathParam("name") String name, String properties) {
+		 
 		 System.out.println("Name: " + name);
 		 System.out.println("Properties: " + properties);
-		 // .header("Access-Control-Allow-Origin", "*").allow("OPTIONS")
-		 //return Response.status(200).entity("Testing the access").header("Access-Control-Allow-Origin", "*").build();
 		 try {
 			 if (nameList.contains(name)) {
-				 return Response.status(460).header("Access-Control-Allow-Origin", "*")
+				 return Response.status(406).header("Access-Control-Allow-Origin", "*")
 						 .entity("Name of database is already in use.").build();
 			 }
-			 //nameList.add(name);
 			 InputStream input = new FileInputStream(filePath);
 			 Properties prop = new Properties();
 			 prop.load(input);
 			 
 			 if (prop.getProperty("db.url_" + name) != null && prop.getProperty("db.user_" + name) != null &&
 					 prop.getProperty("db.password_" + name) != null && prop.getProperty("db.dbSchema_") != null) {
-				 return Response.status(200).header("Access-Control-Allow-Origin", "*")
+				 return Response.status(210).header("Access-Control-Allow-Origin", "*")
 						 .entity("Database already added").build();
 			 } else {
 				 JSONObject json = new JSONObject(properties);
@@ -122,33 +126,34 @@ public class MediabaseTestAPI{
 
 	            // save properties to project root folder
 	            prop.store(output, null);
-				return Response.status(200).header("Access-Control-Allow-Origin", "*")
+				return Response.status(201).header("Access-Control-Allow-Origin", "*")
 						.entity("Database added.").build();
 			 }
 		 }
 		 catch (JSONException exc) {
 			 System.out.println("JSON Exception: " + exc.toString());
-			 return Response.status(477).header("Access-Control-Allow-Origin", "*")
+			 return Response.status(422).header("Access-Control-Allow-Origin", "*")
 					 .entity("Database properties are not provided in correct JSON format").build();
 		 } catch (IOException exc) {
 			 System.err.println("Input failed: " + exc.toString());
-			 return Response.status(588).header("Access-Control-Allow-Origin", "*")
+			 return Response.status(500).header("Access-Control-Allow-Origin", "*")
 					 .entity("Internal file management error.").build();
 		 }
 		 
 	 }
 	 
-	 // return table names
 	 @Path("/metadata/{dbName}/{schema}")
 	 @GET
+	 @ApiOperation(value = "Returns all table names for a given database and schema.")
+	 @ApiResponses(value = { @ApiResponse(code = 406, message = "Provided schema has no tables."),
+							 @ApiResponse(code = 200, message = "Successful Request."),
+							 @ApiResponse(code = 404, message = "Schema not present in database.")})
 	 public Response getTableNames(@PathParam("dbName") String dbName, @PathParam("schema") String schema,
 			 @DefaultValue("false") @QueryParam("views") Boolean views) {
+		 
 		 try {
-			 
-		 	 // set the actual schema
 			 Connection connection = dbConnection(filePath, dbName);
 		     Statement stmt = connection.createStatement();
-		     
 		     String query;
 		     
 		     if (!views) {
@@ -158,7 +163,6 @@ public class MediabaseTestAPI{
 		    			 +  schema + "'";
 		     }
 		     
-		     // execute the query
 		     ResultSet rs = stmt.executeQuery(query);
 		     JSONArray json = resultSetToJSON(rs, false);
 		     System.out.println(json.toString());
@@ -166,41 +170,41 @@ public class MediabaseTestAPI{
 		     stmt.close();
 		     connection.close();
 		     if (json != null && json.toString().equals("[]")) {
-					return Response.status(454).entity("Schema has no tables.").build();
+					return Response.status(406).entity("Schema has no tables.").build();
 				}
 			 return Response.status(200).entity(json.toString()).build();
 		 } catch (SQLException exc) {
 			    System.out.println("JDBC/SQL error: " + exc.toString());
-			    return Response.status(400).entity("Schema is not present in given database.").build();
+			    return Response.status(404).entity("Schema is not present in given database.").build();
 		 }
 		 
 	 }
 	 
-	 // return column name for table in schema with type and nullability
+	 @ApiOperation(value = "Retrieves column information from a given table")
+	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful request."),
+			 				 @ApiResponse(code = 406, message = "Structure missing from database."),
+			 				 @ApiResponse(code = 422, message = "SQL error.")})
 	 @Path("/metadata/{dbName}/{schema}/{tableName}")
 	 @GET
 	 public Response getColumnNames(@PathParam("dbName") String dbName, @PathParam("schema") String schema,
 			 @PathParam("tableName") String tableName) {
-			// see all entries
+		 
 			try {
-			    // set the actual schema
 				Connection connection = dbConnection(filePath, dbName);
 			    Statement stmt = connection.createStatement();
 			    stmt.execute("SET CURRENT SCHEMA " + schema);
 			    
-			    // construct SQL-Query from path parameters 
 			    stmt = connection.createStatement();
 			    String query = "SELECT COLNAME,TYPENAME,NULLS from SYSCAT.COLUMNS where TABNAME='" 
 			    + tableName + "' AND TABSCHEMA ='" + schema + "'";
 
-			    // execute the query
 			    ResultSet rs = stmt.executeQuery(query);
 			    
 				JSONArray json = resultSetToJSON(rs, false);
 				if (json != null && json.toString().equals("[]")) {
-					return Response.status(454).entity("There are no columns in this table.").build();
+					return Response.status(406).entity("There are no columns in this table.").build();
 				}
-				System.out.println("Autogenerated: " + getAutoGenerated(connection, dbName, schema, "BW_ENTRIES"));
+				
 			    rs.close();
 			    stmt.close();
 			    connection.close();
@@ -208,16 +212,18 @@ public class MediabaseTestAPI{
 			    return Response.status(200).entity(json.toString()).build();
 			} catch (SQLException exc) {
 				if (exc.getMessage().contains("SQLCODE=-206, SQLSTATE=42703")) {
-					return Response.status(404).entity("Table is not present in given schema.").build();
+					return Response.status(406).entity("Table is not present in given schema.").build();
 				}
 			    System.out.println("JDBC/SQL error: " + exc.toString());
-			    return Response.status(400).entity("SQL error.").build();
+			    return Response.status(422).entity("SQL error.").build();
 			}
 	 }
 	 
-	 // return primary keys of a column in table in schema
 	 @Path("/metadata/{dbName}/{schema}/{tableName}/primaryKeys")
 	 @GET
+	 @ApiOperation(value = "Returns primary keys of a table")
+	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Request successful."),
+			 				 @ApiResponse(code = 422, message = "SQL error.")})
 	 public Response getPrimaryKeys(@PathParam("dbName") String dbName, @PathParam("schema") String schema, 
 			 @PathParam("tableName") String tableName) {
 			try {
@@ -228,32 +234,33 @@ public class MediabaseTestAPI{
 						"AND KEYSEQ > 0";
 				ResultSet keys = stmt.executeQuery(query);
 				JSONArray json = resultSetToJSON(keys, false);
-//				if (json != null && json.toString().equals("[]")) {
-//					return Response.status(454).build();
-//				}
+
 				keys.close();
 				stmt.close();
 				connection.close();
 				return Response.status(200).entity(json.toString()).build();
 			} catch (SQLException exc) {
 			    System.out.println("JDBC/SQL error: " + exc.toString());
-			    return Response.status(400).entity("SQL error.").build();
+			    return Response.status(422).entity("SQL error.").build();
 			}
 	 }
 	 
-	 // return entry in column in table in schema
 	 @Path("/data/{dbName}/{schema}/{tableName}")
 	 @GET
-	 public Response getEntry(@PathParam("dbName") String dbName, @PathParam("schema") String schema, @PathParam("tableName") String tableName, 
-			 @QueryParam("condition") String condition, @QueryParam("colname") String colname) {
-			// see all entries
+	 @ApiOperation(value = "Retrieves entry from database.")
+	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful request."),
+							 @ApiResponse(code = 406, message = "Structure is not present in database."),
+							 @ApiResponse(code = 422, message = "SQL error.")})
+	 public Response getEntry(@PathParam("dbName") String dbName, @PathParam("schema") String schema,
+			 @PathParam("tableName") String tableName, @QueryParam("condition") String condition,
+			 @QueryParam("colname") String colname) {
+
 			try {
 			    // set the actual schema
 				Connection connection = dbConnection(filePath, dbName);
 			    Statement stmt = connection.createStatement();
 			    stmt.execute("SET CURRENT SCHEMA " + schema);
-			    
-			    // construct SQL-Query from path parameters 
+			     
 			    stmt = connection.createStatement();
 			    String query = "";
 			    if (colname != null && !colname.isEmpty()) {
@@ -262,17 +269,14 @@ public class MediabaseTestAPI{
 			    	query = "SELECT * FROM " + tableName;
 			    }
 			    
-			    // apply conditions from query parameters
 			    if (condition != null && !condition.isEmpty()) {
 			    	query = query + " WHERE " + condition;
 			    }
 
-			    // execute the query
 			    ResultSet rs = stmt.executeQuery(query);
-
 				JSONArray json = resultSetToJSON(rs, true);
 				if (json != null && json.toString().equals("[]")) {
-					return Response.status(455).entity("Entry is empty.").build();
+					return Response.status(406).entity("Entry is empty.").build();
 				}
 			    rs.close();
 			    stmt.close();
@@ -281,13 +285,13 @@ public class MediabaseTestAPI{
 			    return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(json.toString()).build();
 			} catch (SQLException exc) {
 				if (exc.getMessage().contains("SQLCODE=-206, SQLSTATE=42703")) {
-					return Response.status(453).entity("Table does not exits").build();
+					return Response.status(406).entity("Table does not exits.").build();
 				}
 				if (exc.getMessage().contains("SQLCODE=-204, SQLSTATE=42704")) {
-					return Response.status(454).entity("Schema does not exist.").build();
+					return Response.status(406).entity("Schema does not exist.").build();
 				}
 			    System.out.println("JDBC/SQL error: " + exc.toString());
-			    return Response.status(400).entity("SQL error.").build();
+			    return Response.status(422).entity("SQL error.").build();
 			}
 	 }
 	 
@@ -352,8 +356,13 @@ public class MediabaseTestAPI{
 	 
 	 @Path("/data/{dbName}/{schema}/{tableName}")
 	 @PUT
+	 @ApiOperation(value = "Add entry to database.")
+	 @ApiResponses(value = { @ApiResponse(code = 201, message = "Created successfully."),
+							 @ApiResponse(code = 415, message = "Input is not in correct JSON format."),
+							 @ApiResponse(code = 422, message = "SQL error.")})
 	 public Response putEntry(@PathParam("dbName") String dbName, @PathParam("schema") String schema,
 			 @PathParam("tableName") String tableName, String data) {
+		 
 		 try {
 			// set the actual schema
 			Connection connection = dbConnection(filePath, dbName);
@@ -396,23 +405,26 @@ public class MediabaseTestAPI{
 		    stmt.execute(query);
 		    stmt.close();
 		    connection.close();
-		    return Response.status(200).build();
+		    return Response.status(201).entity("Created.").build();
 		 } catch (SQLException exc) {
 			 System.out.println("JDBC/SQL error: " + exc.toString());
-		     return Response.status(450).entity("SQL error.").build();
+		     return Response.status(422).entity("SQL error.").build();
 		 } catch (JSONException exc) {
 			 System.out.println("JSON error: " + exc.toString());
-			 return Response.status(480).entity("Data is not in valid JSON format").build();
+			 return Response.status(415).entity("Data is not in valid JSON format").build();
 			 
 		 }
 	 }
 	 
 	 @Path("/data/{dbName}/{schema}/{tableName}")
 	 @DELETE
+	 @ApiOperation(value = "Deletes entry from database.")
+	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Deletion successful."),
+							 @ApiResponse(code = 422, message = "SQL error.")})
 	 public Response deleteEntry(@PathParam("dbName") String dbName, @PathParam("schema") String schema,
 			 @PathParam("tableName") String tableName, @QueryParam("condition") String condition) {
 		 try {
-			// set the actual schema
+
 			Connection connection = dbConnection(filePath, dbName);
 		    Statement stmt = connection.createStatement();
 		    stmt.execute("SET CURRENT SCHEMA " + schema);
@@ -426,12 +438,16 @@ public class MediabaseTestAPI{
 		    connection.close();
 			return Response.status(200).build();
 		 } catch (SQLException exc) {
-			 return Response.status(400).entity("SQL error.").build();
+			 return Response.status(422).entity("SQL error.").build();
 		 }
 	 }
 	 
 	 @Path("/data/query/{dbName}/{schema}")
 	 @GET
+	 @ApiOperation(value = "Executes given query on database.")
+	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful request."),
+							 @ApiResponse(code = 406, message = "Structure is not present in database."),
+							 @ApiResponse(code = 422, message = "SQL error.")})
 	 public Response sqlQuery(@PathParam("dbName") String dbName, @PathParam("schema") String schema,
 			 @QueryParam("query") String query) {
 		 try {
@@ -442,19 +458,22 @@ public class MediabaseTestAPI{
 			 ResultSet rs = stmt.executeQuery(query);
 			 JSONArray json = resultSetToJSON(rs, false);
 			 if (json != null && json.toString().equals("[]")) {
-				return Response.status(455).build();
+				return Response.status(406).build();
 			 }
 			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
 					 .entity(json.toString()).build();
 		 } catch (SQLException exc) {
 			 System.out.println("SQLException: " + exc.toString());
-			 return Response.status(400).header("Access-Control-Allow-Origin", "*")
+			 return Response.status(422).header("Access-Control-Allow-Origin", "*")
 					 .entity("SQL error: " + exc.toString()).build();
 		 }
 	 }
 	 
 	 @Path("view/{dbName}/{schema}/{viewName}")
 	 @PUT
+	 @ApiOperation(value = "Create view in database.")
+	 @ApiResponses(value = { @ApiResponse(code = 201, message = "Created successfully."),
+							 @ApiResponse(code = 422, message = "SQL error.")})
 	 public Response createView(@PathParam("schema") String schema, @PathParam("viewName") String viewName,
 			 @PathParam("dbName") String dbName, String columns, String tables, String conditions) {
 		 try {
@@ -464,9 +483,9 @@ public class MediabaseTestAPI{
 			 stmt.execute(query);
 			 stmt.close();
 		     connection.close();
-			 return Response.status(200).build(); 
+			 return Response.status(201).build(); 
 		 } catch (SQLException exc) {
-			 return Response.status(400).entity("SQL error.").build();
+			 return Response.status(422).entity("SQL error.").build();
 		 }
 	 }
 	 
