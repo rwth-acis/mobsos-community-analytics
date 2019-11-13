@@ -3,16 +3,183 @@ body {
 	font-size: 100.0%;
     font-family: sans-serif;
 	padding: 50px;
+	margin: 0;
 }
+
+/* The side navigation menu */
+/*
+.sidenav {
+  height: 100%; 
+  width: 20%; 
+  position: fixed; 
+  z-index: 1; 
+  top: 0;
+  left: 0;
+  background-color: #8C8C8C;
+  overflow-x: hidden;
+  padding-top: 10vh; 
+  transition: 0.5s;
+}*/
+
+/* The navigation menu links */
+/*
+.sidenav a {
+  padding: 20px 20px 20px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #000000;
+  background-color: #AFAFAF;
+  display: block;
+  transition: 0.1s;
+}*/
+
+/* When you mouse over the navigation links, change their color */
+/*
+.sidenav a:hover {
+  color: #FFFFFF;
+}*/
+
+/* Position and style the close button (top right corner) */
+/*
+.sidenav .closebtn {
+	position: absolute;
+	top: 0%;
+	right: 10%;
+	font-size: 50px;
+	background-color: Transparent;
+	border: none;
+}*/
+/*
+.sidenav .navigationTitle {
+	position: absolute;
+	top: 0;
+	left: 10%;
+	font-size: 30px;
+	color: #000000;
+}*/
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+	position: relative; 
+	transition: margin-left .1s;
+	/*margin-left: 25%;*/
+	margin-top: 5vh;
+	background-color: #EEEEEE;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+/*@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}*/
+
+@media only screen and (max-width: 500px) {
+	
+	body {
+		font-size: 50.0%;
+	}
+	/*shows elements in a column*/
+	ul{
+		flex-direction: column;
+	}
+
+	/* deletes margin on top or bottom of the a tag*/
+	li{
+		margin: 0;
+	}
+	/* makes sure that the a tag will take the entire screen*/
+	a{
+		display: block;
+	}
+	button {
+		display: block;
+	}
+	#navbutton{
+		/*makes the button visible*/
+		display: block;
+    
+		/*since we are here, we can style it a little bit!*/
+		padding: 0.5vw;
+		font-size: 3vh;
+		background-color: #AFAFAF;
+		border: none;
+    
+		/*outline none removes the default blue border that appears anytime you click on the button*/
+		outline: none;
+    
+		cursor: pointer;
+		align-self: flex-start;
+	}
+}
+
+nav{
+	width: 100vw;
+}
+
+li{
+	list-style-type: none;
+	margin: 0 2vw;
+	font-size: 3vh;
+	
+}
+
+a {
+	text-decoration: none;
+	color: black;
+	/*I added some padding*/
+	padding: 1vw;
+}
+
+a:hover {
+	background-color: #FFFFFF;
+}
+
+ul{
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+#navbutton {
+	display: none;
+	border: none;
+}
+
+#formDatabase {
+	display: none;
+}
+
+#formRequest {
+	display: block;
+}
+
 h1 {
 	color: #000000;
 }
+/*
+html,
+.fullscreen {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}*/
+
+.container {
+	margin: auto;
+	width: 100%;
+	text-align: left;
+}
+
+
 h2 {
 	color: #000000;
 	display: inline;
 }
 button {
-	display: inline;
+	display: block;
+	border: none;
+	text-align: left;
 }
 input {
   width: 50%;
@@ -29,7 +196,7 @@ select {
   margin: 8px 0;
   box-sizing: border-box;
 }
-#las2peerForm {
+/*#las2peerForm {
 	margin: auto;
 	display: inline;
 	color: #000000;
@@ -41,7 +208,77 @@ select {
 #queryForm {
 	margin: auto;
 	color: #000000
-}
+}*/
 #Result {
 	visibility: hidden;
+}
+#download {
+	visibility: hidden;
+}
+
+.switch {
+	margin-left: 5%;
+	position: relative;
+	display: flex;
+	width: 60px;
+	height: 34px;
+	vertical-align: middle;
+
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+/* The slider */
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #CCC;
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+input:checked + .slider {
+	background-color: #2196F3;
+}
+
+input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
+}
+
+.sliderWrapper {
+	display: flex;
+	position: relative;
+}
+
+.sliderWrapper div
+{
+	display: flex;
+	margin-left: 30%;
 }
