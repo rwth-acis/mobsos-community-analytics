@@ -84,13 +84,13 @@ import graphql.schema.idl.RuntimeWiring.Builder;
 // extends RESTService
 public class GraphQLREST{
 	
-	private String restAPI = "http://localhost:8080/MediabaseRESTAPI/rest/mediabase/";
-	private String propertyFile = "src/main/resources/config.properties";
-	private String schemaFile = "src/main/resources/schema.graphqls";
+	private static String restAPI = "http://localhost:8080/MediabaseRESTAPI/rest/mediabase/";
+	private static String propertyFile = "src/main/resources/config.properties";
+	private static String schemaFile = "src/main/resources/schema.graphqls";
 	
-	private String querySchemaFile = "src/main/resources/querySchema.graphqls";
-	private String mutationSchemaFile = "src/main/resources/mutationSchema.graphqls";
-	private String typeSchemaFile = "src/main/resources/typeSchema.graphqls";
+	private static String querySchemaFile = "src/main/resources/querySchema.graphqls";
+	private static String mutationSchemaFile = "src/main/resources/mutationSchema.graphqls";
+	private static String typeSchemaFile = "src/main/resources/typeSchema.graphqls";
 	//private String databaseSchema = "DB2INFO5";
 	
 	
@@ -111,29 +111,10 @@ public class GraphQLREST{
 			for (int i = index; i < (array[0].length() - 1); i++) {
 				testing = testing + array[0].charAt(i);
 			}
-			if (!(Boolean)context.getAttribute("AddedDatabase")) {
-				context.setAttribute("RuntimeWiring", initialRuntimeWiring());
-				String querySchema = initialQuerySchema();
-				String mutationSchema = initialMutationSchema();
-				
-				BufferedWriter writer = new BufferedWriter(new FileWriter(querySchemaFile, true));
-			    writer.write(querySchema.toString());
-			    writer.close();
-			    
-			    writer = new BufferedWriter(new FileWriter(mutationSchemaFile, true));
-			    writer.write(mutationSchema.toString());
-			    writer.close();
-				
-				StringBuilder schema = new StringBuilder();
-				schema.append(querySchema);
-				schema.append(mutationSchema);
-				
-				writer = new BufferedWriter(new FileWriter(schemaFile, true));
-			    writer.write(schema.toString());
-			    writer.close();
-			    
-			    context.setAttribute("AddedDatabase", true);
-			}
+//			if (!(Boolean)context.getAttribute("AddedDatabase")) {
+//				context.setAttribute("RuntimeWiring", initialRuntimeWiring());			    
+//			    context.setAttribute("AddedDatabase", true);
+//			}
 			SchemaParser schemaParser = new SchemaParser();
 	        SchemaGenerator schemaGenerator = new SchemaGenerator();
 		    
@@ -168,11 +149,11 @@ public class GraphQLREST{
 		    String schema = schemaBuilder.toString();
 		    System.out.println("GraphQL Schema built.");
 		    //globalRW = updateRuntimeWiring(name, globalRW);
-		    RuntimeWiring.Builder test = (RuntimeWiring.Builder) context.getAttribute("RuntimeWiring");
+		    RuntimeWiring.Builder runtimeWiring = (RuntimeWiring.Builder) context.getAttribute("RuntimeWiring");
 		    //reader.close();
 	        TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
 	        GraphQLSchema graphQLSchema = schemaGenerator
-	        		.makeExecutableSchema(typeDefinitionRegistry, test.build());
+	        		.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring.build());
 			GraphQL graphQL = GraphQL.newGraphQL(graphQLSchema).build();
 			System.out.println("GraphQL API built.");
 			
@@ -186,9 +167,9 @@ public class GraphQLREST{
 				updateMutationSchema(name, dbSchema);
 				updateTypeSchema(name, dbSchema);
 
-				test = updateRuntimeWiring(name, dbSchema, 
+				runtimeWiring = updateRuntimeWiring(name, dbSchema, 
 						(RuntimeWiring.Builder)context.getAttribute("RuntimeWiring"));
-				context.setAttribute("RuntimeWiring", test);
+				context.setAttribute("RuntimeWiring", runtimeWiring);
 			}
 			System.out.println(errors.toString());
 			System.out.println("Input: " + input);
@@ -220,20 +201,7 @@ public class GraphQLREST{
 		}		
 	}
 	
-	public String initialQuerySchema() {
-		return "schema {" + "\r\n" + "query: Query" + "\r\n"
-				+ "mutation: Mutation" + "\r\n}"
-				+ "type Query { customQuery(name: String!, dbSchema: String!, query: String!): String \r\n}";
-	}
-	
-	public String initialMutationSchema() {
-		return "type Mutation { " + "\r\n"
-				+ "addDatabase(name: String!, url: String!, dbSchema: String!, user: String!,"
-				+ " password:String!): String \r\n"
-				+ "deleteDatabase(name: String!): String \r\n}";
-	}
-	
-	public void updateQuerySchema(String name, String databaseSchema) throws IOException {
+	public static void updateQuerySchema(String name, String databaseSchema) throws IOException {
 		URL url = new URL(restAPI + "metadata/" + name + "/" + databaseSchema);
 		System.out.println("URL: " + url.toString());
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -320,7 +288,7 @@ public class GraphQLREST{
 
 	}
 	
-	public void updateMutationSchema(String name, String databaseSchema) throws IOException {
+	public static void updateMutationSchema(String name, String databaseSchema) throws IOException {
 		
 		URL url = new URL(restAPI + "metadata/" + name + "/" + databaseSchema);
 		System.out.println("URL: " + url.toString());
@@ -370,7 +338,7 @@ public class GraphQLREST{
 
 	}
 	
-	public void updateTypeSchema (String name, String databaseSchema) throws IOException {
+	public static void updateTypeSchema (String name, String databaseSchema) throws IOException {
 		URL url = new URL(restAPI + "metadata/" + name + "/" + databaseSchema);
 		System.out.println("URL: " + url.toString());
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -504,145 +472,10 @@ public class GraphQLREST{
 	    writer.close();
 
 	}
-	public String initialSchema() {
-		return "schema {" + "\r\n" + "query: Query" + "\r\n"
-				+ "mutation: Mutation" + "\r\n}"
-				+ "type Query { " + "\r\n}"
-				+ "type Mutation { " + "\r\n"
-				+ "addDatabase(name: String!, url: String!, user: String!, password:String!): String \r\n"
-				+ "deleteDatabase(name: String!): String}" + "\r\n";
-	}
 	
-	public RuntimeWiring.Builder initialRuntimeWiring() {
-		RuntimeWiring.Builder runtimeWiring = RuntimeWiring.newRuntimeWiring();
-		runtimeWiring = runtimeWiring.type("Query",
-				typeWiring -> typeWiring.dataFetcher("customQuery", createCustomDataFetcher()));
-		runtimeWiring = runtimeWiring.type("Mutation",
-	    		typeWiring -> typeWiring.dataFetcher("addDatabase", createAddDBDataFetcher()));
-		runtimeWiring = runtimeWiring.type("Mutation",
-				typeWiring -> typeWiring.dataFetcher("deleteDatabase", createDeleteDBDataFetcher()));
-		return runtimeWiring;
-	}
 	
-	private DataFetcher<String> createCustomDataFetcher () {
-		return new DataFetcher<String>() {
-			@Override
-			public String get(DataFetchingEnvironment environment) {
-				String name = environment.getArgument("name");
-				String dbSchema = environment.getArgument("dbSchema");
-				String query = environment.getArgument("query");
-				String modQuery = query.replaceAll(" ", "%20");
-				String urlString = restAPI + "data/query/" + name + "/" + dbSchema + "?query=" + modQuery;
-				System.out.println("In data fetcher, URL: " + urlString);
-				String responseData = "";
-				
-				try {
-					URL url = new URL(urlString);
-					System.out.println(url.toString());
-					HttpURLConnection con = (HttpURLConnection) url.openConnection();
-					con.setRequestMethod("GET");
-					con.setDoOutput(true);
-					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-					String inputLine;
-					while ((inputLine = in.readLine()) != null) {
-							responseData = responseData + inputLine;
-						}
-					in.close();
-					
-					return responseData;
-				} catch (JSONException exc) {
-					System.out.println("JSONException: " + exc.toString());
-					return null;
-				}
-				catch (IOException exc) {
-					System.out.println("IOException: " + exc.toString());
-					return null;
-				}
-			}
-		};
-	}
-	private DataFetcher<String> createAddDBDataFetcher() {
-		return new DataFetcher<String>() {
-			@Override
-			public String get(DataFetchingEnvironment environment) {
-				String name = environment.getArgument("name");
-				String dburl = environment.getArgument("url");
-				String dbSchema = environment.getArgument("dbSchema");
-				String user = environment.getArgument("user");
-				String password = environment.getArgument("password");
-				String urlString = restAPI + "database/" + name;
-				String data = "{" + "\"url\":\"" + dburl + "\", \"dbSchema\":\"" + dbSchema +
-						"\", \"user\":\"" + user + "\", \"password\":\"" + password + "\"}";
-				String responseData = "";
-				
-				try {
-					URL url = new URL(urlString);
-					System.out.println(url.toString());
-					HttpURLConnection con = (HttpURLConnection) url.openConnection();
-					con.setRequestMethod("POST");
-					con.setRequestProperty("Content-Type", "application/json");
-					con.setDoOutput(true);
-		            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		            wr.writeBytes(data);
-		            wr.flush();
-		            wr.close();
-					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-					String inputLine;
-					while ((inputLine = in.readLine()) != null) {
-							responseData = responseData + inputLine;
-						}
-					in.close();
-					
-					return responseData;
-				} catch (JSONException exc) {
-					System.out.println("JSONException: " + exc.toString());
-					return null;
-				}
-				catch (IOException exc) {
-					System.out.println("IOException: " + exc.toString());
-					return null;
-				}
-			}
-		};
-	}
 	
-	private DataFetcher<String> createDeleteDBDataFetcher() {
-		return new DataFetcher<String>() {
-			@Override
-			public String get(DataFetchingEnvironment environment) {
-				String name = environment.getArgument("name");
-				String urlString = restAPI + "database/list/" + name;
-				String responseData = "";
-				
-				try {
-					URL url = new URL(urlString);
-					System.out.println(url.toString());
-					HttpURLConnection con = (HttpURLConnection) url.openConnection();
-					con.setRequestMethod("POST");
-					con.setRequestProperty("Content-Type", "application/json");
-					con.setDoOutput(true);
-		            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		            wr.close();
-					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-					String inputLine;
-					while ((inputLine = in.readLine()) != null) {
-							responseData = responseData + inputLine;
-						}
-					in.close();
-					return responseData;
-				} catch (JSONException exc) {
-					System.out.println("JSONException: " + exc.toString());
-					return null;
-				}
-				catch (IOException exc) {
-					System.out.println("IOException: " + exc.toString());
-					return null;
-				}
-			}
-		};
-	}
-	
-	public RuntimeWiring.Builder updateRuntimeWiring(String name, String databaseSchema,
+	public static RuntimeWiring.Builder updateRuntimeWiring(String name, String databaseSchema,
 			RuntimeWiring.Builder runtimeWiring)
 			throws IOException {
 		
@@ -926,7 +759,7 @@ public class GraphQLREST{
 		
 	}
 	
-	private DataFetcher<Map<String, Object>> createPutEntryDataFetcher(String dbName, String table) {
+	private static DataFetcher<Map<String, Object>> createPutEntryDataFetcher(String dbName, String table) {
 		return new DataFetcher<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> get(DataFetchingEnvironment environment) {
@@ -970,7 +803,7 @@ public class GraphQLREST{
 		};
 	}
 	
-	private DataFetcher<String> createDeleteEntryDataFetcher() {
+	private static DataFetcher<String> createDeleteEntryDataFetcher() {
 		return new DataFetcher<String>() {
 			@Override
 			public String get(DataFetchingEnvironment environment) {
@@ -1010,7 +843,7 @@ public class GraphQLREST{
 		};
 	}
 	
-	private DataFetcher<List<String>> createTableNameDataFetcher() {
+	private static DataFetcher<List<String>> createTableNameDataFetcher() {
 		return new DataFetcher<List<String>>() {
 			@Override
 			public List<String> get(DataFetchingEnvironment environment) {
@@ -1051,7 +884,7 @@ public class GraphQLREST{
  		};
 	}
 	
-	private DataFetcher<List<Map<String, Object>>> createTableDataFetcher() {
+	private static DataFetcher<List<Map<String, Object>>> createTableDataFetcher() {
 		return new DataFetcher<List<Map<String, Object>>>() {
 			@Override
 			public List<Map<String, Object>> get(DataFetchingEnvironment environment) {
@@ -1105,7 +938,7 @@ public class GraphQLREST{
 	 * @return	Data fetcher for query type which returns list GraphQL object types as HashMaps, field names as String
 	 * 			and their values of Object
 	 */
-	private DataFetcher<List<Map<String, Object>>> createRESTQueryDataFetcher(String dbName,
+	private static DataFetcher<List<Map<String, Object>>> createRESTQueryDataFetcher(String dbName,
 			String tableName, String schema) {
 		
 		return new DataFetcher<List<Map<String, Object>>>() {
@@ -1188,7 +1021,7 @@ public class GraphQLREST{
 	 * @return	Data fetcher for object type which returns GraphQL object type as HashMap, field names as String
 	 * 			and their values of Object
 	 */
-	private DataFetcher<Object> createRESTTypeDataFetcher(String tableName, String colname, String schema) {
+	private static DataFetcher<Object> createRESTTypeDataFetcher(String tableName, String colname, String schema) {
 		
 		return new DataFetcher<Object> () {
 			@Override
