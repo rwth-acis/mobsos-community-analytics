@@ -424,6 +424,11 @@ public class GraphQLREST{
 			
 			for (int i = 0; i < tableColName.size(); i++) {
 				colname = tableColName.get(i);
+				colname = colname.replaceAll("\\.", "_");
+				colname = colname.replaceAll("\\-", "_");
+				if (!Character.isLetter(colname.charAt(0))) {
+					colname = "nr_" + colname;
+				}
 				coltype = tableColType.get(i);
 				
 				// set type of fields, transforming types of DB2 to GraphQL types
@@ -454,7 +459,7 @@ public class GraphQLREST{
 					}
 				}
 				// check if column can be null and mark accordingly
-				if (tableColNull.get(i).equals("N")){
+				if (tableColNull.get(i).equals("N") || tableColNull.get(i).equals("NO")){
 					typeSchemaBuilder.append("!" + "\r\n");
 				} else {
 					typeSchemaBuilder.append("\r\n");

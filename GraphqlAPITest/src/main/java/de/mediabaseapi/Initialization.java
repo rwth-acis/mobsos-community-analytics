@@ -135,16 +135,22 @@ public class Initialization implements ServletContextListener{
 			input.close();
 			
 			RuntimeWiring.Builder runtimeWiring = (RuntimeWiring.Builder) sc.getAttribute("RuntimeWiring");
+			System.out.println("Building runtime wiring.");
 			runtimeWiring = GraphQLREST.updateRuntimeWiring("mediabase", mediabaseSchema, runtimeWiring);
+			System.out.println("Runtime Wiring Mediabase complete.");
+			System.out.println("las2peer Schema:" + las2peerSchema);
 			runtimeWiring = GraphQLREST.updateRuntimeWiring("las2peer", las2peerSchema, runtimeWiring);
 			sc.setAttribute("RuntimeWiring", runtimeWiring);
 		    
+			System.out.println("Building query schema.");
 		    GraphQLREST.updateQuerySchema("mediabase", mediabaseSchema);
 		    GraphQLREST.updateQuerySchema("las2peer", las2peerSchema);
 		    
+		    System.out.println("Building mutation schema.");
 		    GraphQLREST.updateMutationSchema("mediabase", mediabaseSchema);
 		    GraphQLREST.updateMutationSchema("las2peer", las2peerSchema);
 		    
+		    System.out.println("Building type schema.");
 		    GraphQLREST.updateTypeSchema("mediabase", mediabaseSchema);
 		    GraphQLREST.updateTypeSchema("las2peer", las2peerSchema);
 		    

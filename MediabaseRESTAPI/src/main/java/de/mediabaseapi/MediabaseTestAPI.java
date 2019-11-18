@@ -13,6 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +54,7 @@ public class MediabaseTestAPI{
 	 
 	 private static String filePath = "src/main/resources/config.properties";
 	 private List<String> nameList = new ArrayList<>();
+	 private static Session session;
 	 
 	 @Path("/database/list")
 	 @GET
@@ -81,6 +85,7 @@ public class MediabaseTestAPI{
 			 prop.remove("db.user_" + name);
 			 prop.remove("db.password_" + name);
 			 prop.remove("db.dbSchema_" + name);
+			 prop.remove("db.dbType_" + name);
 			 OutputStream output = new FileOutputStream(filePath);
 			 prop.store(output, null);
 			 System.out.println("DELETE");
@@ -99,10 +104,10 @@ public class MediabaseTestAPI{
 			 				 @ApiResponse(code = 406, message = "Name of database is already in use."),
 			 				 @ApiResponse(code = 422, message = "Properties are not provided in required format"),
 			 				 @ApiResponse(code = 500, message = "Error when handling properties file.")})
-	 public Response addDatabase(@PathParam("name") String name, String properties) {
+	 public Response addDatabase(@PathParam("name") String name, String properties, String testing) {
 		 
 		 System.out.println("Name: " + name);
-		 System.out.println("Properties: " + properties);
+		 System.out.println("Properties: " + testing);
 		 try {
 			 if (nameList.contains(name)) {
 				 return Response.status(406).header("Access-Control-Allow-Origin", "*")
@@ -113,7 +118,8 @@ public class MediabaseTestAPI{
 			 prop.load(input);
 			 
 			 if (prop.getProperty("db.url_" + name) != null && prop.getProperty("db.user_" + name) != null &&
-					 prop.getProperty("db.password_" + name) != null && prop.getProperty("db.dbSchema_") != null) {
+					 prop.getProperty("db.password_" + name) != null && prop.getProperty("db.dbSchema_") != null
+					 && prop.getProperty("db.dbType_" + name) != null) {
 				 return Response.status(210).header("Access-Control-Allow-Origin", "*")
 						 .entity("Database already added").build();
 			 } else {
@@ -123,6 +129,7 @@ public class MediabaseTestAPI{
 	             prop.setProperty("db.user_" + name, json.getString("user"));
 	             prop.setProperty("db.password_" + name, json.getString("password"));
 	             prop.setProperty("db.dbSchema_" + name, json.getString("dbSchema"));
+	             prop.setProperty("db.dbType_" + name, json.getString("dbType"));
 
 	            // save properties to project root folder
 	            prop.store(output, null);
@@ -147,21 +154,45 @@ public class MediabaseTestAPI{
 	 @ApiOperation(value = "Returns all table names for a given database and schema.")
 	 @ApiResponses(value = { @ApiResponse(code = 406, message = "Provided schema has no tables."),
 							 @ApiResponse(code = 200, message = "Successful Request."),
-							 @ApiResponse(code = 404, message = "Schema not present in database.")})
+							 @ApiResponse(code = 404, message = "Schema not present in database."),
+							 @ApiResponse(code = 500, message = "Error when handling properties file.")})
 	 public Response getTableNames(@PathParam("dbName") String dbName, @PathParam("schema") String schema,
 			 @DefaultValue("false") @QueryParam("views") Boolean views) {
 		 
 		 try {
 			 Connection connection = dbConnection(filePath, dbName);
 		     Statement stmt = connection.createStatement();
-		     String query;
+		     System.out.println("Here!");
+		     String query = "";
 		     
-		     if (!views) {
-		    	 query = "SELECT NAME FROM SYSIBM.SYSTABLES WHERE type = 'T' AND CREATOR like '" +  schema + "'";
-		     } else {
-		    	 query = "SELECT NAME FROM SYSIBM.SYSTABLES WHERE (type = 'T' OR type = 'V') AND CREATOR like '"
-		    			 +  schema + "'";
-		     }
+		     InputStream input = new FileInputStream(filePath);
+			 Properties prop = new Properties();
+			 prop.load(input);
+			 String dbType = prop.getProperty("db.dbType_" + dbName);
+			 System.out.println("Type: " + dbType);
+			 input.close();
+		     
+			 if (dbType.equals("MySQL")) {
+				 if (!views) {
+					 query = "SELECT TABLE_NAME AS NAME FROM information_schema.tables "
+					 		+ "where table_schema not in ('information_schema', 'mysql', 'performance_schema')";
+				 } else {
+					 query = "SELECT TABLE_NAME AS NAME \n" + 
+					 		"FROM information_schema.tables \n" + 
+					 		"WHERE (TABLE_TYPE LIKE 'VIEW' OR TABLE_TYPE LIKE 'TABLE') AND "
+					 		+ "table_schema not in ('information_schema', 'mysql', 'performance_schema');";
+				 }
+			 }
+			 else if (dbType.equals("DB2")) {
+				 if (!views) {
+			    	 query = "SELECT NAME FROM SYSIBM.SYSTABLES WHERE type = 'T' AND CREATOR like '" +  schema + "'";
+			     } else {
+			    	 query = "SELECT NAME FROM SYSIBM.SYSTABLES WHERE (type = 'T' OR type = 'V') AND CREATOR like '"
+			    			 +  schema + "'";
+			     } 
+			 } else {
+				 return Response.status(500).entity("Database type is not supported.").build();
+			 }
 		     
 		     ResultSet rs = stmt.executeQuery(query);
 		     JSONArray json = resultSetToJSON(rs, false);
@@ -169,6 +200,9 @@ public class MediabaseTestAPI{
 		     rs.close();
 		     stmt.close();
 		     connection.close();
+		     if (session != null) {
+		    	 session.disconnect();
+		     }
 		     if (json != null && json.toString().equals("[]")) {
 					return Response.status(406).entity("Schema has no tables.").build();
 				}
@@ -176,6 +210,9 @@ public class MediabaseTestAPI{
 		 } catch (SQLException exc) {
 			    System.out.println("JDBC/SQL error: " + exc.toString());
 			    return Response.status(404).entity("Schema is not present in given database.").build();
+		 } catch (IOException exc) {
+			 System.out.println("IOException: " + exc.toString());
+			 return Response.status(500).entity("Error when handling properties file.").build();
 		 }
 		 
 	 }
@@ -183,7 +220,8 @@ public class MediabaseTestAPI{
 	 @ApiOperation(value = "Retrieves column information from a given table")
 	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful request."),
 			 				 @ApiResponse(code = 406, message = "Structure missing from database."),
-			 				 @ApiResponse(code = 422, message = "SQL error.")})
+			 				 @ApiResponse(code = 422, message = "SQL error."),
+			 				 @ApiResponse(code = 500, message = "Error when handling properties file.")})
 	 @Path("/metadata/{dbName}/{schema}/{tableName}")
 	 @GET
 	 public Response getColumnNames(@PathParam("dbName") String dbName, @PathParam("schema") String schema,
@@ -192,11 +230,26 @@ public class MediabaseTestAPI{
 			try {
 				Connection connection = dbConnection(filePath, dbName);
 			    Statement stmt = connection.createStatement();
-			    stmt.execute("SET CURRENT SCHEMA " + schema);
+			    //stmt.execute("SET CURRENT SCHEMA " + schema);
+			    
+			    InputStream input = new FileInputStream(filePath);
+				Properties prop = new Properties();
+				prop.load(input);
+				String dbType = prop.getProperty("db.dbType_" + dbName);
+				input.close();
+				String query = "";
 			    
 			    stmt = connection.createStatement();
-			    String query = "SELECT COLNAME,TYPENAME,NULLS from SYSCAT.COLUMNS where TABNAME='" 
-			    + tableName + "' AND TABSCHEMA ='" + schema + "'";
+			    if (dbType.equals("MySQL")) {
+			    	query = "SELECT COLUMN_NAME AS COLNAME, DATA_TYPE AS TYPENAME, IS_NULLABLE AS NULLS"
+			    			+ " from INFORMATION_SCHEMA.COLUMNS "
+			    			+ " where TABLE_NAME like '" + tableName + "' AND TABLE_SCHEMA like '" + schema +  "';";
+			    } else if (dbType.equals("DB2")) {
+				    query = "SELECT COLNAME,TYPENAME,NULLS from SYSCAT.COLUMNS where TABNAME='" 
+				    + tableName + "' AND TABSCHEMA ='" + schema + "'";
+			    } else {
+			    	return Response.status(500).entity("Database type is not supported.").build();
+			    }
 
 			    ResultSet rs = stmt.executeQuery(query);
 			    
@@ -208,6 +261,9 @@ public class MediabaseTestAPI{
 			    rs.close();
 			    stmt.close();
 			    connection.close();
+			    if (session != null) {
+			    	 session.disconnect();
+			     }
 			    
 			    return Response.status(200).entity(json.toString()).build();
 			} catch (SQLException exc) {
@@ -216,6 +272,9 @@ public class MediabaseTestAPI{
 				}
 			    System.out.println("JDBC/SQL error: " + exc.toString());
 			    return Response.status(422).entity("SQL error.").build();
+			} catch (IOException exc) {
+				System.out.println("IOException: " + exc.toString());
+				return Response.status(500).entity("Error when handling properties file.").build();
 			}
 	 }
 	 
@@ -223,25 +282,49 @@ public class MediabaseTestAPI{
 	 @GET
 	 @ApiOperation(value = "Returns primary keys of a table")
 	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Request successful."),
-			 				 @ApiResponse(code = 422, message = "SQL error.")})
+			 				 @ApiResponse(code = 422, message = "SQL error."),
+			 				 @ApiResponse(code = 500, message = "Error when handling properties file.")})
 	 public Response getPrimaryKeys(@PathParam("dbName") String dbName, @PathParam("schema") String schema, 
 			 @PathParam("tableName") String tableName) {
 			try {
 				Connection connection = dbConnection(filePath, dbName);
 				Statement stmt = connection.createStatement();
-				String query = "SELECT NAME FROM SYSIBM.SYSCOLUMNS " + 
-						"WHERE TBNAME = '" + tableName + "'AND TBCREATOR = '" + schema + "' " +
-						"AND KEYSEQ > 0";
+				
+				InputStream input = new FileInputStream(filePath);
+				Properties prop = new Properties();
+				prop.load(input);
+				String dbType = prop.getProperty("db.dbType_" + dbName);
+				input.close();
+				String query = "";
+				
+				if (dbType.equals("MySQL")) {
+					query = "SELECT COLUMN_NAME AS NAME from INFORMATION_SCHEMA.COLUMNS"
+			    			+ " where TABLE_NAME like '" + tableName + "' AND TABLE_SCHEMA like '" + schema +  "'"
+	    					+ "AND COLUMN_KEY like 'PRI';";
+				} else if (dbType.equals("DB2")) {
+					query = "SELECT NAME FROM SYSIBM.SYSCOLUMNS " + 
+							"WHERE TBNAME = '" + tableName + "'AND TBCREATOR = '" + schema + "' " +
+							"AND KEYSEQ > 0";
+				} else {
+					return Response.status(500).entity("Database type is not supported.").build();
+				}
+				 
 				ResultSet keys = stmt.executeQuery(query);
 				JSONArray json = resultSetToJSON(keys, false);
 
 				keys.close();
 				stmt.close();
 				connection.close();
+				if (session != null) {
+			    	 session.disconnect();
+			     }
 				return Response.status(200).entity(json.toString()).build();
 			} catch (SQLException exc) {
 			    System.out.println("JDBC/SQL error: " + exc.toString());
 			    return Response.status(422).entity("SQL error.").build();
+			} catch (IOException exc) {
+				System.out.println("IOException: " + exc.toString());
+				return Response.status(500).entity("Error when handling properties file.").build();
 			}
 	 }
 	 
@@ -259,7 +342,7 @@ public class MediabaseTestAPI{
 			    // set the actual schema
 				Connection connection = dbConnection(filePath, dbName);
 			    Statement stmt = connection.createStatement();
-			    stmt.execute("SET CURRENT SCHEMA " + schema);
+			    //stmt.execute("SET CURRENT SCHEMA " + schema);
 			     
 			    stmt = connection.createStatement();
 			    String query = "";
@@ -302,7 +385,7 @@ public class MediabaseTestAPI{
 		 try {
 			 Connection connection = dbConnection(filePath, dbName);
 			 Statement stmt = connection.createStatement();
-			 stmt.execute("SET CURRENT SCHEMA " + schema);
+			 //stmt.execute("SET CURRENT SCHEMA " + schema);
 
 			 String query = "SELECT ";
 			 
@@ -367,7 +450,7 @@ public class MediabaseTestAPI{
 			// set the actual schema
 			Connection connection = dbConnection(filePath, dbName);
 		    Statement stmt = connection.createStatement();
-		    stmt.execute("SET CURRENT SCHEMA " + schema);
+		    //stmt.execute("SET CURRENT SCHEMA " + schema);
 			    
 		    // construct SQL-Query from path parameters 
 		    stmt = connection.createStatement();
@@ -427,7 +510,7 @@ public class MediabaseTestAPI{
 
 			Connection connection = dbConnection(filePath, dbName);
 		    Statement stmt = connection.createStatement();
-		    stmt.execute("SET CURRENT SCHEMA " + schema);
+		    //stmt.execute("SET CURRENT SCHEMA " + schema);
 		    String query = "DELETE FROM " + tableName;
 		    if (condition != null && !condition.isEmpty()) {
 		    	query = query + " WHERE " + condition;
@@ -454,7 +537,7 @@ public class MediabaseTestAPI{
 			 Connection connection = dbConnection(filePath, dbName);
 			 System.out.println("SQL Query: " + query);
 			 Statement stmt = connection.createStatement();
-			 stmt.execute("SET CURRENT SCHEMA " + schema);
+			 //stmt.execute("SET CURRENT SCHEMA " + schema);
 			 ResultSet rs = stmt.executeQuery(query);
 			 JSONArray json = resultSetToJSON(rs, false);
 			 if (json != null && json.toString().equals("[]")) {
@@ -505,7 +588,8 @@ public class MediabaseTestAPI{
 					int numColumns = rsmd.getColumnCount();
 					JSONObject obj = new JSONObject();
 				    for (int i = 1; i <= numColumns; i++) {
-				    	String columnName = rsmd.getColumnName(i).toLowerCase();
+				    	//String columnName = rsmd.getColumnName(i).toLowerCase();
+				    	String columnName = rsmd.getColumnLabel(i).toLowerCase();
 				    	obj.put(columnName, resultSet.getObject(columnName));
 				    }
 				    json.put(obj);
@@ -527,22 +611,58 @@ public class MediabaseTestAPI{
 		 try {
 			 Class.forName("com.ibm.db2.jcc.DB2Driver");
 		 } catch (ClassNotFoundException exc) {
-			 System.err.println("Could not load DB2Driver:" + exc.toString());
+			 System.err.println("Could not load DB2Driver: " + exc.toString());
 		 }
+		 try {
+			 Class.forName("com.mysql.cj.jdbc.Driver");
+		 } catch (ClassNotFoundException exc) {
+			 System.err.println("Could not load MySQLDriver: " + exc.toString());
+		 }
+			 
+         
 		 Connection connection = null;
 		 try {
 			 InputStream input = new FileInputStream(filePath);
 			 Properties prop = new Properties();
 			 prop.load(input);
-			 connection = DriverManager.getConnection(prop.getProperty("db.url_" + name),
-					 prop.getProperty("db.user_" + name), prop.getProperty("db.password_" + name));
+			 String connectType = prop.getProperty("db.connection_" + name);
+	         
+	         if (connectType != null && connectType.equals("ssh")) {
+				 String sshuser = prop.getProperty("ssh.user");
+		         String sshhost = prop.getProperty("ssh.host");
+		         String sshpassword = prop.getProperty("ssh.password");
+	        	 JSch jsch = new JSch();
+		         session = jsch.getSession(sshuser, sshhost);
+		         int lport = 4321;
+		         String rhost = "localhost";
+		         int rport = 3306;
+		         session.setPassword(sshpassword);
+		         session.setConfig("StrictHostKeyChecking", "no");
+		         System.out.println("Establishing Connection...");
+		         session.connect();
+		         int assinged_port=session.setPortForwardingL(lport, rhost, rport);
+		         System.out.println("localhost:"+assinged_port+" -> "+rhost+":"+rport);
+				 System.out.println("Testing: " + prop.getProperty("db.url_" + name));
+				 String url = prop.getProperty("ssh.dburl");
+				 String user = prop.getProperty("ssh.dbuser");
+				 String password = prop.getProperty("ssh.dbpassword");
+				 Class.forName("com.mysql.cj.jdbc.Driver");
+				 connection = DriverManager.getConnection(url, user, password);
+	         } else {
+	        	 Class.forName("com.ibm.db2.jcc.DB2Driver");
+	        	 connection = DriverManager.getConnection(prop.getProperty("db.url_" + name),
+	        			prop.getProperty("db.user_" + name), prop.getProperty("db.password_" + name));
+	         }
 			 input.close();
 			 return connection;
 		 } catch (SQLException exc) {
-			 System.err.println("Connection failed:" + exc.toString());
+			 System.err.println("Connection failed: " + exc.toString());
 			 return null;
 		 } catch (IOException exc) {
 			 System.err.println("Input failed: " + exc.toString());
+			 return null;
+		 } catch (Exception exc) {
+			 System.err.println("Class Exception: " + exc.toString());
 			 return null;
 		 }
 	 }
@@ -560,21 +680,45 @@ public class MediabaseTestAPI{
 		 try {
 			 connection = dbConnection(filePath, name);
 		     Statement stmt = connection.createStatement();
-		     stmt.execute("SET CURRENT SCHEMA " + schema);
+		     //stmt.execute("SET CURRENT SCHEMA " + schema);
+		     
+		     InputStream input = new FileInputStream(filePath);
+			 Properties prop = new Properties();
+			 prop.load(input);
+			 String dbType = prop.getProperty("db.dbType_" + name);
+			 input.close();
+			 String query = "";
 		    
 		     // construct SQL-Query from path parameters 
 		     stmt = connection.createStatement();
-		     String query = "SELECT COLNAME from SYSCAT.COLUMNS where TABNAME='" 
-					    + tableName + "' AND TABSCHEMA ='" + schema + "' AND GENERATED = 'A'";
+		     if (dbType.equals("MySQL")) {
+		    	 query = "SELECT  column_name AS COLNAME \n" + 
+		    	 		"FROM INFORMATION_SCHEMA.COLUMNS \n" + 
+		    	 		"WHERE table_name = '" + name + "' AND table_schema = '" + schema + "' \n" + 
+		    	 		"AND extra = \"auto_increment\";";
+		     } else if (dbType.equals("DB2")) {
+		    	 query = "SELECT COLNAME from SYSCAT.COLUMNS where TABNAME='" 
+						    + tableName + "' AND TABSCHEMA ='" + schema + "' AND GENERATED = 'A'";
+		     } else {
+		    	 return null;
+		     }
+		     
 		     
 		     // execute the query
 		     ResultSet rs = stmt.executeQuery(query);
 		     while (rs.next()) {
 		    	 columns.add(rs.getString(1));
 		     }
+		     connection.close();
+		     if (session != null) {
+		    	 session.disconnect();
+		     }
 			 return columns;
 		 } catch (SQLException exc) {
 			 System.err.println("Connection failed:" + exc.toString());
+			 return null;
+		 } catch (IOException exc) {
+			 System.out.println("IOException: " + exc.toString());
 			 return null;
 		 }
 		 
