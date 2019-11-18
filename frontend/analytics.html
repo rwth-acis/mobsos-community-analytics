@@ -9,10 +9,10 @@
 	<script src="./bower_components/yjs/y.js"></script>
 	<script type="text/javascript" src="js/loader.js"></script>
 	<script type="text/javascript" src="js/oidc-button.js"></script>
-	<script type="text/javascript" src="js/apiCall.js"></script>
 	<script type="text/javascript" src="js/jquery-min.js"></script>
-	<script type="text/javascript" src="js/serviceworker.js"></script>
 	<script type="text/javascript" src="js/usage.js"></script>
+	<script type="text/javascript" src="js/apiCall.js"></script>
+	<script type="text/javascript" src="js/serviceworker.js"></script>
 	<!--<script type="text/javascript" src="js/collaborative.js">-->
 
 	<script src="js/bootstrap.min.js"></script>
@@ -56,7 +56,7 @@
 <h1 style="display:block">MobSOS Community Analytics</h1>
 <div id="databaseForm" class="formDatabase" style="display:none">
 	<h2>las2peer Community<h2>
-	<button id="hidelas2peer" onclick='javascript:toggleVisibility("las2peerForm")'>&#9660;</button> <br>
+	<!--<button id="hidelas2peer" onclick='javascript:toggleVisibility("las2peerForm")'>&#9660;</button> <br>-->
 	<form method="POST" action="javascript:addDatabase()" id="las2peerForm">
 		<label>Database Name:<br><input type="text" name="DatabaseName" id="DatabaseName0" required></label> <br>
 		<label>Database Host:<br><input type="text" name="DatabaseHost" id="DatabaseHost0" required></label> <br>
@@ -104,10 +104,17 @@
 	</div>
 	<form method="POST" action="javascript:query()" id="queryForm">
 		<label>Request:<br><input type="text" name="Request" id="Request" required></label> <br>
+		<label id="SecondRequestLabel">Second Request: <br><input type="text" name="SecondRequest" id="SecondRequest"></label> <br id="SecondRequestBreak">
 		<label> Request Type: <br>
 		<select name="Request" id="RequestType" required>
 			<option value="Query">Query</option>
 			<option value="Mutation">Mutation</option></label>
+		</select> <br>
+		<label>Database: <br> 
+		<select name="DatabaseSelect" id ="DatabaseSelect" required onchange="javascript:toggleSecond()">
+		<option value="mediabase">Mediabase</option>
+		<option value="las2peer">las2peer</option>
+		<option value="All">All</option></label><br>
 		</select> <br>
 		<label>Visualization Type:<br>
 		<select name="Visualization" id="Visualization" required>

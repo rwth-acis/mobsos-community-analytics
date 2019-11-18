@@ -216,6 +216,18 @@ select {
 	visibility: hidden;
 }
 
+#SecondRequest {
+	display: none;
+}
+
+#SecondRequestLabel {
+	display: none;
+}
+
+#SecondRequestBreak {
+	display: none;
+}
+
 .switch {
 	margin-left: 5%;
 	position: relative;

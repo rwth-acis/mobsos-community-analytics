@@ -6,7 +6,7 @@ window.onload = () => {
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
-             .register('./serviceworker.js');
+             .register('js/serviceworker.js');
   }
 }*/
 
@@ -26,7 +26,9 @@ Y({
 	window.y = y;
 	console.log('Yjs instance ready!');
 	y.share.map.delete("request");
+	y.share.map.delete("requestSecond");
 	y.share.map.delete("requestType");
+	y.share.map.delete("database");
 	y.share.map.delete("vizType");
 	//y.share.map.set("request", "");
 	//y.share.map.set("requestType", document.getElementById("RequestType").value);
@@ -38,8 +40,16 @@ Y({
 				let cleaned = y.share.map.get("request").replace(/['"]+/g, '')
 				document.getElementById("Request").value = cleaned;
 			}
+			if (document.getElementById("SecondRequest").value == "" && document.getElementById("SecondRequest").style.display != "none") {
+				let cleaned = y.share.map.get("requestSecond").replace(/['"]+/g, '')
+				document.getElementById("SecondRequest").value = cleaned;
+			}
 			if (event.name == "requestType") {
 				setSelect("RequestType", y.share.map.get("requestType"));
+			}
+			if (event.name == "database") {
+				setSelect("DatabaseSelect", y.share.map.get("database"));
+				toggleSecond();
 			}
 			if (event.name == "vizType") {
 				//document.getElementById("Visualization").value = y.share.map.get("vizType");
@@ -51,7 +61,11 @@ Y({
 		if (document.getElementById("collabToggle").checked == true) {
 			y.share.map.set("request", JSON.stringify(document.getElementById("Request").value));
 			y.share.map.set("requestType", JSON.stringify(document.getElementById("RequestType").value));
+			y.share.map.set("database", JSON.stringify(document.getElementById("DatabaseSelect").value))
 			y.share.map.set("vizType", JSON.stringify(document.getElementById("Visualization").value));
+			if (document.getElementById("SecondRequest").style.display != "none") {
+				y.share.map.set("requestSecond", JSON.stringify(document.getElementById("SecondRequest").value))
+			}
 		}
 	};
 });
@@ -81,9 +95,10 @@ function addDatabase() {
 	var dbSchema = document.getElementById("DatabaseSchema0").value;
 	var user = document.getElementById("Username0").value;
 	var password = document.getElementById("Password0").value;
+	var dbType = document.getElementById("DatabaseType0").value;
 	var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql";
 	path = path + "?input=mutation%7BaddDatabase"
-	var object = "(name: \"" + name + "\", url:\"" + url + "\", dbSchema:\"" + dbSchema + "\", user:\"" + user + "\", password:\"" + password + "\")%7D";
+	var object = "(name: \"" + name + "\", url:\"" + url + "\", dbSchema:\"" + dbSchema + "\", user:\"" + user + "\", password:\"" + password + "\", dbType:\"" + dbType + "\")%7D";
 	object = object.replace(/\//g, "%2F");
 	path = path + object
 	//var object = "{" + "\"url\":\"" + url + "\", \"user\":\"" + user + "\", \"password\":\"" + password + "\"}";
@@ -98,45 +113,103 @@ function addDatabase() {
 	request.send();
 };
 function query() {
-	var request = new XMLHttpRequest();
-	request.onreadystatechange = function() {
-		if (this.readyState == "4" && this.status == "200") {
-			document.getElementById("Result").innerHTML = this.responseText;
-			var data = this.responseText;
-			var chartType = document.getElementById("Visualization").value;
-			switch (chartType) {
-				case "GOOGLEBARCHART":
-					createBaseChart(data, "GOOGLEBARCHART");
-					break;
-				case "GOOGLEPIECHART":
-					createBaseChart(data, "GOOGLEPIECHART");
-					break;
-				case "GOOGLECOLUMNCHART":
-					createBaseChart(data, "GOOGLECOLUMNCHART");
-					break;
-				case "GOOGLELINECHART":
-					createLineChart(data);
-					break;
-				case "GOOGLEGEOCHART":
-					createGeoChart(data);
-					break;
-				case "GOOGLECALENDARCHART":
-					createCalendarChart(data);
-					break;
-				default:
-					
-			
+	if (document.getElementById("DatabaseSelect").value == "All") {
+		var paths = [];
+		var responses = [];
+		var requestType = document.getElementById("RequestType").value;
+		var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql?input=";
+		var input = document.getElementById("Request").value;
+		var insertPath = path + requestType.toLowerCase() + "{mediabase_" + input + "}";
+		// replace curly parentheses in accordance with RFC 1738
+		insertPath = insertPath.replace(/{/g, "%7B");
+		insertPath = insertPath.replace(/}/g, "%7D");
+		paths.push(insertPath);
+		
+		input = document.getElementById("SecondRequest").value;
+		insertPath = path + requestType.toLowerCase() + "{mediabase_" + input + "}";
+		// replace curly parentheses in accordance with RFC 1738
+		insertPath = insertPath.replace(/{/g, "%7B");
+		insertPath = insertPath.replace(/}/g, "%7D");
+		paths.push(insertPath);
+		console.log("Paths: " + paths);
+		console.log("Paths length: " + paths.length);
+		
+		var request = new XMLHttpRequest();
+		request.open("GET", paths[0], true);
+		request.onreadystatechange = function() {
+					if (this.readyState == "4" && this.status == "200") {
+						responses.push(this.responseText);
+						if (responses.length > 1) {
+							allQuery(responses, document.getElementById("Visualization").value);
+						}
+					}
+			};
+		request.send();
+		
+		request = new XMLHttpRequest();
+		request.onreadystatechange = function() {
+					if (this.readyState == "4" && this.status == "200") {
+						responses.push(this.responseText);
+						if (responses.length > 1) {
+							allQuery(responses, document.getElementById("Visualization").value);
+						}
+					}
+			};
+		request.open("GET", paths[1], true);
+		request.send();
+		/*for (var i = 0; i < paths.length; i++) {
+			(function(i) {
+				console.log("Index: " + paths[i])
+				let request = new XMLHttpRequest();
+				request.open("GET", paths[i], true);
+				request.onreadystatechange = function() {
+					if (this.readyState == "4" && this.status == "200") {
+						console.log("Response text: " + this.responseText);
+						responses.push(this.responseText);
+					}
+			};
+			request.send();
+			})(i);
+		}*/
+	} else {
+		var request = new XMLHttpRequest();
+		request.onreadystatechange = function() {
+			if (this.readyState == "4" && this.status == "200") {
+				document.getElementById("Result").innerHTML = this.responseText;
+				var data = this.responseText;
+				var chartType = document.getElementById("Visualization").value;
+				switch (chartType) {
+					case "GOOGLEBARCHART":
+						createBaseChart(data, "GOOGLEBARCHART");
+						break;
+					case "GOOGLEPIECHART":
+						createBaseChart(data, "GOOGLEPIECHART");
+						break;
+					case "GOOGLECOLUMNCHART":
+						createBaseChart(data, "GOOGLECOLUMNCHART");
+						break;
+					case "GOOGLELINECHART":
+						createLineChart(data);
+						break;
+					case "GOOGLEGEOCHART":
+						createGeoChart(data);
+						break;
+					case "GOOGLECALENDARCHART":
+						createCalendarChart(data);
+						break;
+					default:
 			}
-			document.getElementById("download").style.visibility = "visible";
-			document.getElementById("KeyCheck").innerHTML = (new Date("2016-11-17 12:00:00.0")).getFullYear();
-		} else {
-			document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
+				document.getElementById("download").style.visibility = "visible";
+				document.getElementById("KeyCheck").innerHTML = (new Date("2016-11-17 12:00:00.0")).getFullYear();
+			} else {
+				document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
+			}
 		}
-	}
 	var requestType = document.getElementById("RequestType").value;
 	var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql?input=";
 	var input = document.getElementById("Request").value;
-	path = path + input;
+	var database = document.getElementById("DatabaseSelect").value;
+	path = path + requestType.toLowerCase() + "{" + database + "_" + input + "}";
 	// replace curly parentheses in accordance with RFC 1738
 	path = path.replace(/{/g, "%7B");
 	path = path.replace(/}/g, "%7D");
@@ -151,8 +224,46 @@ function query() {
 	document.getElementById("QueryCheck").innerHTML = path;
 
 	document.getElementById("download").style.visibility = "visible";
+	}
 };
 
+function allQuery(data, chart) {
+	console.log("Data: " + data);
+	console.log("Chart: " + chart);
+	var combinedData = data[0];
+	if (data.length > 1) {
+		combinedData = data[0].slice(0, data[0].length - 2);
+	} else {
+		combinedData = data[0];
+	}
+	for (var i = 1; i < data.length; i++) {
+		let index = data[i].indexOf(":");
+		combinedData = combinedData + "," + data[i].slice(index + 2);
+	}
+	console.log("combinedData: " + combinedData);
+	switch (chart) {
+		case "GOOGLEBARCHART":
+			createBaseChart(combinedData, "GOOGLEBARCHART");
+			break;
+		case "GOOGLEPIECHART":
+			createBaseChart(combinedData, "GOOGLEPIECHART");
+			break;
+		case "GOOGLECOLUMNCHART":
+			createBaseChart(combinedData, "GOOGLECOLUMNCHART");
+			break;
+		case "GOOGLELINECHART":
+			createLineChart(combinedData);
+			break;
+		case "GOOGLEGEOCHART":
+			createGeoChart(combinedData);
+			break;
+		case "GOOGLECALENDARCHART":
+			createCalendarChart(combinedData);
+			break;
+		default:
+			break;
+		}
+};
 function createGeoChart(data) {
 	var output = "{\"bw_author\":[{\"authorname\":\"Germany\", \"id\":\"49\"}, " +
 	"{\"authorname\":\"France\", \"id\":\"50\"}," +
@@ -196,6 +307,8 @@ function createLineChart(data) {
 	"{ \"authorname\":\"Test 5\",\"id\":\"54\", \"id2\":\"69\"}," +
 	"{ \"authorname\":\"Test 6\",\"id\":\"63\", \"id2\":\"79\"}," +
 	"{ \"authorname\":\"Test 7\",\"id\":\"62\", \"id2\":\"89\"}]}";
+	
+	output = data;
 	
 	var array = JSON.parse(output);
 	var key = Object.keys(array);

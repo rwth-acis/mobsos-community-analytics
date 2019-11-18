@@ -27,3 +27,17 @@ function signinCallback(result) {
 		console.log(result);
 	}
 };
+
+function toggleSecond() {
+	if (document.getElementById("DatabaseSelect").value == "All") {
+		document.getElementById("SecondRequest").style.display = "block";
+		document.getElementById("SecondRequest").required = true;
+		document.getElementById("SecondRequestLabel").style.display = "block";
+		document.getElementById("SecondRequestBreak").style.display = "block";
+	} else {
+		document.getElementById("SecondRequest").style.display = "none";
+		document.getElementById("SecondRequest").required = false;
+		document.getElementById("SecondRequestLabel").style.display = "none";
+		document.getElementById("SecondRequestBreak").style.display = "none";
+	}
+}
