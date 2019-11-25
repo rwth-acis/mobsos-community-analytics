@@ -2,7 +2,7 @@
 
 # Continuous Community Analytics
 
-RESTful API and GraphQL for database visualization with accompanying frontend
+RESTful API for database visualization
 
 ## Build
 Add database credentials for two database *mediabase* and *las2peer* into config.properties file
@@ -13,6 +13,13 @@ Add database credentials for two database *mediabase* and *las2peer* into config
 4. db.dbType_*databasename*=*type of database*, currently either DB2 or MySQL
 5. db.dburl_*databasename*=*database url*, format: database server:port:database name on server
 
+Execute following command in command line
 
     ant all
     
+## Deployment
+Navigate to mobsos-community-analytics/RESTAPI/bin and execute the following
+
+	start_network.bat/sh
+	
+The URL of the API is shown above the dashed line
