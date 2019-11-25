@@ -1,0 +1,9 @@
+{
+  "name": "MobSOS Community Analytics",
+  "short_name": "MobSOSCA",
+  "lang": "en-US",
+  "start_url": "/analytics.html",
+  "display": "standalone",
+  "background_color": "white",
+  "theme_color": "white"
+}

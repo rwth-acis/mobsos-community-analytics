@@ -1,0 +1,7 @@
+{
+	"queries": [
+		{"query":"query{mediabase_bw_entries{date, mood}}","visual":"GOOGLECALENDARCHART"},
+		{"query":"another test", "visual":"another viztest"}
+	],
+	"restAPI": "host address"
+}
