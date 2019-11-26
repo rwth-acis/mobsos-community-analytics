@@ -380,7 +380,14 @@ function createBaseChart(data, type, options, outputID) {
 		chart = new google.visualization.BarChart(document.getElementById(outputID));
 	}
 	else if (type == "GOOGLEPIECHART") {
+		var chartImageDiv = document.getElementById('chartImageDiv');
 		chart = new google.visualization.PieChart(document.getElementById(outputID));
+		google.visualization.events.addListener(chart, 'ready', function () {
+        chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		document.getElementById("downloadClick").style.display = "block";
+        console.log(chartImageDiv.innerHTML);
+      });
+
 	}
 	else {
 		chart = new google.visualization.ColumnChart(document.getElementById(outputID));

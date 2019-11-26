@@ -46,9 +46,9 @@
 <nav>
 	<ul>
 		<button class="navbutton"> 🞬 </button>
-		<li><a href="#requestForm" class="active">Query</a></li>
-		<li><a href="#databaseForm">Database</a></li>
-		<li><a href="#report">Report</a></li>
+		<li><a href="#requestForm" class="active navbar">Query</a></li>
+		<li><a href="#databaseForm" class="navbar">Database</a></li>
+		<li><a href="#report" class="navbar">Report</a></li>
 	</ul>
 </nav>
 </div>
@@ -114,15 +114,15 @@
 	</form>
 	<div id="chartDiv">
 	</div>
+	<div id="chartImageDiv" style="display:none">
+	<!--<button id="download" download="">Download as Image</button>-->
+	</div>
+	<a id="downloadClick" href="#" onclick="this.href = $('#chartImageDiv img:first').attr('src');" download>Download as image</a>
 </div>
 <div id="report" class="report" style="display:none">
 	<input type ='file' accept="application/json" onchange='javascript:loadQueries(event)'><br>
 	<div id="reportView">
 	</div>
-</div>
-<div id="downloadDiv">
-	<br>
-	<button id="download" onclick='javascript:downloadChart()'>Download as Image</button>
 </div>
 <p id="Result">Test</p>
 <p id="QueryCheck">Check</p>

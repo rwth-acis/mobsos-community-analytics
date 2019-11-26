@@ -87,7 +87,7 @@ body {
 		margin: 0;
 	}
 	/* makes sure that the a tag will take the entire screen*/
-	a{
+	.navbar{
 		display: block;
 	}
 	button {
@@ -122,14 +122,14 @@ li{
 	
 }
 
-a {
+.navbar{
 	text-decoration: none;
 	color: black;
 	/*I added some padding*/
 	padding: 1vw;
 }
 
-a:hover {
+.navbar:hover {
 	background-color: #FFFFFF;
 }
 
@@ -218,8 +218,12 @@ select {
 #Result {
 	visibility: hidden;
 }
-#download {
-	visibility: hidden;
+
+#downloadClick {
+	display: none;
+	text-decoration: none;
+	font-size: 80%;
+	color: black;
 }
 
 #SecondRequest {
