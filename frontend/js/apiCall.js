@@ -27,7 +27,7 @@ Y({
 	console.log('Yjs instance ready!');
 	y.share.map.delete("request");
 	y.share.map.delete("requestSecond");
-	y.share.map.delete("requestType");
+	//y.share.map.delete("requestType");
 	y.share.map.delete("database");
 	y.share.map.delete("vizType");
 	//y.share.map.set("request", "");
@@ -44,9 +44,9 @@ Y({
 				let cleaned = y.share.map.get("requestSecond").replace(/['"]+/g, '')
 				document.getElementById("SecondRequest").value = cleaned;
 			}
-			if (event.name == "requestType") {
-				setSelect("RequestType", y.share.map.get("requestType"));
-			}
+			//if (event.name == "requestType") {
+			//	setSelect("RequestType", y.share.map.get("requestType"));
+			//}
 			if (event.name == "database") {
 				setSelect("DatabaseSelect", y.share.map.get("database"));
 				toggleSecond();
@@ -60,7 +60,7 @@ Y({
 	document.getElementById("queryForm").onsubmit = function (event) {
 		if (document.getElementById("collabToggle").checked == true) {
 			y.share.map.set("request", JSON.stringify(document.getElementById("Request").value));
-			y.share.map.set("requestType", JSON.stringify(document.getElementById("RequestType").value));
+			//y.share.map.set("requestType", JSON.stringify(document.getElementById("RequestType").value));
 			y.share.map.set("database", JSON.stringify(document.getElementById("DatabaseSelect").value))
 			y.share.map.set("vizType", JSON.stringify(document.getElementById("Visualization").value));
 			if (document.getElementById("SecondRequest").style.display != "none") {
@@ -96,8 +96,9 @@ function addDatabase() {
 	var user = document.getElementById("Username0").value;
 	var password = document.getElementById("Password0").value;
 	var dbType = document.getElementById("DatabaseType0").value;
-	var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql";
-	path = path + "?input=mutation%7BaddDatabase"
+	//var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql";
+	var path = apiOptions.APIURL + "/graphql/graphql?input=";
+	path = path + "mutation%7BaddDatabase"
 	var object = "(name: \"" + name + "\", url:\"" + url + "\", dbSchema:\"" + dbSchema + "\", user:\"" + user + "\", password:\"" + password + "\", dbType:\"" + dbType + "\")%7D";
 	object = object.replace(/\//g, "%2F");
 	path = path + object
@@ -113,12 +114,13 @@ function addDatabase() {
 	request.send();
 };
 
-function executeQuery(query, visual, outputID) {
+function executeQuery(query, visual, options, outputID) {
 	if (document.getElementById("DatabaseSelect").value == "All") {
 		var paths = [];
 		var responses = [];
 		var requestType = document.getElementById("RequestType").value;
-		var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql?input=";
+		//var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql?input=";
+		var path = apiOptions.APIURL + "/graphql/graphql?input=";
 		var input = document.getElementById("Request").value;
 		var insertPath = path + requestType.toLowerCase() + "{mediabase_" + input + "}";
 		// replace curly parentheses in accordance with RFC 1738
@@ -182,34 +184,36 @@ function executeQuery(query, visual, outputID) {
 				//switch (chartType) {
 				switch (visual) {
 					case "GOOGLEBARCHART":
-						createBaseChart(data, "GOOGLEBARCHART", outputID);
+						createBaseChart(data, "GOOGLEBARCHART", options, outputID);
 						break;
 					case "GOOGLEPIECHART":
-						createBaseChart(data, "GOOGLEPIECHART", outputID);
+						createBaseChart(data, "GOOGLEPIECHART", options, outputID);
 						break;
 					case "GOOGLECOLUMNCHART":
-						createBaseChart(data, "GOOGLECOLUMNCHART", outputID);
+						createBaseChart(data, "GOOGLECOLUMNCHART", options, outputID);
 						break;
 					case "GOOGLELINECHART":
-						createLineChart(data, outputID);
+						createLineChart(data, options, outputID);
 						break;
 					case "GOOGLEGEOCHART":
-						createGeoChart(data, outputID);
+						createGeoChart(data, options, outputID);
 						break;
 					case "GOOGLECALENDARCHART":
-						createCalendarChart(data, outputID);
+						createCalendarChart(data, options, outputID);
 						break;
 					default:
-			}
+						document.getElementById(outputID).value = data;
+				}
 				document.getElementById("download").style.visibility = "visible";
 				document.getElementById("KeyCheck").innerHTML = (new Date("2016-11-17 12:00:00.0")).getFullYear();
 			} else {
 				document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
 			}
 		}
-	var requestType = document.getElementById("RequestType").value;
+	//var requestType = document.getElementById("RequestType").value;
 	//var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql?input=";
-	var path = "http://137.226.58.245:8080/graphql/graphql?input=";
+	//var path = "http://137.226.58.233:8080/graphql/graphql?input=";
+	var path = apiOptions.APIURL + "/graphql/graphql?input="
 	//var input = document.getElementById("Request").value;
 	var database = document.getElementById("DatabaseSelect").value;
 	//path = path + requestType.toLowerCase() + "{" + database + "_" + input + "}";
@@ -272,11 +276,17 @@ function allQuery(data, chart) {
 function callQuery() {
 	var query = document.getElementById("Request").value;
 	var visual = document.getElementById("Visualization").value;
-	var outputID = "chartDiv"
-	executeQuery(query, visual, outputID);
+	var outputID = "chartDiv";
+	if (document.getElementById("ChartOptions").value != "") {
+		var options = JSON.parse(document.getElementById("ChartOptions").value)
+	} else {
+		var options = {"title":"with default options","width":400,"height":400};
+	}
+	
+	executeQuery(query, visual, options, outputID);
 };
 
-function createGeoChart(data, outputID) {
+function createGeoChart(data, options, outputID) {
 	var output = "{\"bw_author\":[{\"authorname\":\"Germany\", \"id\":\"49\"}, " +
 	"{\"authorname\":\"France\", \"id\":\"50\"}," +
 	"{ \"authorname\":\"United States\", \"id\":\"51\"}," +
@@ -294,9 +304,9 @@ function createGeoChart(data, outputID) {
 	var data = new google.visualization.DataTable(formattedArray);
 
 	// Set chart options
-	var options = {'title':'Query Visualization',
-				   'width':400,
-				   'height':300};
+	//var options = {'title':'Query Visualization',
+	//			   'width':400,
+	//			   'height':300};
 
 	// Instantiate and draw our chart, passing in some options.
 	var chart = new google.visualization.GeoChart(document.getElementById(outputID));
@@ -310,7 +320,7 @@ function createGeoChart(data, outputID) {
 	
 };
 
-function createLineChart(data, ouputID) {
+function createLineChart(data, options, ouputID) {
 	var output = "{\"bw_author\":[{\"authorname\":\"Test 0\", \"id\":\"49\", \"id2\":\"19\"}, " +
 	"{\"authorname\":\"Test 1\", \"id\":\"50\", \"id2\":\"29\"}," +
 	"{ \"authorname\":\"Test 2\", \"id\":\"51\", \"id2\":\"39\"}," +
@@ -331,16 +341,16 @@ function createLineChart(data, ouputID) {
 	var data = new google.visualization.DataTable(formattedArray);
 
 	// Set chart options
-	var options = {'title':'Query Visualization',
-				   'width':400,
-				   'height':300};
+	//var options = {'title':'Query Visualization',
+	//			   'width':400,
+	//			   'height':300};
 
 	// Instantiate and draw our chart, passing in some options.
 	var chart = new google.visualization.LineChart(document.getElementById(outputID));
 	chart.draw(data, options);
 };
 
-function createBaseChart(data, type, outputID) {
+function createBaseChart(data, type, options, outputID) {
 	var output = "{\"bw_author\":[{\"authorname\":\"Test 0\", \"id\":\"49\"}, " +
 	"{\"authorname\":\"Test 1\", \"id\":\"50\"}," +
 	"{ \"authorname\":\"Test 2\", \"id\":\"51\"}," +
@@ -360,9 +370,9 @@ function createBaseChart(data, type, outputID) {
 	var data = new google.visualization.DataTable(formattedArray);
 
 	// Set chart options
-	var options = {'title':'Query Visualization',
-				   'width':400,
-				   'height':300};
+	//var options = {'title':'Query Visualization',
+	//			   'width':400,
+	//			   'height':300};
 
 	// Instantiate and draw our chart, passing in some options.
 	var chart;
@@ -378,7 +388,7 @@ function createBaseChart(data, type, outputID) {
 	chart.draw(data, options);
 };
 
-function createCalendarChart(data, outputID) {
+function createCalendarChart(data, options, outputID) {
 	var array = JSON.parse(data);
 	var key = Object.keys(array);
 	var formattedArray = formattingCalendarChart(array[key[0]]);
@@ -388,9 +398,7 @@ function createCalendarChart(data, outputID) {
 	var data = new google.visualization.DataTable(formattedArray);
 
 	// Set chart options
-	var options = {'title':'Query Visualization',
-				   'width':1000,
-				   'height':1000};
+	//var options = {'title':'testing','width':1000,'height':1000};
 
 	// Instantiate and draw our chart, passing in some options.
 	var chart = new google.visualization.Calendar(document.getElementById(outputID));
@@ -565,25 +573,30 @@ function formatDate(date) {
 
 // load queries from .json file
 function loadQueries(event) {
-	console.log("loadQueries");
+	console.log("load Queries");
 	var input = event.target;
 	var reader = new FileReader();
 	reader.onload = function() {
+		var count = 0;
+		while(document.getElementById("displayChart" + count) != null){
+			document.getElementById("displayChart" + count).parentNode.removeChild(document.getElementById("displayChart" + count));
+			count++;
+		}
 		var queries = reader.result;
 		var json = JSON.parse(reader.result);
 		var array = json.queries;
+		console.log("setTest2 " + apiOptions.setTest);
 		for (var i = 0; i < array.length; i++) {
-			console.log("i: " + i);
-			var para = document.createElement("p");
-			var node = document.createTextNode(array[i].query);
-			para.appendChild(node);
+			console.log("Title: " + array[i].options.title);
+			//var para = document.createElement("p");
+			//var node = document.createTextNode(array[i].query);
+			//para.appendChild(node);
 			var element = document.getElementById("reportView");
-			element.appendChild(para);
+			//element.appendChild(para);
 			var chartVisual = document.createElement("div");
 			chartVisual.setAttribute("id", "displayChart" + i);
 			element.appendChild(chartVisual);
-			executeQuery(array[i].query, array[i].visual, "displayChart" + i)
-			
+			executeQuery(array[i].query, array[i].visual, array[i].options, "displayChart" + i);
 		}
 	};
 	reader.readAsText(input.files[0]);

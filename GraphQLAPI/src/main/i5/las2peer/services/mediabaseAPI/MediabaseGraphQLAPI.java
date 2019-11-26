@@ -1322,7 +1322,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 			String url = prop.getProperty("restAPIURL");
 			initInput.close();
 			if (url.equals("build")) {
-				return "http://localhost:8000/rest/";
+				return "http://localhost:8088/rest/";
 			} else {
 				return url + "/rest/";
 			}

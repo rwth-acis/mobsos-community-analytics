@@ -5,6 +5,7 @@
 	<link rel="stylesheet" type="text/css" href="css/style.css" media="all">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src="config.js"></script>
 	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
 	<script src="./bower_components/yjs/y.js"></script>
 	<script type="text/javascript" src="js/loader.js"></script>
@@ -85,11 +86,7 @@
 	<form method="POST" action="javascript:callQuery()" id="queryForm">
 		<label>Request:<br><input type="text" name="Request" id="Request" required></label> <br>
 		<label id="SecondRequestLabel">Second Request: <br><input type="text" name="SecondRequest" id="SecondRequest"></label> <br id="SecondRequestBreak">
-		<label> Request Type: <br>
-		<select name="Request" id="RequestType" required>
-			<option value="Query">Query</option>
-			<option value="Mutation">Mutation</option></label>
-		</select> <br>
+		<label>Google Chart Options:<br><input type="text" name="ChartOptions" id="ChartOptions"><br>
 		<label>Database: <br> 
 		<select name="DatabaseSelect" id ="DatabaseSelect" required onchange="javascript:toggleSecond()">
 		<option value="mediabase">Mediabase</option>
@@ -115,13 +112,13 @@
 		</select> <br>
 		<input type="submit" value="Execute" id="submit2" title="Execute Query"> <br>
 	</form>
+	<div id="chartDiv">
+	</div>
 </div>
 <div id="report" class="report" style="display:none">
 	<input type ='file' accept="application/json" onchange='javascript:loadQueries(event)'><br>
 	<div id="reportView">
 	</div>
-</div>
-<div id="chartDiv">
 </div>
 <div id="downloadDiv">
 	<br>

@@ -180,11 +180,13 @@ h2 {
 	color: #000000;
 	display: inline;
 }
-button {
+
+button{
 	display: block;
-	border: none;
 	text-align: left;
+	border: none;
 }
+
 input {
   width: 50%;
   padding: 12px 20px 12px 12px;

@@ -1,7 +1,20 @@
 {
-	"queries": [
-		{"query":"query{mediabase_bw_entries{date, mood}}","visual":"GOOGLECALENDARCHART"},
-		{"query":"another test", "visual":"another viztest"}
-	],
-	"restAPI": "host address"
+	"queries": 
+	[
+		{
+			"query":"query{mediabase_bw_entries{date, mood}}",
+			"visual":"GOOGLECALENDARCHART",
+			"options":{"title":"Mood in Calendar","width":1000,"height":800}
+		},
+		{
+			"query":"query{mediabase_bw_entries{id, mood}}",
+			"visual":"GOOGLEPIECHART",
+			"options":{"title":"Testing pie chart","width":400,"height":300}
+		},
+		{
+			"query":"query{mediabase_bw_entries{id, mood}}",
+			"visual":"GOOGLEPIECHART",
+			"options":{"title":"Testing pie chart","width":400,"height":300}
+		}
+	]
 }
