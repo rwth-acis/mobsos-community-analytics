@@ -155,11 +155,38 @@ public class GraphQLTest {
 			Assert.assertEquals(200, result.getHttpCode());
 			Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
 			System.out.println("Result of 'testGet': " + result.getResponse().trim());
+			
+//			pathing = "graphql?input=query%7Ball_reviews%7Bid%7D%7D";
+//			System.out.println("Path: " + graphQLmainPath + pathing);
+//			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
+//			Assert.assertEquals(200, result.getHttpCode());
+//			Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
+//			System.out.println("Result of 'testGet': " + result.getResponse().trim());
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.toString());
 		}
-		
+	}
+	
+	//@Test
+	public void testDatabaseNames() {
+		try {
+			MiniClient client = new MiniClient();
+			client.setConnectorEndpoint(graphQLconnector.getHttpEndpoint());
+			System.out.println("Endpoint: " + graphQLconnector.getHttpEndpoint());
+			client.setLogin(graphQLtestAgent.getIdentifier(), graphQLtestPass);
+			
+			// encoding for "{" = %7B and "}" = %7D as they are unsafe according to RFC 1738
+			String pathing = "graphql?input=query%7BdatabaseNames%7D";
+			System.out.println("Path: " + graphQLmainPath + pathing);
+			ClientResponse result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
+			Assert.assertEquals(200, result.getHttpCode());
+			System.out.println("Result of 'testGet': " + result.getResponse());
+			Assert.assertEquals("{\"databaseNames\":\"[las2peer, mediabase, las2peer_reserve]\"}", result.getResponse().trim());
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.toString());
+		}
 	}
 	
 	//@Test

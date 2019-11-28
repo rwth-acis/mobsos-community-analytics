@@ -130,6 +130,25 @@ public class RESTTest {
 				Assert.fail(e.toString());
 			}
 		}
+		
+		@Test
+		public void testGetDatabaseNames() {
+			try {
+				MiniClient client = new MiniClient(); 
+				client.setConnectorEndpoint(connector.getHttpEndpoint());
+				client.setLogin(testAgent.getIdentifier(), testPass);
+				
+				String pathing = "listDatabases";
+				ClientResponse result = client.sendRequest("GET",
+						mainPath + pathing, "");
+				Assert.assertEquals(200, result.getHttpCode());
+				Assert.assertEquals("[las2peer, mediabase, las2peer_reserve]",
+				result.getResponse().trim());
+			} catch (Exception e) {
+				e.printStackTrace();
+				Assert.fail(e.toString());
+			}
+		}
 //		
 //		@Test
 //		public void testGetTableNames() {

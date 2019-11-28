@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -121,6 +122,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 		runtimeWiring = initialRuntimeWiring();
 		String querySchema = initialQuerySchema();
 		String mutationSchema = initialMutationSchema();
+		String typeSchema = initialTypeSchema();
 		
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(querySchemaFile, true));
@@ -129,6 +131,10 @@ public class MediabaseGraphQLAPI extends RESTService{
 		    
 		    writer = new BufferedWriter(new FileWriter(mutationSchemaFile, true));
 		    writer.write(mutationSchema.toString());
+		    writer.close();
+		    
+		    writer = new BufferedWriter(new FileWriter(typeSchemaFile, true));
+		    writer.write(typeSchema.toString());
 		    writer.close();
 			
 			StringBuilder schema = new StringBuilder();
@@ -152,17 +158,20 @@ public class MediabaseGraphQLAPI extends RESTService{
 			System.out.println("las2peer Schema:" + las2peerSchema);
 			runtimeWiring = updateRuntimeWiring("las2peer", las2peerSchema, runtimeWiring);
 		    
-			System.out.println("Building query schema.");
-		    updateQuerySchema("mediabase", mediabaseSchema);
-		    updateQuerySchema("las2peer", las2peerSchema);
-		    
-		    System.out.println("Building mutation schema.");
-		    updateMutationSchema("mediabase", mediabaseSchema);
-		    updateMutationSchema("las2peer", las2peerSchema);
-		    
-		    System.out.println("Building type schema.");
-		    updateTypeSchema("mediabase", mediabaseSchema);
-		    updateTypeSchema("las2peer", las2peerSchema);		    
+			System.out.println("Building schema.");
+			updateSchema("mediabase", mediabaseSchema);
+			updateSchema("las2peer", las2peerSchema);
+//			System.out.println("Building query schema.");
+//		    updateQuerySchema("mediabase", mediabaseSchema);
+//		    updateQuerySchema("las2peer", las2peerSchema);
+//		    
+//		    System.out.println("Building mutation schema.");
+//		    updateMutationSchema("mediabase", mediabaseSchema);
+//		    updateMutationSchema("las2peer", las2peerSchema);
+//		    
+//		    System.out.println("Building type schema.");
+//		    updateTypeSchema("mediabase", mediabaseSchema);
+//		    updateTypeSchema("las2peer", las2peerSchema);		    
 		    
 		} catch (IOException exc) {
 			System.out.println("IOException: " + exc.toString());
@@ -257,9 +266,10 @@ public class MediabaseGraphQLAPI extends RESTService{
 			if (input.contains("addDatabase")) {
 				String name = getInputProperty(input, "name");
 				String dbSchema = getInputProperty(input, "dbSchema");
-				updateQuerySchema(name, dbSchema);
-				updateMutationSchema(name, dbSchema);
-				updateTypeSchema(name, dbSchema);
+//				updateQuerySchema(name, dbSchema);
+//				updateMutationSchema(name, dbSchema);
+//				updateTypeSchema(name, dbSchema);
+				updateSchema(name, dbSchema);
 
 				RuntimeWiring.Builder test = ((MediabaseGraphQLAPI)(Context.get().getService())).getRuntimeWiring();
 				test = updateRuntimeWiring(name, dbSchema, test);
@@ -315,8 +325,11 @@ public class MediabaseGraphQLAPI extends RESTService{
 	 */
 	public String initialQuerySchema() {
 		return "schema {" + "\r\n" + "query: Query" + "\r\n"
-				+ "mutation: Mutation" + "\r\n}"
-				+ "type Query { customQuery(name: String!, dbSchema: String!, query: String!): String \r\n}";
+				+ "mutation: Mutation" + "\r\n}" + "\r\n"
+				+ "type Query { \r\n"
+				+ "databaseNames: String \r\n"
+				+ "all_reviews(id: ID): [REVIEW] \r\n"
+				+ "customQuery(dbName: String!, dbSchema: String!, query: String!): String \r\n}";
 	}
 	
 	/**
@@ -331,6 +344,20 @@ public class MediabaseGraphQLAPI extends RESTService{
 	}
 	
 	/**
+	 * Builds initial type Schema, including types for sample queries
+	 * @return initial type Schema
+	 */
+	public String initialTypeSchema() {
+		return "type REVIEW { \r\n"
+				+ "perma_link: String \r\n"
+				+ "date: String \r\n"
+				+ "rating: Int \r\n"
+				+ "author_id: Int \r\n"
+				+ "id: ID \r\n"
+				+ "\r\n}";
+	}
+	
+	/**
 	 * Initializes runtime wiring builder for initial schema
 	 * @return	runtime builder for initial schema
 	 */
@@ -338,10 +365,30 @@ public class MediabaseGraphQLAPI extends RESTService{
 		RuntimeWiring.Builder runtimeWiring = RuntimeWiring.newRuntimeWiring();
 		runtimeWiring = runtimeWiring.type("Query",
 				typeWiring -> typeWiring.dataFetcher("customQuery", createCustomDataFetcher()));
+		runtimeWiring = runtimeWiring.type("Query",
+				typeWiring -> typeWiring.dataFetcher("databaseNames", createDatabaseNamesDataFetcher()));
+		runtimeWiring = runtimeWiring.type("Query",
+				typeWiring -> typeWiring.dataFetcher("all_reviews", createAllReviewsDataFetcher()));
 		runtimeWiring = runtimeWiring.type("Mutation",
 	    		typeWiring -> typeWiring.dataFetcher("addDatabase", createAddDBDataFetcher()));
 		runtimeWiring = runtimeWiring.type("Mutation",
 				typeWiring -> typeWiring.dataFetcher("deleteDatabase", createDeleteDBDataFetcher()));
+		
+		runtimeWiring = runtimeWiring.type("REVIEW", typeWiring -> typeWiring
+				.dataFetcher("perma_link", 
+				createRESTTypeDataFetcher("REVIEW", "perma_link", "")));
+		runtimeWiring = runtimeWiring.type("REVIEW", typeWiring -> typeWiring
+				.dataFetcher("date", 
+				createRESTTypeDataFetcher("REVIEW", "date", "")));
+		runtimeWiring = runtimeWiring.type("REVIEW", typeWiring -> typeWiring
+				.dataFetcher("rating", 
+				createRESTTypeDataFetcher("REVIEW", "rating", "")));
+		runtimeWiring = runtimeWiring.type("REVIEW", typeWiring -> typeWiring
+				.dataFetcher("author_id", 
+				createRESTTypeDataFetcher("REVIEW", "author_id", "")));
+		runtimeWiring = runtimeWiring.type("REVIEW", typeWiring -> typeWiring
+				.dataFetcher("id", 
+				createRESTTypeDataFetcher("REVIEW", "id", "")));
 		return runtimeWiring;
 	}
 	
@@ -353,11 +400,49 @@ public class MediabaseGraphQLAPI extends RESTService{
 		return new DataFetcher<String>() {
 			@Override
 			public String get(DataFetchingEnvironment environment) {
-				String name = environment.getArgument("name");
+				String name = environment.getArgument("dbName");
 				String dbSchema = environment.getArgument("dbSchema");
 				String query = environment.getArgument("query");
 				String modQuery = query.replaceAll(" ", "%20");
 				String urlString = retrieveRESTURL() + "data/query/" + name + "/" + dbSchema + "?query=" + modQuery;
+				System.out.println("In data fetcher, URL: " + urlString);
+				String responseData = "";
+				
+				try {
+					URL url = new URL(urlString);
+					System.out.println(url.toString());
+					HttpURLConnection con = (HttpURLConnection) url.openConnection();
+					con.setRequestMethod("GET");
+					con.setDoOutput(true);
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine;
+					while ((inputLine = in.readLine()) != null) {
+							responseData = responseData + inputLine;
+						}
+					in.close();
+					
+					return responseData;
+				} catch (JSONException exc) {
+					System.out.println("JSONException: " + exc.toString());
+					return null;
+				}
+				catch (IOException exc) {
+					System.out.println("IOException: " + exc.toString());
+					return null;
+				}
+			}
+		};
+	}
+	
+	/**
+	 * sets up DataFetcher returning the names of all databases
+	 * @return DataFetcher for all database names
+	 */
+	private DataFetcher<String> createDatabaseNamesDataFetcher() {
+		return new DataFetcher<String>() {
+			@Override
+			public String get(DataFetchingEnvironment environment) {
+				String urlString = retrieveRESTURL() + "listDatabases";
 				System.out.println("In data fetcher, URL: " + urlString);
 				String responseData = "";
 				
@@ -475,6 +560,347 @@ public class MediabaseGraphQLAPI extends RESTService{
 				}
 			}
 		};
+	}
+	
+	/**
+	 * builds new data fetcher for query types
+	 * @param 	tableName contains name of the GraphQL query type
+	 * @param 	schema contains name of schema of the database
+	 * @param	con contains connection to DB2 database
+	 * @return	Data fetcher for query type which returns list GraphQL object types as HashMaps, field names as String
+	 * 			and their values of Object
+	 */
+	private static DataFetcher<List<Map<String, Object>>> createAllReviewsDataFetcher() {
+		
+		return new DataFetcher<List<Map<String, Object>>>() {
+			@Override
+			public List<Map<String, Object>> get(DataFetchingEnvironment environment) {
+				
+				// collect subfields from query and transform to SQL columns
+				System.out.println("DataFetcher");
+				String subfieldSelection = "";
+				DataFetchingFieldSelectionSet fields = environment.getSelectionSet();
+				List<SelectedField> selectedFields = fields.getFields();
+				System.out.println(selectedFields.size() + " size");
+				for (int i = 0; i < selectedFields.size(); i++) {
+					subfieldSelection = subfieldSelection + selectedFields.get(i).getName().toUpperCase();
+					if (i < selectedFields.size() - 1) {
+						subfieldSelection = subfieldSelection + ", ";
+					}
+					
+				}
+				System.out.println("Subfields: " + subfieldSelection);
+				String query = "";
+				String urlString = retrieveRESTURL() + "listDatabases";
+				
+				try {
+					URL url = new URL(urlString);
+					System.out.println(url.toString());
+					HttpURLConnection con = (HttpURLConnection) url.openConnection();
+					con.setRequestMethod("GET");
+					con.setDoOutput(false);
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine;
+					String databases = "";
+					List<String> databaseList = new ArrayList<>();
+					
+					while ((inputLine = in.readLine()) != null) {
+						System.out.println(inputLine);
+						databases = databases + inputLine;
+					}
+					System.out.println("Databases String PRE: " + databases);
+					databases = databases.substring(0, databases.length() - 2);
+					databases = databases.substring(1);
+					System.out.println("Databases String: " + databases);
+					databaseList = new ArrayList<String>(Arrays.asList(databases.split(", ")));
+					in.close();
+					
+					String parameters = "?";
+					// check if there are any parameters
+					if (environment.getArguments() != null && !environment.getArguments().isEmpty()) {
+						// transform parameters into SQL conditions for the query
+						List<String> keys = new ArrayList<String>(environment.getArguments().keySet());
+						for (int i = 0; i < keys.size(); i++) {
+							if (i < keys.size() - 1) {
+								query = query + keys.get(i).toUpperCase() + "=" + environment.getArgument(keys.get(i)) + " AND ";
+							} else {
+								query = query + keys.get(i).toUpperCase() + "=" + environment.getArgument(keys.get(i));
+							}
+						}
+						parameters = parameters + "condition=" + query;
+					}
+					
+					List<Map<String, Object>> objectList = new ArrayList<Map<String, Object>>();
+					for (String databaseName: databaseList) {
+						if (databaseName.equals("mediabase") || databaseName.equals("las2peer"))
+						urlString = retrieveRESTURL() + "data/" + databaseName + "/" + "DB2INFO5" + "/" + "BW_ENTRIES";			
+						url = new URL(urlString + parameters);
+						System.out.println(url.toString());
+						con = (HttpURLConnection) url.openConnection();
+						con.setRequestMethod("GET");
+						con.setDoOutput(false);
+						in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+						inputLine = "";
+						
+						JSONArray jsonArray = new JSONArray();
+						while ((inputLine = in.readLine()) != null) {
+							System.out.println(inputLine);
+							jsonArray = new JSONArray(inputLine);
+							System.out.println("jsonArray: " + jsonArray.toString());
+							for (int i = 0; i < jsonArray.length(); i++) {
+								objectList.add(toMap((JSONObject) jsonArray.get(i)));							
+							}
+						}
+						in.close();
+					}
+					
+//					JSONObject jsonObject = new JSONObject();
+//					jsonObject.put(tableName.toLowerCase(), (Object) jsonArray);
+//					System.out.println("JSONObject: " + jsonObject.getJSONArray(tableName.toLowerCase()).get(0));
+					return objectList;
+				} catch (JSONException exc) {
+					System.out.println("JSONException: " + exc.toString());
+					return null;
+				}
+				catch (IOException exc) {
+					System.out.println("IOException: " + exc.toString());
+					return null;
+				}
+			}
+		};
+	}
+	
+	/**
+	 * Update schema of graphQL API, called when adding a database
+	 * @param name	name of database to be added
+	 * @param databaseSchema schema of the database considered by the API
+	 * @throws IOException	thrown if error occurred while handling schema files
+	 */
+	public static void updateSchema(String name, String databaseSchema) throws IOException {
+		
+		URL url = new URL(retrieveRESTURL() + "metadata/" + name + "/" + databaseSchema);
+		System.out.println("URL: " + url.toString());
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		con.setRequestMethod("GET");
+		con.setDoOutput(false);
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		List<String> output = new ArrayList<>();
+		while ((inputLine = in.readLine()) != null) {
+			System.out.println(inputLine);
+			JSONArray jsonArray = new JSONArray(inputLine);
+			for (int i = 0; i < jsonArray.length(); i++) {
+				output.add(((JSONObject) jsonArray.get(i)).getString("name"));					
+			}	
+		}
+		System.out.println("Output: " + output.toString());
+		in.close();
+		StringBuilder querySchemaBuilder = new StringBuilder();
+		BufferedReader reader = new BufferedReader(new FileReader(querySchemaFile));
+		// for reading one line
+		String line = null;
+		// keep reading till readLine returns null
+		while ((line = reader.readLine()) != null) {
+		    // keep appending last line read to buffer
+		    querySchemaBuilder.append(line + "\r\n");
+		}
+	    reader.close();
+	    
+	    StringBuilder mutationSchemaBuilder = new StringBuilder();
+		reader = new BufferedReader(new FileReader(mutationSchemaFile));
+		// for reading one line
+		line = null;
+		// keep reading till readLine returns null
+		while ((line = reader.readLine()) != null) {
+		    // keep appending last line read to buffer
+			mutationSchemaBuilder.append(line + "\r\n");
+		}
+		reader.close();
+		
+		StringBuilder typeSchemaBuilder = new StringBuilder();
+		reader = new BufferedReader(new FileReader(typeSchemaFile));
+		// for reading one line
+		line = null;
+		// keep reading till readLine returns null
+		while ((line = reader.readLine()) != null) {
+		    // keep appending last line read to buffer
+			typeSchemaBuilder.append(line + "\r\n");
+		}
+		reader.close();
+		
+	    // delete last closing bracket
+	    // why 3? no idea...
+	    querySchemaBuilder.deleteCharAt(querySchemaBuilder.length() - 3);
+		querySchemaBuilder.append(name + "_database_metadata(dbName: String, schema: String): [String]" + "\r\n");
+		querySchemaBuilder.append(name + "_table_metadata(dbName: String, schema: String, name: String):"
+				+ " [" + name + "_TABLE_METADATA]" + "\r\n");
+		
+		// delete last closing bracket
+		mutationSchemaBuilder.deleteCharAt(mutationSchemaBuilder.length() - 3);
+
+		List<String> primaryKeys = new ArrayList<String>();
+		List<String> foreignKeys = new ArrayList<String>();
+		int primaryKeyCount = 0;
+		for (String tableName: output) {			
+			URL keyUrl = new URL(retrieveRESTURL() + "metadata/" + name + "/" + databaseSchema + "/"
+			+ tableName + "/primaryKeys");
+			System.out.println(keyUrl.toString());
+			HttpURLConnection keyCon = (HttpURLConnection) keyUrl.openConnection();
+			keyCon.setRequestMethod("GET");
+			keyCon.setDoOutput(false);
+			BufferedReader keyIn = new BufferedReader(new InputStreamReader(keyCon.getInputStream()));
+			String keyInputLine;
+			
+			primaryKeys.clear();
+			primaryKeyCount = 0;
+			while ((keyInputLine = keyIn.readLine()) != null) {
+				JSONArray jsonArray = new JSONArray(keyInputLine);
+				for (int i = 0; i < jsonArray.length(); i++) {
+					primaryKeys.add(((JSONObject) jsonArray.get(i)).getString("name"));
+				}	
+			}
+			keyIn.close();
+			
+			// build query type definition for each table, such that it returns array of table types
+			// e.g. query {tableName: [TABLENAME]}
+			querySchemaBuilder.append(name + "_" + tableName.toLowerCase());
+			if (!primaryKeys.isEmpty()) {
+				for (String primaryKey: primaryKeys) {
+					if (primaryKeyCount == 0) {
+						querySchemaBuilder.append("(" + primaryKey.toLowerCase() + ": ID");
+					} else {
+						querySchemaBuilder.append(", " + primaryKey.toLowerCase() + ": ID");
+					}
+					primaryKeyCount++;
+				}
+				querySchemaBuilder.append("): [" + name + "_" + tableName + "] " + "\r\n");
+			} else {
+				querySchemaBuilder.append(": [" + name + "_" + tableName + "] " + "\r\n");
+			}
+			
+			mutationSchemaBuilder.append(name + "_" +tableName.toLowerCase()
+			+ "(dbName: String, schema: String, tableName: String, data: String): " 
+					+ name + "_" + tableName + "\r\n");
+			
+			URL tableUrl = new URL(retrieveRESTURL() + "metadata/" + name + "/" + databaseSchema + "/" + tableName);
+			System.out.println(tableUrl.toString());
+			HttpURLConnection tableCon = (HttpURLConnection) tableUrl.openConnection();
+			tableCon.setRequestMethod("GET");
+			tableCon.setDoOutput(false);
+			BufferedReader tableIn = new BufferedReader(new InputStreamReader(tableCon.getInputStream()));
+			String tableInputLine;
+			List<String> tableColName = new ArrayList<>();
+			List<String> tableColType = new ArrayList<>();
+			List<String> tableColNull = new ArrayList<>();
+			
+			while ((tableInputLine = tableIn.readLine()) != null) {
+				JSONArray jsonArray = new JSONArray(tableInputLine);
+				for (int i = 0; i < jsonArray.length(); i++) {
+					tableColName.add(((JSONObject) jsonArray.get(i)).getString("colname"));
+					tableColType.add(((JSONObject) jsonArray.get(i)).getString("typename"));
+					tableColNull.add(((JSONObject) jsonArray.get(i)).getString("nulls"));
+				}	
+			}
+			tableIn.close();
+			String colname;
+			String coltype;
+			primaryKeys.clear();
+			foreignKeys.clear();
+			
+//			URL keyUrl = new URL(retrieveRESTURL() + "metadata/" + name + "/" + databaseSchema + "/"
+//			+ tableName + "/primaryKeys");
+//			System.out.println(keyUrl.toString());
+//			HttpURLConnection keyCon = (HttpURLConnection) keyUrl.openConnection();
+//			keyCon.setRequestMethod("GET");
+//			keyCon.setDoOutput(false);
+//			BufferedReader keyIn = new BufferedReader(new InputStreamReader(keyCon.getInputStream()));
+//			String keyInputLine;
+//			
+//			while ((keyInputLine = keyIn.readLine()) != null) {
+//				JSONArray jsonArray = new JSONArray(keyInputLine);
+//				for (int i = 0; i < jsonArray.length(); i++) {
+//					primaryKeys.add(((JSONObject) jsonArray.get(i)).getString("name"));
+//				}	
+//			}
+//			keyIn.close();
+			
+				
+			// transform db2 entries to GraphQL object types and build runtime wiring
+			// each table in database becomes GraphQL object type with column names as fields
+			//typeSchemaBuilder.append(" type " + tableName + " { " + "\r\n");
+			typeSchemaBuilder.append(" type " + name + "_" + tableName + " { " + "\r\n");
+			
+			for (int i = 0; i < tableColName.size(); i++) {
+				colname = tableColName.get(i);
+				colname = colname.replaceAll("\\.", "_");
+				colname = colname.replaceAll("\\-", "_");
+				if (!Character.isLetter(colname.charAt(0))) {
+					colname = "nr_" + colname;
+				}
+				coltype = tableColType.get(i);
+				
+				// set type of fields, transforming types of DB2 to GraphQL types
+				if (primaryKeys.contains(colname)) {
+					typeSchemaBuilder.append(" " + colname.toLowerCase() +  ": ID");
+				} else {
+					switch (coltype) {
+					case "INTEGER":
+						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": Int");
+						break;
+					case "SMALLINT":
+						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": Int");
+						break;
+					case "BIGINT":
+						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": BigInteger");
+						break;
+					case "DECIMAL":
+						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": Float");
+						break;
+					case "REAL":
+						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": Float");
+						break;
+					case "DECFLOAT":
+						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": Float");
+						break;
+					default:
+						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": String");
+					}
+				}
+				// check if column can be null and mark accordingly
+				if (tableColNull.get(i).equals("N") || tableColNull.get(i).equals("NO")){
+					typeSchemaBuilder.append("!" + "\r\n");
+				} else {
+					typeSchemaBuilder.append("\r\n");
+				}
+			}
+			typeSchemaBuilder.append("} " + "\r\n");
+		}
+				
+		querySchemaBuilder.append("}" + "\r\n");
+		
+		mutationSchemaBuilder.append(name + "_deleteEntry(dbName: String, schema: String, tableName: String,"
+				+ " condition: String): String" + "\r\n" + "}" + "\r\n");
+		
+		// add table metadatatype and database metadata
+		typeSchemaBuilder.append("type " + name + "_TABLE_METADATA {" + "\r\n" + "schema: String!" + "\r\n" +
+				"name: String!" + "\r\n" + "columns: [String]" + "\r\n" + "}");
+		
+		FileChannel.open(Paths.get(querySchemaFile), StandardOpenOption.WRITE).truncate(0).close();
+	    BufferedWriter writer = new BufferedWriter(new FileWriter(querySchemaFile, true));
+	    writer.write(querySchemaBuilder.toString());	     
+	    writer.close();
+		
+		FileChannel.open(Paths.get(mutationSchemaFile), StandardOpenOption.WRITE).truncate(0).close();
+	    writer = new BufferedWriter(new FileWriter(mutationSchemaFile, true));
+	    writer.write(mutationSchemaBuilder.toString());	     
+	    writer.close();
+		
+		FileChannel.open(Paths.get(typeSchemaFile), StandardOpenOption.WRITE).truncate(0).close();
+	    writer = new BufferedWriter(new FileWriter(typeSchemaFile, true));
+	    writer.append(typeSchemaBuilder.toString());	     
+	    writer.close();
+
 	}
 	
 	/**
@@ -1155,6 +1581,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 			}
 		};
 	}
+	
 	/**
 	 * builds new data fetcher for object types
 	 * @param 	tableName contains name of the GraphQL object type

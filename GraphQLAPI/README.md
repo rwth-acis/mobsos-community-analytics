@@ -1,5 +1,3 @@
-![las2peer](https://rwth-acis.github.io/las2peer/logo/vector/las2peer-logo.svg)
-
 # Continuous Community Analytics
 
 GraphQL API for database visualization wrapped around RESTful API

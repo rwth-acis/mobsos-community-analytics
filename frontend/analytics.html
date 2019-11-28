@@ -21,8 +21,8 @@
 	<script src="js/jsrsasign-4.7.0-all-min.js"></script>
 	
 </head>
+<body onload="javascript:getDatabases()">
 <!--<div class="login" style="display:block">
-<body>
 <h1>MobSOS Continuous Community Analytics</h1>
 <button class="oidc-signin"
 		test="test"
@@ -46,7 +46,8 @@
 <nav>
 	<ul>
 		<button class="navbutton"> 🞬 </button>
-		<li><a href="#requestForm" class="active navbar">Query</a></li>
+		<li><a href="#requestForm" class="active navbar">Request</a></li>
+		<li><a href="#requestConstructor" class="navbar">Request Construction</a></li>
 		<li><a href="#databaseForm" class="navbar">Database</a></li>
 		<li><a href="#report" class="navbar">Report</a></li>
 	</ul>
@@ -83,22 +84,15 @@
 		<span class="slider"></span>
 	</label>
 	</div>
-	<form method="POST" action="javascript:callQuery()" id="queryForm">
+	<form method="POST" action="javascript:callRequest()" id="queryForm">
 		<label>Request:<br><input type="text" name="Request" id="Request" required></label> <br>
 		<label id="SecondRequestLabel">Second Request: <br><input type="text" name="SecondRequest" id="SecondRequest"></label> <br id="SecondRequestBreak">
-		<label>Google Chart Options:<br><input type="text" name="ChartOptions" id="ChartOptions"><br>
-		<label>Database: <br> 
-		<select name="DatabaseSelect" id ="DatabaseSelect" required onchange="javascript:toggleSecond()">
-		<option value="mediabase">Mediabase</option>
-		<option value="las2peer">las2peer</option>
-		<option value="All">All</option></label><br>
-		</select> <br>
 		<label>Visualization Type:<br>
 		<select name="Visualization" id="Visualization" required>
 			<option value="JSON">JSON</option>
-			<option value="CSV">CSV</option>
+			<!--<option value="CSV">CSV</option>
 			<option value="HTMLTABLE">HTMLTABLE</option>
-			<option value="XML">XML</option>
+			<option value="XML">XML</option>-->
 			<option value="GOOGLEPIECHART">GOOGLEPIECHART</option>
 			<option value="GOOGLEBARCHART">GOOGLEBARCHART</option>
 			<option value="GOOGLECOLUMNCHART">GOOGLECOLUMNCHART</option>
@@ -110,6 +104,7 @@
 			<option value="GOOGLETABLE">GOOGLETABLE</option>
 			<option value="GRAPH">GRAPH</option></label>
 		</select> <br>
+		<label>Google Chart Options:<br><input type="text" name="ChartOptions" id="ChartOptions"><br>
 		<input type="submit" value="Execute" id="submit2" title="Execute Query"> <br>
 	</form>
 	<div id="chartDiv">
@@ -123,6 +118,46 @@
 	<input type ='file' accept="application/json" onchange='javascript:loadQueries(event)'><br>
 	<div id="reportView">
 	</div>
+</div>
+<div id="requestConstructor" class="requestConstructor" >
+	<form method="POST" action="javascript:callRequestConstruction()" id="queryBuild">
+		<label>Template Type:<br><select id="TemplateType" onchange="javascript:constructionInput()" required>
+		<option disabled selected="selected" value=""> -- select an option -- </option>
+		<option value="Media-User">Media-User</option>
+		<option value="Media-Platform">Media-Platform</option>
+		</label>
+		</select> <br>
+		<div id="insertDiv">
+		</div>
+		<label>Target Database: <br> 
+		<select name="DatabaseSelect" id ="DatabaseSelect" onchange="javascript:setTargetDatabases()"required>
+			<option value="mediabase">mediabase</option>
+			<option value="las2peer">las2peer</option>
+			<option value="All">All</option></label><br>
+		</select> <br>
+		<label>Visualization Type:<br>
+		<select name="Visualization" id="VisualizationConstructor" required>
+			<option value="JSON">JSON</option>
+			<option value="GOOGLEPIECHART">GOOGLEPIECHART</option>
+			<option value="GOOGLEBARCHART">GOOGLEBARCHART</option>
+			<option value="GOOGLECOLUMNCHART">GOOGLECOLUMNCHART</option>
+			<option value="GOOGLELINECHART">GOOGLELINECHART</option>
+			<option value="GOOGLEGEOCHART">GOOGLEGEOCHART</option>
+			<option value="GOOGLECALENDARCHART">GOOGLECALENDARCHART</option>
+			<option value="GOOGLETIMELINECHART">GOOGLETIMELINECHART</option>
+			<option value="GOOGLERADARCHART">GOOGLERADARCHART</option>
+			<option value="GOOGLETABLE">GOOGLETABLE</option>
+			<option value="GRAPH">GRAPH</option></label>
+		</select> <br>
+		<label>Google Chart Options:<br><input type="text" name="ChartOptionsConstructor" id="ChartOptionsConstructor"><br>
+		<input type="submit" value="Execute" id="submit3" title="Execute Query"> <br>
+	</form>
+	<div id="chartDivConstructor">
+	</div>
+	<div id="chartImageDivConstructor" style="display:none">
+	<!--<button id="download" download="">Download as Image</button>-->
+	</div>
+	<a id="downloadClickConstructor" href="#" onclick="this.href = $('#chartImageDivConstructor img:first').attr('src');" download>Download as image</a>
 </div>
 <p id="Result">Test</p>
 <p id="QueryCheck">Check</p>
@@ -149,14 +184,23 @@
 			$(this).addClass('active').siblings('li').removeClass('active');
 			if ($(this).attr('href') == "#requestForm") {
 				document.getElementById("requestForm").style.display = "block";
+				document.getElementById("requestConstructor").style.display = "none";
 				document.getElementById("databaseForm").style.display = "none";
 				document.getElementById("report").style.display = "none";
+			} else if ($(this).attr('href') == "#requestConstructor") {
+				document.getElementById("requestForm").style.display = "none";
+				document.getElementById("requestConstructor").style.display = "block";
+				document.getElementById("databaseForm").style.display = "none";
+				document.getElementById("report").style.display = "none";
+				
 			} else if ($(this).attr('href') == "#databaseForm") {
 				document.getElementById("requestForm").style.display = "none";
+				document.getElementById("requestConstructor").style.display = "none";
 				document.getElementById("databaseForm").style.display = "block";
 				document.getElementById("report").style.display = "none";
 			} else {
 				document.getElementById("requestForm").style.display = "none";
+				document.getElementById("requestConstructor").style.display = "none";
 				document.getElementById("databaseForm").style.display = "none";
 				document.getElementById("report").style.display = "block";
 			}

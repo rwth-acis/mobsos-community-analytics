@@ -12,9 +12,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -44,18 +46,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-// TODO Describe your own service
 /**
- * las2peer-Template-Service
- * 
- * This is a template for a very basic las2peer service that uses the las2peer WebConnector for RESTful access to it.
- * 
- * Note: If you plan on using Swagger you should adapt the information below in the SwaggerDefinition annotation to suit
- * your project. If you do not intend to provide a Swagger documentation of your service API, the entire Api and
- * SwaggerDefinition annotation should be removed.
+ * This call is only included to enable JUnit testing
  * 
  */
-// TODO Adjust the following configuration
 @Api
 @SwaggerDefinition(
 		info = @Info(
@@ -588,6 +582,32 @@ public class MediabaseAPI extends RESTService{
 		 } catch (SQLException exc) {
 			 return Response.status(422).entity("SQL error.").build();
 		 }
+	 }
+	 
+	 @Path("listDatabases")
+	 @GET
+	 @ApiOperation(value = "Get the names of all added databases")
+	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful request."),
+			 				 @ApiResponse(code = 500, message = "Error while reading properties file.")})
+	 public Response getDatabases() {
+		 try {
+			 List<String> names = new ArrayList<>();
+			 InputStream input = new FileInputStream(filePath);
+			 Properties prop = new Properties();
+			 prop.load(input);
+			 Set<Object> keys = prop.keySet();
+			 for (Object key: keys) {
+				 String stringKey = (String) key;
+				 if (stringKey.contains("db.url_")) {
+					 names.add(stringKey.substring(stringKey.indexOf('_') + 1));
+				 }
+			 }
+			 input.close();
+			 return Response.status(200).entity(names.toString()).build();
+		 } catch (IOException exc) {
+				System.out.println("IOException: " + exc.toString());
+				return Response.status(500).entity("Error when handling properties file.").build();
+			}
 	 }
 	 
 	 /**

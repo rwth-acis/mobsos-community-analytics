@@ -156,6 +156,14 @@ ul{
 	display: none;
 }
 
+#requestConstructor {
+	display: none;
+}
+
+#insertDiv {
+	margin-left: 5%; 
+}
+
 h1 {
 	color: #000000;
 }
@@ -181,7 +189,7 @@ h2 {
 	display: inline;
 }
 
-button{
+button {
 	display: block;
 	text-align: left;
 	border: none;

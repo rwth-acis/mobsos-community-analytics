@@ -114,22 +114,24 @@ function addDatabase() {
 	request.send();
 };
 
-function executeQuery(query, visual, options, outputID) {
+function executeRequest(query, visual, options, outputID) {
 	if (document.getElementById("DatabaseSelect").value == "All") {
 		var paths = [];
 		var responses = [];
-		var requestType = document.getElementById("RequestType").value;
+		//<var requestType = document.getElementById("RequestType").value;
 		//var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql?input=";
 		var path = apiOptions.APIURL + "/graphql/graphql?input=";
-		var input = document.getElementById("Request").value;
-		var insertPath = path + requestType.toLowerCase() + "{mediabase_" + input + "}";
+		//var input = document.getElementById("Request").value;
+		var input = "query%7BdatabaseNames%7D";
+		//var insertPath = path + requestType.toLowerCase() + "{mediabase_" + input + "}";
+		var insertPath = path + input;
 		// replace curly parentheses in accordance with RFC 1738
 		insertPath = insertPath.replace(/{/g, "%7B");
 		insertPath = insertPath.replace(/}/g, "%7D");
 		paths.push(insertPath);
 		
 		input = document.getElementById("SecondRequest").value;
-		insertPath = path + requestType.toLowerCase() + "{mediabase_" + input + "}";
+		//insertPath = path + requestType.toLowerCase() + "{mediabase_" + input + "}";
 		// replace curly parentheses in accordance with RFC 1738
 		insertPath = insertPath.replace(/{/g, "%7B");
 		insertPath = insertPath.replace(/}/g, "%7D");
@@ -142,6 +144,7 @@ function executeQuery(query, visual, options, outputID) {
 		request.onreadystatechange = function() {
 					if (this.readyState == "4" && this.status == "200") {
 						responses.push(this.responseText);
+						console.log("Response: " + this.responseText);
 						if (responses.length > 1) {
 							allQuery(responses, document.getElementById("Visualization").value);
 						}
@@ -180,6 +183,7 @@ function executeQuery(query, visual, options, outputID) {
 			if (this.readyState == "4" && this.status == "200") {
 				document.getElementById("Result").innerHTML = this.responseText;
 				var data = this.responseText;
+				getDatabases();
 				//var chartType = document.getElementById("Visualization").value;
 				//switch (chartType) {
 				switch (visual) {
@@ -204,7 +208,7 @@ function executeQuery(query, visual, options, outputID) {
 					default:
 						document.getElementById(outputID).value = data;
 				}
-				document.getElementById("download").style.visibility = "visible";
+				//document.getElementById("download").style.visibility = "visible";
 				document.getElementById("KeyCheck").innerHTML = (new Date("2016-11-17 12:00:00.0")).getFullYear();
 			} else {
 				document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
@@ -231,7 +235,7 @@ function executeQuery(query, visual, options, outputID) {
 	document.getElementById("Result").innerHTML = "further running...";
 	document.getElementById("QueryCheck").innerHTML = path;
 
-	document.getElementById("download").style.visibility = "visible";
+	//document.getElementById("download").style.visibility = "visible";
 	}
 };
 
@@ -273,7 +277,8 @@ function allQuery(data, chart) {
 		}
 };
 
-function callQuery() {
+// collect input parameter for GraphQL request for direct request
+function callRequest() {
 	var query = document.getElementById("Request").value;
 	var visual = document.getElementById("Visualization").value;
 	var outputID = "chartDiv";
@@ -283,8 +288,35 @@ function callQuery() {
 		var options = {"title":"with default options","width":400,"height":400};
 	}
 	
-	executeQuery(query, visual, options, outputID);
+	executeRequest(query, visual, options, outputID);
 };
+
+// collect input parameter for GraphQL request for request from request construction
+function callRequestConstruction() {
+	if (document.getElementById("DatabaseSelect").value == "All") {
+		if (document.getElementById("TemplateType").value == "Media-User") {
+			var query = "query{all_reviews(id:\"" +  document.getElementById("userInput").value + "\"){id, rating}}";
+		} else if (document.getElementById("TemplateType").value == "Media-Platform") {
+			var query = "query{all_reviews{author_id, perma_link}}";
+		}
+	} else {
+		if (document.getElementById("TemplateType").value == "Media-User") {
+			var query = "query{" + document.getElementById("DatabaseSelect").value + "_bw_entries(id:\"" + 
+			document.getElementById("userInput").value + "\"){id, mood}}";
+		} else if (document.getElementById("TemplateType").value == "Media-Platform") {
+			var query = "query{" + document.getElementById("DatabaseSelect").value + "_bw_entries{author_id, perma_link}}";
+		}
+	}
+	
+	var visual = document.getElementById("VisualizationConstructor").value;
+	var outputID = "chartDivConstructor";
+	if (document.getElementById("ChartOptionsConstructor").value != "") {
+		var options = JSON.parse(document.getElementById("ChartOptionsConstructor").value)
+	} else {
+		var options = {"title":"with default options","width":400,"height":400};
+	}
+	executeRequest(query, visual, options, outputID);
+}
 
 function createGeoChart(data, options, outputID) {
 	var output = "{\"bw_author\":[{\"authorname\":\"Germany\", \"id\":\"49\"}, " +
@@ -310,7 +342,13 @@ function createGeoChart(data, options, outputID) {
 
 	// Instantiate and draw our chart, passing in some options.
 	var chart = new google.visualization.GeoChart(document.getElementById(outputID));
+	var chartImageDiv = document.getElementById('chartImageDiv');
+	google.visualization.events.addListener(chart, 'ready', function () {
+	chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+	document.getElementById("downloadClick").style.display = "block";
+	console.log(chartImageDiv.innerHTML);
 	document.getElementById(outputID).style.visibility = "visible";
+	});
 	chart.draw(data, options);
 	//chart.draw(data, options);
 	//google.visualization.events.addListener(chart, 'ready', function () {
@@ -347,6 +385,12 @@ function createLineChart(data, options, ouputID) {
 
 	// Instantiate and draw our chart, passing in some options.
 	var chart = new google.visualization.LineChart(document.getElementById(outputID));
+	var chartImageDiv = document.getElementById('chartImageDiv');
+	google.visualization.events.addListener(chart, 'ready', function () {
+	chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+	document.getElementById("downloadClick").style.display = "block";
+	console.log(chartImageDiv.innerHTML);
+	});
 	chart.draw(data, options);
 };
 
@@ -378,19 +422,31 @@ function createBaseChart(data, type, options, outputID) {
 	var chart;
 	if (type == "GOOGLEBARCHART") {
 		chart = new google.visualization.BarChart(document.getElementById(outputID));
-	}
-	else if (type == "GOOGLEPIECHART") {
 		var chartImageDiv = document.getElementById('chartImageDiv');
-		chart = new google.visualization.PieChart(document.getElementById(outputID));
 		google.visualization.events.addListener(chart, 'ready', function () {
         chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
 		document.getElementById("downloadClick").style.display = "block";
         console.log(chartImageDiv.innerHTML);
-      });
+		});
+	}
+	else if (type == "GOOGLEPIECHART") {
+		chart = new google.visualization.PieChart(document.getElementById(outputID));
+		var chartImageDiv = document.getElementById('chartImageDiv');
+		google.visualization.events.addListener(chart, 'ready', function () {
+        chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		document.getElementById("downloadClick").style.display = "block";
+        console.log(chartImageDiv.innerHTML);
+		});
 
 	}
 	else {
 		chart = new google.visualization.ColumnChart(document.getElementById(outputID));
+		var chartImageDiv = document.getElementById('chartImageDiv');
+		google.visualization.events.addListener(chart, 'ready', function () {
+        chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		document.getElementById("downloadClick").style.display = "block";
+        console.log(chartImageDiv.innerHTML);
+		});
 	}
 	chart.draw(data, options);
 };
@@ -603,8 +659,76 @@ function loadQueries(event) {
 			var chartVisual = document.createElement("div");
 			chartVisual.setAttribute("id", "displayChart" + i);
 			element.appendChild(chartVisual);
-			executeQuery(array[i].query, array[i].visual, array[i].options, "displayChart" + i);
+			executeRequest(array[i].query, array[i].visual, array[i].options, "displayChart" + i);
 		}
 	};
 	reader.readAsText(input.files[0]);
+};
+
+function getDatabases() {
+	var request = new XMLHttpRequest();
+		request.onreadystatechange = function() {
+			if (this.readyState == "4" && this.status == "200") {
+				document.getElementById("Result").innerHTML = this.responseText;
+				var data = this.responseText;
+				data = (JSON.parse(data).databaseNames).split(", ");
+				for (var i = 0; i < data.length; i++) {
+					var selection = document.getElementById("DatabaseSelect");
+					var opt = document.createElement("option");
+					var name = "";
+					if (i == 0) {
+						name = data[i].substring(1, data[i].length);
+					} else if (i == data.length - 1) {
+						name = data[i].substring(0, data[i].length - 1);
+					} else {
+						name = data[i];
+					}
+					var present = false;
+					for (var j = 0; j < document.getElementById("DatabaseSelect").options.length; j++) {
+						if (document.getElementById("DatabaseSelect").options[j].value == name) {
+							present = true;
+						}
+					}
+					if (!present) {
+						opt.value = name;
+						opt.innerHTML = name;
+						selection.appendChild(opt);
+					}
+				}
+			} else {
+				document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
+			}
+		}
+	var path = apiOptions.APIURL + "/graphql/graphql?input="
+	path = path + "query%7BdatabaseNames%7D";
+	// replace curly parentheses in accordance with RFC 1738
+	path = path.replace(/{/g, "%7B");
+	path = path.replace(/}/g, "%7D");
+	document.getElementById("Result").style.visibility = "visible";
+	document.getElementById("Result").innerHTML = path;
+	request.open("GET", path, true);
+	document.getElementById("Result").innerHTML = "still running...";
+	console.log("Path: " + path);
+	request.send();
+};
+
+function setTargetDatabases() {
+	console.log("onload");
+	var databases = getDatabases();
+	console.log("Databases: " + databases);
+	for (var i = 0; i < databases.length; i++) {
+		var selection = document.getElementById("DatabaseSelect");
+		var opt = document.createElement("option");
+		if (i == 0) {
+			opt.value = databases[i].substring(1, databases[i].length - 1);
+			opt.innerHTML = databases[i].substring(1, databases[i].length - 1);
+		} else if (i == databases.length - 1) {	
+			opt.value = databases[i].substring(0, databases[i].length - 2);
+			opt.innerHTML = databases[i].substring(0, databases[i].length - 2);
+		} else {
+			opt.value = databases[i];
+			opt.innerHTML = databases[i];
+		}
+		selection.appendChild(opt);
+	}
 };
