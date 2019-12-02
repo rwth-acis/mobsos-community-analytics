@@ -1,6 +1,5 @@
 {
-	"queries": 
-	[
+	"queries":[
 		{
 			"query":"query{mediabase_bw_entries{date, mood}}",
 			"visual":"GOOGLECALENDARCHART",
@@ -15,6 +14,23 @@
 			"query":"query{mediabase_bw_entries{id, mood}}",
 			"visual":"GOOGLEPIECHART",
 			"options":{"title":"Testing pie chart","width":400,"height":300}
+		}
+	],
+	"templates":[
+		{
+			"name":"template",
+			"targetDatabase":"mediabase",
+			"from":"",
+			"selectionType":[
+								{
+									"name":"date",
+									"type":"String"
+								},
+								{
+									"name":"mood",
+									"type":"Int"
+								}
+							]
 		}
 	]
 }

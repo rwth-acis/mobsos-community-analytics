@@ -106,3 +106,32 @@ function constructionInput() {
 		insertDiv.appendChild(platformSelectLabel);
 	}
 };
+
+function showNavbar() {
+	document.getElementById("navigationBar").style.width = "50%";
+	document.getElementById("pageContent").style.marginLeft = "50%";
+	document.getElementById("navigationBar").style.display = "block";
+	//$("nav").style.display = "block";
+	//$("nav").style.width = "20%";
+};
+
+function closeNavbar() {
+	document.getElementById("navigationBar").style.width = "0%";
+	document.getElementById("pageContent").style.marginLeft = "0.5%";
+	document.getElementById("navigationBar").style.display = "none";
+};
+
+var signinCallback = function(result){
+	console.log("Login");
+	if(result === "success"){
+		// authenticated
+		// OpenID Connect user info
+		console.log(oidc_userinfo);
+		document.getElementById("login").style.display = "none";
+		document.getElementById("navigationBar").style.display = "block";
+		document.getElementById("pageContent").style.display = "block";
+	} else {
+		// anonymous
+		console.log("Login failed.");
+	}
+};

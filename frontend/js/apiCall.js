@@ -115,7 +115,7 @@ function addDatabase() {
 };
 
 function executeRequest(query, visual, options, outputID) {
-	if (document.getElementById("DatabaseSelect").value == "All") {
+	if (false && document.getElementById("DatabaseSelect").value == "All") {
 		var paths = [];
 		var responses = [];
 		//<var requestType = document.getElementById("RequestType").value;
@@ -181,6 +181,9 @@ function executeRequest(query, visual, options, outputID) {
 		var request = new XMLHttpRequest();
 		request.onreadystatechange = function() {
 			if (this.readyState == "4" && this.status == "200") {
+				//document.getElementById("Request").style.borderColor = "black";
+				document.getElementById("RequestLabel").style.color = "black";
+				//document.getElementById("RequestLabel").innerHTML = "Visualization Request:";
 				document.getElementById("Result").innerHTML = this.responseText;
 				var data = this.responseText;
 				getDatabases();
@@ -210,6 +213,10 @@ function executeRequest(query, visual, options, outputID) {
 				}
 				//document.getElementById("download").style.visibility = "visible";
 				document.getElementById("KeyCheck").innerHTML = (new Date("2016-11-17 12:00:00.0")).getFullYear();
+			} else if (this.status == "513"){
+				document.getElementById("RequestLabel").style.color = "red";
+				//document.getElementById("Request").style.borderColor = "red";
+				document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
 			} else {
 				document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
 			}
@@ -219,7 +226,7 @@ function executeRequest(query, visual, options, outputID) {
 	//var path = "http://137.226.58.233:8080/graphql/graphql?input=";
 	var path = apiOptions.APIURL + "/graphql/graphql?input="
 	//var input = document.getElementById("Request").value;
-	var database = document.getElementById("DatabaseSelect").value;
+	//var database = document.getElementById("DatabaseSelect").value;
 	//path = path + requestType.toLowerCase() + "{" + database + "_" + input + "}";
 	path = path + query;
 	// replace curly parentheses in accordance with RFC 1738
@@ -342,13 +349,24 @@ function createGeoChart(data, options, outputID) {
 
 	// Instantiate and draw our chart, passing in some options.
 	var chart = new google.visualization.GeoChart(document.getElementById(outputID));
-	var chartImageDiv = document.getElementById('chartImageDiv');
-	google.visualization.events.addListener(chart, 'ready', function () {
-	chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
-	document.getElementById("downloadClick").style.display = "block";
-	console.log(chartImageDiv.innerHTML);
-	document.getElementById(outputID).style.visibility = "visible";
-	});
+	if (outputID == "chartDiv") {
+		var chartImageDiv = document.getElementById('chartImageDiv');
+		google.visualization.events.addListener(chart, 'ready', function () {
+		chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		document.getElementById("downloadClick").style.display = "block";
+		console.log(chartImageDiv.innerHTML);
+		document.getElementById(outputID).style.visibility = "visible";
+		});
+	} else if(outputID == "chartDivConstructor") {
+		var chartImageDiv = document.getElementById('chartImageDivConstructor');
+		google.visualization.events.addListener(chart, 'ready', function () {
+		chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		document.getElementById("downloadClickConstructor").style.display = "block";
+		console.log(chartImageDiv.innerHTML);
+		document.getElementById(outputID).style.visibility = "visible";
+		});
+	}
+	
 	chart.draw(data, options);
 	//chart.draw(data, options);
 	//google.visualization.events.addListener(chart, 'ready', function () {
@@ -385,12 +403,23 @@ function createLineChart(data, options, ouputID) {
 
 	// Instantiate and draw our chart, passing in some options.
 	var chart = new google.visualization.LineChart(document.getElementById(outputID));
-	var chartImageDiv = document.getElementById('chartImageDiv');
-	google.visualization.events.addListener(chart, 'ready', function () {
-	chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
-	document.getElementById("downloadClick").style.display = "block";
-	console.log(chartImageDiv.innerHTML);
-	});
+	if (outputID == "chartDiv") {
+		var chartImageDiv = document.getElementById('chartImageDiv');
+		google.visualization.events.addListener(chart, 'ready', function () {
+		chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		document.getElementById("downloadClick").style.display = "block";
+		console.log(chartImageDiv.innerHTML);
+		document.getElementById(outputID).style.visibility = "visible";
+		});
+	} else if(outputID == "chartDivConstructor") {
+		var chartImageDiv = document.getElementById('chartImageDivConstructor');
+		google.visualization.events.addListener(chart, 'ready', function () {
+		chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		document.getElementById("downloadClickConstructor").style.display = "block";
+		console.log(chartImageDiv.innerHTML);
+		document.getElementById(outputID).style.visibility = "visible";
+		});
+	}
 	chart.draw(data, options);
 };
 
@@ -422,30 +451,48 @@ function createBaseChart(data, type, options, outputID) {
 	var chart;
 	if (type == "GOOGLEBARCHART") {
 		chart = new google.visualization.BarChart(document.getElementById(outputID));
-		var chartImageDiv = document.getElementById('chartImageDiv');
-		google.visualization.events.addListener(chart, 'ready', function () {
-        chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
-		document.getElementById("downloadClick").style.display = "block";
-        console.log(chartImageDiv.innerHTML);
-		});
+		//var chartImageDiv = document.getElementById('chartImageDiv');
+		//google.visualization.events.addListener(chart, 'ready', function () {
+        //chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		//document.getElementById("downloadClick").style.display = "block";
+        //console.log(chartImageDiv.innerHTML);
+		//});
 	}
 	else if (type == "GOOGLEPIECHART") {
 		chart = new google.visualization.PieChart(document.getElementById(outputID));
-		var chartImageDiv = document.getElementById('chartImageDiv');
-		google.visualization.events.addListener(chart, 'ready', function () {
-        chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
-		document.getElementById("downloadClick").style.display = "block";
-        console.log(chartImageDiv.innerHTML);
-		});
+		//var chartImageDiv = document.getElementById('chartImageDiv');
+		//google.visualization.events.addListener(chart, 'ready', function () {
+        //chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		//document.getElementById("downloadClick").style.display = "block";
+        //console.log(chartImageDiv.innerHTML);
+		//});
 
 	}
 	else {
 		chart = new google.visualization.ColumnChart(document.getElementById(outputID));
+		//var chartImageDiv = document.getElementById('chartImageDiv');
+		//google.visualization.events.addListener(chart, 'ready', function () {
+        //chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		//document.getElementById("downloadClick").style.display = "block";
+        //console.log(chartImageDiv.innerHTML);
+		//});
+	}
+	
+	if (outputID == "chartDiv") {
 		var chartImageDiv = document.getElementById('chartImageDiv');
 		google.visualization.events.addListener(chart, 'ready', function () {
-        chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
 		document.getElementById("downloadClick").style.display = "block";
-        console.log(chartImageDiv.innerHTML);
+		console.log(chartImageDiv.innerHTML);
+		document.getElementById(outputID).style.visibility = "visible";
+		});
+	} else if(outputID == "chartDivConstructor") {
+		var chartImageDiv = document.getElementById('chartImageDivConstructor');
+		google.visualization.events.addListener(chart, 'ready', function () {
+		chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
+		document.getElementById("downloadClickConstructor").style.display = "block";
+		console.log(chartImageDiv.innerHTML);
+		document.getElementById(outputID).style.visibility = "visible";
 		});
 	}
 	chart.draw(data, options);
@@ -634,37 +681,6 @@ function formatDate(date) {
     return [year, month, day].join(', ');
 };
 
-// load queries from .json file
-function loadQueries(event) {
-	console.log("load Queries");
-	var input = event.target;
-	var reader = new FileReader();
-	reader.onload = function() {
-		var count = 0;
-		while(document.getElementById("displayChart" + count) != null){
-			document.getElementById("displayChart" + count).parentNode.removeChild(document.getElementById("displayChart" + count));
-			count++;
-		}
-		var queries = reader.result;
-		var json = JSON.parse(reader.result);
-		var array = json.queries;
-		console.log("setTest2 " + apiOptions.setTest);
-		for (var i = 0; i < array.length; i++) {
-			console.log("Title: " + array[i].options.title);
-			//var para = document.createElement("p");
-			//var node = document.createTextNode(array[i].query);
-			//para.appendChild(node);
-			var element = document.getElementById("reportView");
-			//element.appendChild(para);
-			var chartVisual = document.createElement("div");
-			chartVisual.setAttribute("id", "displayChart" + i);
-			element.appendChild(chartVisual);
-			executeRequest(array[i].query, array[i].visual, array[i].options, "displayChart" + i);
-		}
-	};
-	reader.readAsText(input.files[0]);
-};
-
 function getDatabases() {
 	var request = new XMLHttpRequest();
 		request.onreadystatechange = function() {
@@ -713,7 +729,6 @@ function getDatabases() {
 };
 
 function setTargetDatabases() {
-	console.log("onload");
 	var databases = getDatabases();
 	console.log("Databases: " + databases);
 	for (var i = 0; i < databases.length; i++) {
@@ -731,4 +746,80 @@ function setTargetDatabases() {
 		}
 		selection.appendChild(opt);
 	}
+};
+
+function loadFile() {
+	console.log("loadFile");
+	var result = null;
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+			if (this.readyState == "4" && this.status == "200") {
+				result = xmlhttp.responseText;
+				buildReport(result);
+			}
+		}
+	xmlhttp.open("GET", "../../savedQueries.json", false);
+	xmlhttp.send();
+};
+
+
+// load queries from .json file
+function loadQueries(event) {
+	console.log("load Queries");
+	var input = event.target;
+	var reader = new FileReader();
+	reader.onload = function() {
+		buildReport(reader.result);
+		//var count = 0;
+		//while(document.getElementById("displayChart" + count) != null){
+		//	document.getElementById("displayChart" + count).parentNode.removeChild(document.getElementById("displayChart" + count));
+		//	count++;
+		//}
+		//var queries = reader.result;
+		//var json = JSON.parse(reader.result);
+		//var array = json.queries;
+		//console.log("setTest2 " + apiOptions.setTest);
+		//for (var i = 0; i < array.length; i++) {
+			//console.log("Title: " + array[i].options.title);
+			//var para = document.createElement("p");
+			//var node = document.createTextNode(array[i].query);
+			//para.appendChild(node);
+			//var element = document.getElementById("reportView");
+			//element.appendChild(para);
+			//var chartVisual = document.createElement("div");
+			//chartVisual.setAttribute("id", "displayChart" + i);
+			//element.appendChild(chartVisual);
+			//executeRequest(array[i].query, array[i].visual, array[i].options, "displayChart" + i);
+		//}
+	};
+	reader.readAsText(input.files[0]);
+};
+
+function buildReport(input) {
+	var count = 0;
+	console.log("Building Resport");
+	while(document.getElementById("displayChart" + count) != null){
+		console.log("Building...");
+		document.getElementById("displayChart" + count).parentNode.removeChild(document.getElementById("displayChart" + count));
+		count++;
+	}
+	//var queries = input;
+	var json = JSON.parse(input);
+	var array = json.queries;
+	for (var i = 0; i < array.length; i++) {
+		console.log("Title: " + array[i].options.title);
+		//var para = document.createElement("p");
+		//var node = document.createTextNode(array[i].query);
+		//para.appendChild(node);
+		var element = document.getElementById("reportView");
+		//element.appendChild(para);
+		var chartVisual = document.createElement("div");
+		chartVisual.setAttribute("id", "displayChart" + i);
+		element.appendChild(chartVisual);
+		executeRequest(array[i].query, array[i].visual, array[i].options, "displayChart" + i);
+	}
+};
+
+function setAPI(url) {
+	apiOptions.APIURL = url;
 };

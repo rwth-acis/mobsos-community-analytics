@@ -1,9 +1,10 @@
 body {
-	background-color: #EEEEEE;
+	background-color: #FFFFFF;
 	font-size: 100.0%;
     font-family: sans-serif;
-	padding: 50px;
 	margin: 0;
+	padding: 0;
+	height: 100%;
 }
 
 /* The side navigation menu */
@@ -58,13 +59,7 @@ body {
 	color: #000000;
 }*/
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
-#main {
-	position: relative; 
-	transition: margin-left .1s;
-	/*margin-left: 25%;*/
-	margin-top: 5vh;
-	background-color: #EEEEEE;
-}
+
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 /*@media screen and (max-height: 450px) {
@@ -72,77 +67,84 @@ body {
   .sidenav a {font-size: 18px;}
 }*/
 
-@media only screen and (max-width: 500px) {
-	
-	body {
-		font-size: 50.0%;
-	}
-	/*shows elements in a column*/
-	ul{
-		flex-direction: column;
-	}
-
-	/* deletes margin on top or bottom of the a tag*/
-	li{
-		margin: 0;
-	}
-	/* makes sure that the a tag will take the entire screen*/
-	.navbar{
-		display: block;
-	}
-	button {
-		display: block;
-	}
-	#navbutton{
-		/*makes the button visible*/
-		display: block;
-    
-		/*since we are here, we can style it a little bit!*/
-		padding: 0.5vw;
-		font-size: 3vh;
-		background-color: #AFAFAF;
-		border: none;
-    
-		/*outline none removes the default blue border that appears anytime you click on the button*/
-		outline: none;
-    
-		cursor: pointer;
-		align-self: flex-start;
-	}
+.pageContent {
+	margin-left: 20%;
+	margin-right: 0.5%;
 }
 
-nav{
-	width: 100vw;
+#main {
+	/*padding: 5%;*/
+	position: relative;
+	/*height: 100vh;*/
+	transition: margin-left .1s;
+	/*margin-top: 5vh;*/
+	background-color: #FFFFFF;
+	/*margin: auto;*/
+	padding: 1%;
+	box-shadow: 2px 2px 2px #888888;
+	border: 2px solid #888888;
+	border-radius: 5px;
+	height: auto;
+	margin-bottom: 0.5%;
 }
 
 li{
 	list-style-type: none;
-	margin: 0 2vw;
+	/*margin: 0 2vw;*/
+	margin-left: 1%;
 	font-size: 3vh;
+	/*background-color: #0099ff;*/
+	padding-top: 0.5vw;
+	padding-bottom: 0.5vw;
 	
+}
+
+a{
+	margin-left: 0.5vw;
+	background-color: #FFFFFF;
 }
 
 .navbar{
 	text-decoration: none;
 	color: black;
 	/*I added some padding*/
-	padding: 1vw;
+	/*padding: 1vw;*/
+	
+	margin-left: 0.5vw;
+	background-color: #0099ff;
 }
 
 .navbar:hover {
-	background-color: #FFFFFF;
+	color: #FFFFFF;
+	text-decoration: none;
 }
 
-ul{
+.navbar:hover, .navbar:hover span{
+    color: #FFFFFF;
+}
+
+.navigationBar {
+	height: 100vh;
+	width: 19.5%;
+	position: fixed;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	overflow-x: hidden;
+	background-color: #0099ff;
+}
+/*ul{
   margin: 0;
   padding: 0;
   display: flex;
-}
+  flex-direction: column;
+}*/
 
+/*
 #navbutton {
 	display: none;
 	border: none;
-}
+}*/
 
 #formDatabase {
 	display: none;
@@ -164,9 +166,7 @@ ul{
 	margin-left: 5%; 
 }
 
-h1 {
-	color: #000000;
-}
+
 /*
 html,
 .fullscreen {
@@ -177,23 +177,22 @@ html,
   width: 100%;
 }*/
 
-.container {
-	margin: auto;
-	width: 100%;
-	text-align: left;
-}
-
 
 h2 {
 	color: #000000;
 	display: inline;
 }
 
-button {
+span {
+	margin-right: 0.5%;
+	color: black;
+}
+
+/*button {
 	display: block;
 	text-align: left;
 	border: none;
-}
+}*/
 
 input {
   width: 50%;
@@ -230,8 +229,27 @@ select {
 #downloadClick {
 	display: none;
 	text-decoration: none;
-	font-size: 80%;
 	color: black;
+	background-color: #FFFFFF;
+	width: 150px;
+	padding: 0.5%;
+}
+
+#downloadClick:hover {
+	color: #0099ff;
+}
+
+#downloadClickConstructor {
+	display: none;
+	text-decoration: none;
+	color: black;
+	background-color: #FFFFFF;
+	width: 150px;
+	padding: 0.5%;
+}
+
+#downloadClickConstructor:hover {
+	color: #0099ff;
 }
 
 #SecondRequest {
@@ -244,6 +262,26 @@ select {
 
 #SecondRequestBreak {
 	display: none;
+}
+
+#heading {
+	margin-top: 0.5%;
+	margin-bottom: 0.5%;
+	padding: 1%;
+	background-color: #FFFFFF;
+	box-shadow: 2px 2px 2px #888888;
+	border: 2px solid #888888;
+	border-radius: 5px;
+}
+
+.mobiledash {
+	display: none;
+}
+
+h1 {
+	color: #000000;
+	position: relative;
+	display: block-inline;
 }
 
 .switch {
@@ -311,4 +349,86 @@ input:checked + .slider:before {
 {
 	display: flex;
 	margin-left: 30%;
+}
+
+.closebutton {
+	display: none;
+}
+
+/* order matters*/
+@media only screen and (max-width: 1000px) {
+	
+	body {
+		font-size: 100.0%;
+	}
+	
+	h1{
+		display: inline;
+		position: relative;
+		left: 10%;
+	}
+	
+	.mobiledash {
+		display: inline;
+		border: none;
+		background-color: #FFFFFF;
+		font-size: 30px;
+		position: relative;
+		left: 5%;
+	}
+	
+	.navigationBar {
+		width: 0;
+	}
+	
+	.pageContent {
+		margin-left: 0.5%;
+	}
+	
+	.closebutton {
+		display: block;
+		color: #000000;
+		font-size: 24px;
+		position: absolute;
+		right: 5%;
+	}
+	
+	.closebutton:hover {
+		color: #FFFFFF;
+		text-decoration: none;
+	}
+
+	/* deletes margin on top or bottom of the a tag
+	li{
+		margin: 0;
+		display: none;
+	}
+	nav {
+		display: none;
+	}*/
+	/* makes sure that the a tag will take the entire screen
+	.navbar{
+		display: none;
+	}*/
+	
+	.navbutton{
+		/*makes the button visible*/
+		display: block;
+    
+		/*since we are here, we can style it a little bit!*/
+		padding: 0.5vw;
+		font-size: 3vh;
+		background-color: #AFAFAF;
+		border: none;
+    
+		/*outline none removes the default blue border that appears anytime you click on the button*/
+		outline: none;
+    
+		cursor: pointer;
+		align-self: flex-start;
+	}
+}
+
+#qv_loginform{
+	display = block;
 }
