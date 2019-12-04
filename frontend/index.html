@@ -1,184 +1,258 @@
 <!DOCTYPE html>
-<!--
-Copyright (c) 2014 Advanced Community Information Systems (ACIS) Group,
-Chair of Computer Science 5 (Databases & Information Systems), RWTH Aachen University, Germany
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of the ACIS Group nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>las2peer Template Service - Frontend Example</title>
+	<title>MobSOS Community Analytics</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css" media="all">
+	<link rel="stylesheet" type="text/css" href="css/uikit.min.css" media="all">
+	<link rel="stylesheet" type="text/css" href="css/uikit-rtl.min.css" media="all">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src="config.js"></script>
+	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+	<script src="./bower_components/yjs/y.js"></script>
+	<script type="text/javascript" src="js/loader.js"></script>
+	
 
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-  <![endif]-->
+	<!--<script type="text/javascript" src="js/collaborative.js">-->
+	
+	<!--UIKit Javascript-->
+	<script type="text/javascript" src="js/uikit.min.js"></script>
+	<script type="text/javascript" src="js/uikit-icons.min.js"></script>
 
-  <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jws-2.0.min.js"></script>
+	<script src="js/jsrsasign-4.7.0-all-min.js"></script>
+	
 </head>
-<body>
-
-  <!-- Fixed navbar -->
-  <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">My App</a>
-      </div>
-      <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-          <li><a href="#url1">Navigation Button 1</a></li>
-          <li><a href="#url2">Navigation Button 2</a></li>
-        </ul>
-        <!-- OpenID Connect Button: add HTML element representing button -->
-        <span id="signinButton">
-          <span class="oidc-signin navbar-btn navbar-right btn-default"
-                data-callback="signinCallback"
-                data-name="OpenID Connect"
-                data-logo="logo.png"
-                data-size="sm"
-                data-server="https://api.learning-layers.eu/o/oauth2"
-                data-clientid="YOUR OIDC CLIENT ID HERE"
-                data-scope="openid email profile">
-          </span>
-        </span>
-      </div><!--/.nav-collapse -->
-    </div>
-  </div>
-
-  <!-- Container for actual page content -->
-  <div class="container" style="margin-top:60px">
-    <h2 class="authenticated hidden">Hello, <span id="uname"></span>!</h2>
-    <button onclick="getExample();" class="btn btn-default"><span class="glyphicon glyphicon-hand-right"> Click me!</span></button>
-    <p id="getExampleOutput"></p>
-    <button onclick="postExample('Yeeehaaaa!');" class="btn btn-default"><span class="glyphicon glyphicon-hand-right"> Click me, too!</span></button>
-    <p id="postExampleOutput"></p>
-  </div>
-
-  <!-- import jQuery for AJAX calls (must) -->
-  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-
-  <!-- import Bootstrap for responsive UI (must) -->
-  <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-
-  <!-- import JWS and JSRSASIGN (must) -->
-  <script type="text/javascript" src="js/jws-2.0.min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/ext/base64-min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/base64x-1.1.min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/ext/jsbn-min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/ext/jsbn2-min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/asn1hex-1.1.min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/crypto-1.1.min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/ext/rsa-min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/ext/rsa2-min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/rsapem-1.1.min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/rsasign-1.2.min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/x509-1.1.min.js"></script>
-  <script type="text/javascript" src="js/jsrsasign/crypto-1.1.min.js"></script>
-
-  <!-- import OpenID Connect Button -->
-  <script type="text/javascript">
-
-    (function() {
-      var po = document.createElement('script');
-      po.type = 'text/javascript';
-      po.async = true;
-      po.src = 'js/oidc-button.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(po, s);
-    })();
-
-    // OpenID Connect Button: implement a callback function
-    function signinCallback(result) {
-      if(result === "success"){
-        // authenticated
-
-        // OpenID Connect user info
-        console.log(oidc_userinfo);
-        $("#uname").html(oidc_userinfo.name);
-        $(".authenticated").removeClass("hidden");
-      } else {
-        // anonymous
-      }
-    }
-
-  </script>
-
-  <!-- import client library for service -->
-  <script type="text/javascript" src="js/client.js"></script>
-
-  <!-- instantiate and use the client library -->
-  <script type="text/javascript">
-    // create new instance of TemplateServiceClient, given its endpoint URL
-    var client = new TemplateServiceClient("http://localhost:8080/");
-
-    // function defined as response to a click on the first button (see below)
-    function getExample() {
-      client.getMethod(
-        function(data,type) {
-          // this is the success callback
-          console.log(data);
-          $("#getExampleOutput").html(data);
-        },
-        function(error) {
-          // this is the error callback
-          console.log(error);
-          $("#getExampleOutput").html(error);
-        }
-      );
-    }
-
-    // function defined as response to a click on the second button (see below)
-    function postExample(input) {
-      client.postMethod(input,
-        function(data,type) {
-          // this is the success callback
-          console.log(data);
-          $("#postExampleOutput").html(data);
-        },
-        function(error) {
-          // this is the error callback
-          console.log(error);
-          $("#postExampleOutput").html(error);
-        }
-      );
-    }
-
-  </script>
+<body onload="javascript:getDatabases()">
+<div id="login" align="center" style="display:block">
+<h1>MobSOS Continuous Community Analytics</h1>
+<button	class="oidc-signin"
+		style="padding:5px; border-radius: 4px; border:1px"
+        data-callback="signinCallback"
+        data-name="Learning Layers"
+        data-logo="images/learningLayers.png"
+        data-server="https://api.learning-layers.eu/o/oauth2"
+        data-clientid="cc34a07e-2dc1-4c69-83bb-d7e95ff0adf9"
+        data-size="sm"
+        data-scope="openid phone email address profile"><img style="margin-right:0px;" src="images/learningLayers.png" height="16px"> Sign in with <i>Learning Layers</i>
+</button>
+<!--<form id="qv_loginform" action="javascript:onlogin()"></form>-->
+</div>
+<!--<div id="mySidenav" class="sidenav">
+	<button class="closebtn" onclick="closeNav()">&#xab;</button>
+	<a href="#analytics.html#requestForm">Query</a>
+	<a href="#databaseForm.html#databasePage">Databases</a>
+</div>-->
+<!--<div class="navigationBar" style="display:block">uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky"
+ class="uk-navbar-container" uk-navbar class="uk-navbar-nav"-->
+<div class="navigationBar" id="navigationBar" style="display:none">
+<nav>
+	<!--<ul>-->
+		<!--<button class="navbutton" style="display:none"> 🞬 </button><br>-->
+		<a href="javascript:void(0)" class="closebutton" onclick="closeNavbar()">×</a>
+		<li><a href="#requestForm" class="active navbar"><span style="color:black" uk-icon="icon: file-edit; ratio: 1.5;"></span> Visualization</a></li>
+		<li><a href="#requestConstructor" class="navbar"><span style="color:black" uk-icon="icon: nut; ratio: 1.5"></span> Visualization Templates</a></li>
+		<li><a href="#databaseForm" class="navbar"><span style="color:black" uk-icon="icon: database; ratio: 1.5"></span> Database Management</a></li>
+		<li><a href="#report" onclick="javascript:loadFile()" class="navbar"><span style="color:black" uk-icon="icon: world; ratio: 1.5"></span> Report</a></li>
+	<!--</ul>-->
+</nav>
+</div>
+<div class="pageContent" id="pageContent" style="display:none">
+<div id="heading">
+	<button class="mobiledash" id="mobiledash" onclick="javascript:showNavbar()">☰</button>
+	<h1>MobSOS Continuous Community Analytics</h1>
+</div>
+<div id="main">
+<span class=fullscreen>
+<div id="databaseForm" class="formDatabase" style="display:none">
+	<!--<h2>las2peer Community<h2>-->
+	<!--<button id="hidelas2peer" onclick='javascript:toggleVisibility("las2peerForm")'>&#9660;</button> <br>-->
+	<form method="POST" action="javascript:addDatabase()" id="las2peerForm">
+		<label>Database Name:<br><input type="text" name="DatabaseName" id="DatabaseName0" required></label> <br>
+		<label>Database Host:<br><input type="text" name="DatabaseHost" id="DatabaseHost0" placeholder="format: url:port/database" required></label> <br>
+		<label>Database Schema:<br><input type="text" name="DatabaseSchema" id="DatabaseSchema0" required></label> <br>
+		<label>Username:<br><input type = "text" name="Username" id="Username0"  required></label> <br>
+		<label>Password:<br><input type = "password" name="Password" id="Password0" required></label> <br>
+		<label>Database Type:<br>
+		<select name="DatabaseType" id="DatabaseType0" required>
+			<option value="DB2">DB2</option>
+			<option value="MySQL">MySQL</option>
+		</select> <br>
+		<input type="submit" value="Execute" id="submit0" title="Execute Query"> <br>
+	</form>
+	<!--<form action="javascript:setAPI()">
+	<label>API URL:<br><input type="text" id="apiInput"></label>
+	<input type="submit" value="Set API" id="setAPISubmit">
+	</form>-->
+</div>
+<div id="requestForm" class="formRequest" style="display:block">
+	<h2>Visualization</h2>
+	<!-- Rectangular switch -->
+	<div class="sliderWrapper">
+	<div>Collaboration:</div>
+	<label class="switch">
+		<input type="checkbox" id="collabToggle"></input>
+		<span class="slider"></span>
+	</label>
+	</div>
+	<form method="POST" action="javascript:callRequest()" id="queryForm">
+		<label id="RequestLabel">Visualization Request:<br><input type="text" name="Request" id="Request" required></label> <br>
+		<label id="SecondRequestLabel">Second Request:<br><input type="text" name="SecondRequest" id="SecondRequest"></label> <br id="SecondRequestBreak">
+		<label>Visualization Type:<br>
+		<select name="Visualization" id="Visualization" required>
+			<option value="JSON">JSON</option>
+			<!--<option value="CSV">CSV</option>
+			<option value="HTMLTABLE">HTMLTABLE</option>
+			<option value="XML">XML</option>-->
+			<option value="GOOGLEPIECHART">GOOGLEPIECHART</option>
+			<option value="GOOGLEBARCHART">GOOGLEBARCHART</option>
+			<option value="GOOGLECOLUMNCHART">GOOGLECOLUMNCHART</option>
+			<option value="GOOGLELINECHART">GOOGLELINECHART</option>
+			<option value="GOOGLEGEOCHART">GOOGLEGEOCHART</option>
+			<option value="GOOGLECALENDARCHART">GOOGLECALENDARCHART</option>
+			<option value="GOOGLETIMELINECHART">GOOGLETIMELINECHART</option>
+			<option value="GOOGLERADARCHART">GOOGLERADARCHART</option>
+			<option value="GOOGLETABLE">GOOGLETABLE</option>
+			<option value="GRAPH">GRAPH</option></label>
+		</select> <br>
+		<label>Google Chart Options:<br><input type="text" name="ChartOptions" id="ChartOptions" value='{"title":"sample title","width":1000,"height":1000}'><br>
+		<input type="submit" value="Execute" id="submit2" title="Execute Query"> <br>
+	</form>
+	<div id="chartDiv">
+	</div>
+	<div id="chartImageDiv" style="display:none">
+	<!--<button id="download" download="">Download as Image</button>-->
+	</div>
+	<a id="downloadClick" href="#" onclick="this.href = $('#chartImageDiv img:first').attr('src');" download>Download as image</a>
+</div>
+<div id="report" class="report" style="display:none">
+	<input type ='file' accept="application/json" onchange='javascript:loadQueries(event)'><br>
+	<div id="reportView">
+	</div>
+</div>
+<div id="requestConstructor" class="requestConstructor">
+	<form method="POST" action="javascript:callRequestConstruction()" id="queryBuild">
+		<label>Template Type:<br><select id="TemplateType" onchange="javascript:constructionInput()" required>
+		<option disabled selected="selected" value=""> -- select an option -- </option>
+		<option value="Media-User">Media-User</option>
+		<option value="Media-Platform">Media-Platform</option>
+		</label>
+		</select> <br>
+		<div id="insertDiv">
+		</div>
+		<label>Target Database: <br> 
+		<select name="DatabaseSelect" id="DatabaseSelect" onchange="javascript:setTargetDatabases()"required>
+			<option value="mediabase">mediabase</option>
+			<option value="las2peer">las2peer</option>
+			<option value="All">All</option></label><br>
+		</select> <br>
+		<label>Visualization Type:<br>
+		<select name="Visualization" id="VisualizationConstructor" required>
+			<option value="JSON">JSON</option>
+			<option value="GOOGLEPIECHART">GOOGLEPIECHART</option>
+			<option value="GOOGLEBARCHART">GOOGLEBARCHART</option>
+			<option value="GOOGLECOLUMNCHART">GOOGLECOLUMNCHART</option>
+			<option value="GOOGLELINECHART">GOOGLELINECHART</option>
+			<option value="GOOGLEGEOCHART">GOOGLEGEOCHART</option>
+			<option value="GOOGLECALENDARCHART">GOOGLECALENDARCHART</option>
+			<option value="GOOGLETIMELINECHART">GOOGLETIMELINECHART</option>
+			<option value="GOOGLERADARCHART">GOOGLERADARCHART</option>
+			<option value="GOOGLETABLE">GOOGLETABLE</option>
+			<option value="GRAPH">GRAPH</option></label>
+		</select> <br>
+		<label>Google Chart Options:<br><input type="text" name="ChartOptionsConstructor" id="ChartOptionsConstructor" value='{"title":"sample title","width":1000,"height":1000}'><br>
+		<input type="submit" value="Execute" id="submit3" title="Execute Query"> <br>
+	</form>
+	<div id="chartDivConstructor">
+	</div>
+	<div id="chartImageDivConstructor" style="display:none">
+	<!--<button id="download" download="">Download as Image</button>-->
+	</div>
+	<a id="downloadClickConstructor" href="#" onclick="this.href = $('#chartImageDivConstructor img:first').attr('src');" download>Download as image</a>
+</div>
+<p id="Result" style="display:none">Test</p>
+<p id="QueryCheck" style="display:none">Check</p>
+<p id="ChartCheck" style="display:none">Waiting</p>
+<p id="KeyCheck" style="display:none">Processing</p>
+</div>
+</div>
+<!--<script type="text/javascript">
+   loadFile();
+</script>-->
+<script type="text/javascript" src="js/jquery-min.js"></script>
+<script type="text/javascript" src="js/apiCall.js"></script>
+<script type="text/javascript" src="js/serviceworker.js"></script>
+<script type="text/javascript" src="js/usage.js"></script>
+<!--<script type="text/javascript" src="js/oidc-button.js"></script>-->
+<script>
+	// change icon on button, when click
+	$(".navbutton").click(function(){
+		if($(".navbutton").text() == "☰"){
+			$(".navbutton").text("✖");
+		}else{        
+			$(".navbutton").text("☰");      
+		}
+		$("li").toggle("fast");
+	});
+	/*$(".oidc-signin").click(function() {
+		console.log($(".oidc-signin").data())
+	});*/
+	// show context selected in navigation bar
+	(function($) {
+		$('nav li a').click(function() {
+			$(this).addClass('active').siblings('li').removeClass('active');
+			if ($(this).attr('href') == "#requestForm") {
+				document.getElementById("requestForm").style.display = "block";
+				document.getElementById("requestConstructor").style.display = "none";
+				document.getElementById("databaseForm").style.display = "none";
+				document.getElementById("report").style.display = "none";
+			} else if ($(this).attr('href') == "#requestConstructor") {
+				document.getElementById("requestForm").style.display = "none";
+				document.getElementById("requestConstructor").style.display = "block";
+				document.getElementById("databaseForm").style.display = "none";
+				document.getElementById("report").style.display = "none";
+				
+			} else if ($(this).attr('href') == "#databaseForm") {
+				document.getElementById("requestForm").style.display = "none";
+				document.getElementById("requestConstructor").style.display = "none";
+				document.getElementById("databaseForm").style.display = "block";
+				document.getElementById("report").style.display = "none";
+			} else {
+				document.getElementById("requestForm").style.display = "none";
+				document.getElementById("requestConstructor").style.display = "none";
+				document.getElementById("databaseForm").style.display = "none";
+				document.getElementById("report").style.display = "block";
+			}
+		});
+	})(jQuery);
+</script>
+<!-- required for oidc button -->
+<!--<script type="text/javascript">
+function signinCallback(result){
+	console.log("Login");
+	if(result === "success"){
+		// authenticated
+		// OpenID Connect user info
+		console.log(oidc_userinfo);
+		document.getElementById("login").style.display = "none";
+		document.getElementById("navigationBar").style.display = "block";
+		document.getElementById("pageContent").style.display = "block";
+	} else {
+		// anonymous
+		console.log("Login failed.");
+	}
+};
+</script>-->
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); 
+    po.type = 'text/javascript'; 
+    po.async = true;
+    po.src = 'js/oidc-button.js';
+    var s = document.getElementsByTagName('script')[0]; 
+    s.parentNode.insertBefore(po, s);
+  })();
+</script>
 </body>
 </html>

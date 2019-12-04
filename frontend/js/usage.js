@@ -18,7 +18,7 @@ function toggleVisibility(id) {
 };
 
 // handling for oidc button
-function signinCallback(result) {
+/*function signinCallback(result) {
 	if(result === "success"){
 	    // after successful sign in, display a welcome string for the user
 		//$("#status").html("Hello, " + oidc_userinfo.name + "!");
@@ -26,7 +26,7 @@ function signinCallback(result) {
 	    // if sign in was not successful, log the cause of the error on the console
 		console.log(result);
 	}
-};
+};*/
 
 function toggleSecond() {
 	if (document.getElementById("DatabaseSelect").value == "All") {
@@ -123,6 +123,7 @@ function closeNavbar() {
 
 var signinCallback = function(result){
 	console.log("Login");
+	console.log("Result: " + result);
 	if(result === "success"){
 		// authenticated
 		// OpenID Connect user info

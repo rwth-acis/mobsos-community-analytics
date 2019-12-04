@@ -84,10 +84,9 @@ function addDatabase() {
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == "4" && this.status == "200") {
-			document.getElementById("Result").innerHTML = this.responseText;
+			console.log("Response:" + this.responseText);
 		} else {
-			document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
-			document.getElementById("Result").innerHTML = this.responseText;
+			console.log("Response:" + this.responseText);
 		}
 	}
 	var name = document.getElementById("DatabaseName0").value;
@@ -217,6 +216,7 @@ function executeRequest(query, visual, options, outputID) {
 				document.getElementById("RequestLabel").style.color = "red";
 				//document.getElementById("Request").style.borderColor = "red";
 				document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
+
 			} else {
 				document.getElementById("Result").innerHTML = "Status: " + this.status + " readyState: " + this.readyState;
 			}
@@ -234,6 +234,7 @@ function executeRequest(query, visual, options, outputID) {
 	path = path.replace(/}/g, "%7D");
 	document.getElementById("Result").style.visibility = "visible";
 	document.getElementById("Result").innerHTML = path;
+	console.log("Path: " + path);
 	request.open("GET", path, true);
 	document.getElementById("Result").innerHTML = "still running...";
 	request.send();
@@ -753,12 +754,14 @@ function loadFile() {
 	var result = null;
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
+			console.log("Status: " + this.status);
 			if (this.readyState == "4" && this.status == "200") {
 				result = xmlhttp.responseText;
+				console.log("File read: " + result);
 				buildReport(result);
 			}
 		}
-	xmlhttp.open("GET", "../../savedQueries.json", false);
+	xmlhttp.open("GET", "savedQueries.json", true);
 	xmlhttp.send();
 };
 

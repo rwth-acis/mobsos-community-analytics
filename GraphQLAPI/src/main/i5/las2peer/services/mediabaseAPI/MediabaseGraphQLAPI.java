@@ -632,6 +632,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 					
 					List<Map<String, Object>> objectList = new ArrayList<Map<String, Object>>();
 					for (String databaseName: databaseList) {
+						// what does this line do?
 						if (databaseName.equals("mediabase") || databaseName.equals("las2peer"))
 						urlString = retrieveRESTURL() + "data/" + databaseName + "/" + "DB2INFO5" + "/" + "BW_ENTRIES";			
 						url = new URL(urlString + parameters);
