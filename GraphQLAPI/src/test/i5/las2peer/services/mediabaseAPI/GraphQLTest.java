@@ -149,11 +149,38 @@ public class GraphQLTest {
 			System.out.println("Result of 'testGet': " + result.getResponse());
 			Assert.assertEquals("{}", result.getResponse().trim());
 			
-			pathing = "graphql?input=query%7Bmediabase_bw_entries(id:16)%7Bmood%7D%7D";
+			pathing = "graphql?input=query%7Bmediabase_bw_entries(id:14)%7Bmood%7D%7D";
 			System.out.println("Path: " + graphQLmainPath + pathing);
 			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
 			Assert.assertEquals(200, result.getHttpCode());
-			Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
+			Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"5\"}]}", result.getResponse().trim());
+			System.out.println("Result of 'testGet': " + result.getResponse().trim());
+			
+			pathing = "graphql?input=mutation%7BaddDatabase(name:%22testing%22,"
+					+ "url:%22jdbc:db2://beuys.informatik.rwth-aachen.de:50003/mav_dev%22,"
+					+ "dbSchema:%22DB2INFO5%22,"
+					+ "user:%22db2info5%22,"
+					+ "password:%22pfidb52ab%22,"
+					+ "dbType:%22DB2%22)%7D";
+			//pathing = "graphql?input=mutation%7BaddDatabase(name:'testing')%7D";
+			System.out.println("Path: " + graphQLmainPath + pathing);
+			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
+			Assert.assertEquals(200, result.getHttpCode());
+			//Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
+			System.out.println("Result of 'testGet': " + result.getResponse().trim());
+			
+			pathing = "graphql?input=query%7Btesting_bw_entries(id:16)%7Bmood%7D%7D";
+			System.out.println("Path: " + graphQLmainPath + pathing);
+			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
+			Assert.assertEquals(200, result.getHttpCode());
+			Assert.assertEquals("{\"testing_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
+			System.out.println("Result of 'testGet': " + result.getResponse().trim());
+			
+			pathing = "graphql?input=mutation%7BdeleteDatabase(name:%22testing%22)%7D";
+			System.out.println("Path: " + graphQLmainPath + pathing);
+			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
+			Assert.assertEquals(200, result.getHttpCode());
+			//Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
 			System.out.println("Result of 'testGet': " + result.getResponse().trim());
 			
 //			pathing = "graphql?input=query%7Ball_reviews%7Bid%7D%7D";

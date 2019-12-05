@@ -219,6 +219,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 			if (input == null) {
 				return Response.status(415).entity("No graphQL call present in request.").build();
 			}
+			System.out.println("INPUT: " + input);
 			SchemaParser schemaParser = new SchemaParser();
 	        SchemaGenerator schemaGenerator = new SchemaGenerator();
 		    
@@ -293,6 +294,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 			} else {
 				for (GraphQLError error: errors) {
 					if (error.getErrorType().toString().equals("ValidationError")) {
+						System.out.println("Error: " + error);
 						return Response.status(400).entity("GraphQL Input not correct.").build();
 					}
 				}
@@ -485,7 +487,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 				String dbSchema = environment.getArgument("dbSchema");
 				String user = environment.getArgument("user");
 				String password = environment.getArgument("password");
-				String type = environment.getArgument("type");
+				String type = environment.getArgument("dbType");
 				String urlString = retrieveRESTURL() + "database/" + name;
 				String data = "{" + "\"url\":\"" + dburl + "\", \"dbSchema\":\"" + dbSchema +
 						"\", \"user\":\"" + user + "\", \"password\":\"" + password + "\", \"dbType\":\"" + type + "\"}";
@@ -531,14 +533,14 @@ public class MediabaseGraphQLAPI extends RESTService{
 			@Override
 			public String get(DataFetchingEnvironment environment) {
 				String name = environment.getArgument("name");
-				String urlString = retrieveRESTURL() + "database/list/" + name;
+				String urlString = retrieveRESTURL() + "database/" + name;
 				String responseData = "";
 				
 				try {
 					URL url = new URL(urlString);
 					System.out.println(url.toString());
 					HttpURLConnection con = (HttpURLConnection) url.openConnection();
-					con.setRequestMethod("POST");
+					con.setRequestMethod("DELETE");
 					con.setRequestProperty("Content-Type", "application/json");
 					con.setDoOutput(true);
 		            DataOutputStream wr = new DataOutputStream(con.getOutputStream());

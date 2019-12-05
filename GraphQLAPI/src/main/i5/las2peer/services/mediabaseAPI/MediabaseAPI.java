@@ -1,5 +1,4 @@
 package i5.las2peer.services.mediabaseAPI;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,10 +45,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+// TODO Describe your own service
 /**
- * This call is only included to enable JUnit testing
+ * las2peer-Template-Service
+ * 
+ * This is a template for a very basic las2peer service that uses the las2peer WebConnector for RESTful access to it.
+ * 
+ * Note: If you plan on using Swagger you should adapt the information below in the SwaggerDefinition annotation to suit
+ * your project. If you do not intend to provide a Swagger documentation of your service API, the entire Api and
+ * SwaggerDefinition annotation should be removed.
  * 
  */
+// TODO Adjust the following configuration
 @Api
 @SwaggerDefinition(
 		info = @Info(
@@ -75,25 +82,24 @@ public class MediabaseAPI extends RESTService{
 	 }
 	 
 	 private static String filePath = "config.properties";
-	 private List<String> nameList = new ArrayList<>();
+	 //private List<String> nameList = new ArrayList<>();
 	 
-	 @Path("/database/list")
-	 @GET
-	 public Response getDatabaseNames() {
-		 
-		 if (nameList.isEmpty()) {
-			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
-					 .entity("No databases.").build();
-		 } else {
-			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
-					 .entity(nameList.toString()).build();
-		 }
-	 }
+//	 @Path("/database/list")
+//	 @GET
+//	 public Response getDatabaseNames() {
+//		 
+//		 if (nameList.isEmpty()) {
+//			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
+//					 .entity("No databases.").build();
+//		 } else {
+//			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
+//					 .entity(nameList.toString()).build();
+//		 }
+//	 }
 	 
-	 @Path("/database/list/{name}")
-	 //@POST
+	 @Path("/database/{name}")
 	 @DELETE
-	 @ApiOperation(value = "Retrieves entry from database.")
+	 @ApiOperation(value = "Deletes database from API.")
 	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful deletion."),
 							 @ApiResponse(code = 500, message = "Error when handling properties file.")})
 	 public Response deleteDatabase(@PathParam("name") String name) {
@@ -122,17 +128,17 @@ public class MediabaseAPI extends RESTService{
 	 @ApiOperation(value = "Adds database with then can be queried.")
 	 @ApiResponses(value = { @ApiResponse(code = 210, message = "Database was already registered."),
 			 				 @ApiResponse(code = 201, message = "Database was added successfully."),
-			 				 @ApiResponse(code = 406, message = "Name of database is already in use."),
 			 				 @ApiResponse(code = 422, message = "Properties are not provided in required format"),
 			 				 @ApiResponse(code = 500, message = "Error when handling properties file.")})
-	 public Response addDatabase(@PathParam("name") String name, @ApiParam(value="Properties of database in JSON format") String properties) {
+	 public Response addDatabase(@PathParam("name") String name,
+			 @ApiParam(value="Properties of database in JSON format") String properties) {
 		 
-		 System.out.println("Name: " + name);
+		 System.out.println("Properties: " + properties);
 		 try {
-			 if (nameList.contains(name)) {
-				 return Response.status(406).header("Access-Control-Allow-Origin", "*")
-						 .entity("Name of database is already in use.").build();
-			 }
+//			 if (nameList.contains(name)) {
+//				 return Response.status(406).header("Access-Control-Allow-Origin", "*")
+//						 .entity("Name of database is already in use.").build();
+//			 }
 			 InputStream input = new FileInputStream(filePath);
 			 Properties prop = new Properties();
 			 prop.load(input);
@@ -512,7 +518,8 @@ public class MediabaseAPI extends RESTService{
 	 }
 	 
 	 @Path("/data/{dbName}/{schema}/{tableName}")
-	 @DELETE
+	 //@DELETE
+	 @POST
 	 @ApiOperation(value = "Deletes entry from database.")
 	 @ApiResponses(value = { @ApiResponse(code = 200, message = "Deletion successful."),
 							 @ApiResponse(code = 422, message = "SQL error.")})

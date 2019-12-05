@@ -131,6 +131,37 @@ public class RESTTest {
 			}
 		}
 		
+		@Test 
+		public void addAndDeleteDatabase() {
+			try {
+				MiniClient client = new MiniClient(); 
+				client.setConnectorEndpoint(connector.getHttpEndpoint());
+				client.setLogin(testAgent.getIdentifier(), testPass);
+				
+				String pathing = "database/testing";
+				String properties = "{\"name\":\"testing\","
+						+ " \"url\":\"jdbc:db2://beuys.informatik.rwth-aachen.de:50003/mav_dev\","
+						+ " \"dbSchema\":\"DB2INFO5\", \"user\":\"db2info5\", \"password\":\"pfidb52ab\","
+						+ " \"dbType\":\"DB2\"}";
+				ClientResponse result = client.sendRequest("POST",
+						mainPath + pathing, properties);
+				Assert.assertEquals(201, result.getHttpCode());
+				
+				client = new MiniClient(); 
+				client.setConnectorEndpoint(connector.getHttpEndpoint());
+				client.setLogin(testAgent.getIdentifier(), testPass);
+				
+				pathing = "database/testing";
+				result = client.sendRequest("DELETE",
+						mainPath + pathing, "");
+				Assert.assertEquals(200, result.getHttpCode());
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				Assert.fail(e.toString());
+			}
+		}
+		
 		@Test
 		public void testGetDatabaseNames() {
 			try {
