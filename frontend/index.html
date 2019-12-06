@@ -69,7 +69,7 @@
 	<!--<h2>las2peer Community<h2>-->
 	<!--<button id="hidelas2peer" onclick='javascript:toggleVisibility("las2peerForm")'>&#9660;</button> <br>-->
 	<form method="POST" action="javascript:addDatabase()" id="las2peerForm">
-		<label>Database Name:<br><input type="text" name="DatabaseName" id="DatabaseName0" required></label> <br>
+		<label id="databaseNameLabel">Database Name:<br><input type="text" name="DatabaseName" id="DatabaseName0" required></label> <br>
 		<label>Database Host:<br><input type="text" name="DatabaseHost" id="DatabaseHost0" placeholder="format: url:port/database" required></label> <br>
 		<label>Database Schema:<br><input type="text" name="DatabaseSchema" id="DatabaseSchema0" required></label> <br>
 		<label>Username:<br><input type = "text" name="Username" id="Username0"  required></label> <br>
@@ -142,7 +142,7 @@
 		<div id="insertDiv">
 		</div>
 		<label>Target Database: <br> 
-		<select name="DatabaseSelect" id="DatabaseSelect" onchange="javascript:setTargetDatabases()"required>
+		<select name="DatabaseSelect" id="DatabaseSelect" onchange="javascript:getDatabases()"required>
 			<option value="mediabase">mediabase</option>
 			<option value="las2peer">las2peer</option>
 			<option value="All">All</option></label><br>

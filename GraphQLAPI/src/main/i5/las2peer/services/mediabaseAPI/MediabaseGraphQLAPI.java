@@ -217,7 +217,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 		
 		try {
 			if (input == null) {
-				return Response.status(415).entity("No graphQL call present in request.").build();
+				return Response.status(415).header("Access-Control-Allow-Origin", "*").entity("No graphQL call present in request.").build();
 			}
 			System.out.println("INPUT: " + input);
 			SchemaParser schemaParser = new SchemaParser();
@@ -295,7 +295,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 				for (GraphQLError error: errors) {
 					if (error.getErrorType().toString().equals("ValidationError")) {
 						System.out.println("Error: " + error);
-						return Response.status(400).entity("GraphQL Input not correct.").build();
+						return Response.status(400).header("Access-Control-Allow-Origin", "*").entity("GraphQL Input not correct.").build();
 					}
 				}
 				return Response.status(513).header("Access-Control-Allow-Origin", "*")
@@ -353,7 +353,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 		return "type REVIEW { \r\n"
 				+ "perma_link: String \r\n"
 				+ "date: String \r\n"
-				+ "rating: Int \r\n"
+				+ "mood: Int \r\n"
 				+ "author_id: Int \r\n"
 				+ "id: ID \r\n"
 				+ "\r\n}";
@@ -384,7 +384,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 				createRESTTypeDataFetcher("REVIEW", "date", "")));
 		runtimeWiring = runtimeWiring.type("REVIEW", typeWiring -> typeWiring
 				.dataFetcher("rating", 
-				createRESTTypeDataFetcher("REVIEW", "rating", "")));
+				createRESTTypeDataFetcher("REVIEW", "mood", "")));
 		runtimeWiring = runtimeWiring.type("REVIEW", typeWiring -> typeWiring
 				.dataFetcher("author_id", 
 				createRESTTypeDataFetcher("REVIEW", "author_id", "")));

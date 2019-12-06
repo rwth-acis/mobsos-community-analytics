@@ -218,7 +218,7 @@ public class MediabaseAPI extends RESTService{
 			    			 +  schema + "'";
 			     } 
 			 } else {
-				 return Response.status(500).entity("Database type is not supported.").build();
+				 return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Database type is not supported.").build();
 			 }
 		     
 		     ResultSet rs = stmt.executeQuery(query);
@@ -228,15 +228,15 @@ public class MediabaseAPI extends RESTService{
 		     stmt.close();
 		     connection.close();
 		     if (json != null && json.toString().equals("[]")) {
-					return Response.status(406).entity("Schema has no tables.").build();
+					return Response.status(406).header("Access-Control-Allow-Origin", "*").entity("Schema has no tables.").build();
 				}
-			 return Response.status(200).entity(json.toString()).build();
+			 return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(json.toString()).build();
 		 } catch (SQLException exc) {
 			    System.out.println("JDBC/SQL error: " + exc.toString());
-			    return Response.status(404).entity("Schema is not present in given database.").build();
+			    return Response.status(404).header("Access-Control-Allow-Origin", "*").entity("Schema is not present in given database.").build();
 		 } catch (IOException exc) {
 			 System.out.println("IOException: " + exc.toString());
-			 return Response.status(500).entity("Error when handling properties file.").build();
+			 return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error when handling properties file.").build();
 		 }
 		 
 	 }
@@ -272,30 +272,30 @@ public class MediabaseAPI extends RESTService{
 				    query = "SELECT COLNAME,TYPENAME,NULLS from SYSCAT.COLUMNS where TABNAME='" 
 				    + tableName + "' AND TABSCHEMA ='" + schema + "'";
 			    } else {
-			    	return Response.status(500).entity("Database type is not supported.").build();
+			    	return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Database type is not supported.").build();
 			    }
 
 			    ResultSet rs = stmt.executeQuery(query);
 			    
 				JSONArray json = resultSetToJSON(rs, false);
 				if (json != null && json.toString().equals("[]")) {
-					return Response.status(406).entity("There are no columns in this table.").build();
+					return Response.status(406).header("Access-Control-Allow-Origin", "*").entity("There are no columns in this table.").build();
 				}
 				
 			    rs.close();
 			    stmt.close();
 			    connection.close();
 			    
-			    return Response.status(200).entity(json.toString()).build();
+			    return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(json.toString()).build();
 			} catch (SQLException exc) {
 				if (exc.getMessage().contains("SQLCODE=-206, SQLSTATE=42703")) {
-					return Response.status(406).entity("Table is not present in given schema.").build();
+					return Response.status(406).header("Access-Control-Allow-Origin", "*").entity("Table is not present in given schema.").build();
 				}
 			    System.out.println("JDBC/SQL error: " + exc.toString());
-			    return Response.status(422).entity("SQL error.").build();
+			    return Response.status(422).header("Access-Control-Allow-Origin", "*").entity("SQL error.").build();
 			} catch (IOException exc) {
 				System.out.println("IOException: " + exc.toString());
-				return Response.status(500).entity("Error when handling properties file.").build();
+				return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error when handling properties file.").build();
 			}
 	 }
 	 
@@ -327,7 +327,7 @@ public class MediabaseAPI extends RESTService{
 							"WHERE TBNAME = '" + tableName + "'AND TBCREATOR = '" + schema + "' " +
 							"AND KEYSEQ > 0";
 				} else {
-					return Response.status(500).entity("Database type is not supported.").build();
+					return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Database type is not supported.").build();
 				}
 				 
 				ResultSet keys = stmt.executeQuery(query);
@@ -337,13 +337,13 @@ public class MediabaseAPI extends RESTService{
 				stmt.close();
 				connection.close();
 				
-				return Response.status(200).entity(json.toString()).build();
+				return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(json.toString()).build();
 			} catch (SQLException exc) {
 			    System.out.println("JDBC/SQL error: " + exc.toString());
-			    return Response.status(422).entity("SQL error.").build();
+			    return Response.status(422).header("Access-Control-Allow-Origin", "*").entity("SQL error.").build();
 			} catch (IOException exc) {
 				System.out.println("IOException: " + exc.toString());
-				return Response.status(500).entity("Error when handling properties file.").build();
+				return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error when handling properties file.").build();
 			}
 	 }
 	 
@@ -378,7 +378,7 @@ public class MediabaseAPI extends RESTService{
 			    ResultSet rs = stmt.executeQuery(query);
 				JSONArray json = resultSetToJSON(rs, true);
 				if (json != null && json.toString().equals("[]")) {
-					return Response.status(406).entity("Entry is empty.").build();
+					return Response.status(406).header("Access-Control-Allow-Origin", "*").entity("Entry is empty.").build();
 				}
 			    rs.close();
 			    stmt.close();
@@ -387,13 +387,13 @@ public class MediabaseAPI extends RESTService{
 			    return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(json.toString()).build();
 			} catch (SQLException exc) {
 				if (exc.getMessage().contains("SQLCODE=-206, SQLSTATE=42703")) {
-					return Response.status(406).entity("Table does not exits.").build();
+					return Response.status(406).header("Access-Control-Allow-Origin", "*").entity("Table does not exits.").build();
 				}
 				if (exc.getMessage().contains("SQLCODE=-204, SQLSTATE=42704")) {
-					return Response.status(406).entity("Schema does not exist.").build();
+					return Response.status(406).header("Access-Control-Allow-Origin", "*").entity("Schema does not exist.").build();
 				}
 			    System.out.println("JDBC/SQL error: " + exc.toString());
-			    return Response.status(422).entity("SQL error.").build();
+			    return Response.status(422).header("Access-Control-Allow-Origin", "*").entity("SQL error.").build();
 			}
 	 }
 	 
@@ -437,21 +437,21 @@ public class MediabaseAPI extends RESTService{
 			 		query = query + "";
 			 		break;
 			 	default:
-			 		return Response.status(460).build();
+			 		return Response.status(460).header("Access-Control-Allow-Origin", "*").build();
 			 		
 			 }
 			 
 			 ResultSet rs = stmt.executeQuery(query); 
 			 JSONArray json = resultSetToJSON(rs, true);
 			 if (json != null && json.toString().equals("[]")) {
-				return Response.status(455).build();
+				return Response.status(455).header("Access-Control-Allow-Origin", "*").build();
 			 }
 			
-			 return Response.status(200).entity(json.toString()).build();
+			 return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(json.toString()).build();
 			 			 
 			 
 		 } catch (SQLException exc) {
-			 return Response.status(400).build();
+			 return Response.status(400).header("Access-Control-Allow-Origin", "*").build();
 			 
 		 }
 	 }
@@ -507,13 +507,13 @@ public class MediabaseAPI extends RESTService{
 		    stmt.execute(query);
 		    stmt.close();
 		    connection.close();
-		    return Response.status(201).entity("Created.").build();
+		    return Response.status(201).header("Access-Control-Allow-Origin", "*").entity("Created.").build();
 		 } catch (SQLException exc) {
 			 System.out.println("JDBC/SQL error: " + exc.toString());
-		     return Response.status(422).entity("SQL error.").build();
+		     return Response.status(422).header("Access-Control-Allow-Origin", "*").entity("SQL error.").build();
 		 } catch (JSONException exc) {
 			 System.out.println("JSON error: " + exc.toString());
-			 return Response.status(415).entity("Data is not in valid JSON format").build();
+			 return Response.status(415).header("Access-Control-Allow-Origin", "*").entity("Data is not in valid JSON format").build();
 			 
 		 }
 	 }
@@ -538,9 +538,9 @@ public class MediabaseAPI extends RESTService{
 		    stmt.execute(query);
 		    stmt.close();
 		    connection.close();
-			return Response.status(200).build();
+			return Response.status(200).header("Access-Control-Allow-Origin", "*").build();
 		 } catch (SQLException exc) {
-			 return Response.status(422).entity("SQL error.").build();
+			 return Response.status(422).header("Access-Control-Allow-Origin", "*").entity("SQL error.").build();
 		 }
 	 }
 	 
@@ -560,7 +560,7 @@ public class MediabaseAPI extends RESTService{
 			 ResultSet rs = stmt.executeQuery(query);
 			 JSONArray json = resultSetToJSON(rs, false);
 			 if (json != null && json.toString().equals("[]")) {
-				return Response.status(406).build();
+				return Response.status(406).header("Access-Control-Allow-Origin", "*").build();
 			 }
 			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
 					 .entity(json.toString()).build();
@@ -585,9 +585,9 @@ public class MediabaseAPI extends RESTService{
 			 stmt.execute(query);
 			 stmt.close();
 		     connection.close();
-			 return Response.status(201).build(); 
+			 return Response.status(201).header("Access-Control-Allow-Origin", "*").build(); 
 		 } catch (SQLException exc) {
-			 return Response.status(422).entity("SQL error.").build();
+			 return Response.status(422).header("Access-Control-Allow-Origin", "*").entity("SQL error.").build();
 		 }
 	 }
 	 
@@ -610,10 +610,10 @@ public class MediabaseAPI extends RESTService{
 				 }
 			 }
 			 input.close();
-			 return Response.status(200).entity(names.toString()).build();
+			 return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(names.toString()).build();
 		 } catch (IOException exc) {
 				System.out.println("IOException: " + exc.toString());
-				return Response.status(500).entity("Error when handling properties file.").build();
+				return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Error when handling properties file.").build();
 			}
 	 }
 	 

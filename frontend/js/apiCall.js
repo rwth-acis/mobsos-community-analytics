@@ -81,12 +81,19 @@ google.charts.load('current', {'packages':['corechart']});
 google.charts.load("current", {packages:["calendar"]});
 
 function addDatabase() {
+	document.getElementById("databaseNameLabel").style.color = "black";
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if (this.readyState == "4" && this.status == "200") {
 			console.log("Response:" + this.responseText);
+			document.getElementById("databaseNameLabel").style.color = "green";
+		} else if (this.readyState == "1") {
+			document.getElementById("databaseNameLabel").style.color = "blue";
 		} else {
 			console.log("Response:" + this.responseText);
+			console.log("readyState: " + this.readyState);
+			console.log("status: " + this.status);
+			document.getElementById("databaseNameLabel").style.color = "red";
 		}
 	}
 	var name = document.getElementById("DatabaseName0").value;
@@ -98,9 +105,14 @@ function addDatabase() {
 	//var path = "http://localhost:9000/GraphqlAPITest/graphql/graphqlrest/graphql";
 	var path = apiOptions.APIURL + "/graphql/graphql?input=";
 	path = path + "mutation%7BaddDatabase"
-	var object = "(name: \"" + name + "\", url:\"" + url + "\", dbSchema:\"" + dbSchema + "\", user:\"" + user + "\", password:\"" + password + "\", dbType:\"" + dbType + "\")%7D";
+	var object = "(name:%22" + name + "%22, url:%22" + url + "%22,dbSchema:%22" + dbSchema + "%22,user:%22" + user + "%22,password:%22" + password +
+					"%22,dbType:%22" + dbType + "%22)%7D";
 	object = object.replace(/\//g, "%2F");
+	//object = object.replace(/\"/g, "%22");
 	path = path + object
+	path = path.replace(/{/g, "%7B");
+	path = path.replace(/}/g, "%7D");
+
 	//var object = "{" + "\"url\":\"" + url + "\", \"user\":\"" + user + "\", \"password\":\"" + password + "\"}";
 	document.getElementById("Result").style.visibility = "visible";
 	document.getElementById("Result").innerHTML = "running...";
@@ -184,6 +196,7 @@ function executeRequest(query, visual, options, outputID) {
 				document.getElementById("RequestLabel").style.color = "black";
 				//document.getElementById("RequestLabel").innerHTML = "Visualization Request:";
 				document.getElementById("Result").innerHTML = this.responseText;
+				console.log("Result: " + this.responseText);
 				var data = this.responseText;
 				getDatabases();
 				//var chartType = document.getElementById("Visualization").value;
@@ -303,7 +316,7 @@ function callRequest() {
 function callRequestConstruction() {
 	if (document.getElementById("DatabaseSelect").value == "All") {
 		if (document.getElementById("TemplateType").value == "Media-User") {
-			var query = "query{all_reviews(id:\"" +  document.getElementById("userInput").value + "\"){id, rating}}";
+			var query = "query{all_reviews(id:\"" +  document.getElementById("userInput").value + "\"){id, mood}}";
 		} else if (document.getElementById("TemplateType").value == "Media-Platform") {
 			var query = "query{all_reviews{author_id, perma_link}}";
 		}
@@ -687,6 +700,7 @@ function getDatabases() {
 		request.onreadystatechange = function() {
 			if (this.readyState == "4" && this.status == "200") {
 				document.getElementById("Result").innerHTML = this.responseText;
+				console.log("databasesResult: " + this.responseText);
 				var data = this.responseText;
 				data = (JSON.parse(data).databaseNames).split(", ");
 				for (var i = 0; i < data.length; i++) {
