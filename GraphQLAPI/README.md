@@ -16,7 +16,8 @@ Execute following command in command line
     ant all
 
 After this command the property *restAPIURL* can be changed to URL of corresponding RESTful API, see [here](https://github.com/rwth-acis/mobsos-community-analytics/tree/master/RESTAPI).
-    
+The unit tests only work on specific databases, therefore they are skipped in the build process. If access to the specific databases is specified in the config.properties file and the tests should be executed, set the property *junit* to *true*.
+
 ## Deployment
 Navigate to mobsos-community-analytics/GraphQLAPI/bin and execute the following
 

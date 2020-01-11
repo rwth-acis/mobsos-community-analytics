@@ -6,31 +6,9 @@
 			"options":{"title":"Mood in Calendar","width":1000,"height":800}
 		},
 		{
-			"query":"query{mediabase_bw_entries{id, mood}}",
-			"visual":"GOOGLEPIECHART",
-			"options":{"title":"Testing pie chart","width":400,"height":300}
-		},
-		{
-			"query":"query{mediabase_bw_entries{id, mood}}",
-			"visual":"GOOGLEPIECHART",
-			"options":{"title":"Testing pie chart","width":400,"height":300}
-		}
-	],
-	"templates":[
-		{
-			"name":"template",
-			"targetDatabase":"mediabase",
-			"from":"",
-			"selectionType":[
-								{
-									"name":"date",
-									"type":"String"
-								},
-								{
-									"name":"mood",
-									"type":"Int"
-								}
-							]
+			"query":"query{all_reviews(id:14){date, mood}}",
+			"visual":"GOOGLELINECHART",
+			"options":{"title":"Reviews of user 14","width":400,"height":300}
 		}
 	]
 }

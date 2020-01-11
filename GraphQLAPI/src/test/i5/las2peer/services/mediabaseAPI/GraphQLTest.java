@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,6 +55,10 @@ public class GraphQLTest {
 	 */
 	@Before
 	public void startServer() throws Exception {
+		
+		// test cases are designed for specific databases, credentials are not publicly available
+		// therefore tests should be skipped
+		Assume.assumeTrue(getJUNIT().equals("true"));
 		// start node
 		node = new LocalNodeManager().newNode();
 		node.launch();
@@ -73,9 +78,6 @@ public class GraphQLTest {
 		RESTconnector.setLogStream(new PrintStream(RESTlogStream));
 		RESTconnector.start(node);
 		
-		// start node
-		//node = new LocalNodeManager().newNode();
-		//node.launch();
 
 		// add agent to node
 		graphQLtestAgent = MockAgentFactory.getAdam();
@@ -120,10 +122,6 @@ public class GraphQLTest {
 			RESTconnector.stop();
 			RESTconnector = null;
 		}
-//		if (RESTnode != null) {
-//			RESTnode.shutDown();
-//			RESTnode = null;
-//		}
 		if (RESTlogStream != null) {
 			System.out.println("REST Connector-Log:");
 			System.out.println("--------------");
@@ -136,59 +134,18 @@ public class GraphQLTest {
 	public void testquery() {
 		try {
 			MiniClient client = new MiniClient(); 
-			//client.setConnectorEndpoint(graphQLconnector.getHttpEndpoint());
 			client.setConnectorEndpoint(graphQLconnector.getHttpEndpoint());
 			System.out.println("Endpoint: " + graphQLconnector.getHttpEndpoint());
 			client.setLogin(graphQLtestAgent.getIdentifier(), graphQLtestPass);
 			
-			// encoding for "{" = %7B and "}" = %7D as they are unsafe according to RFC 1738
-			String pathing = "graphql?input=query%7Bmediabase_bw_entries(id:915609)%7Bperma_link%7D%7D";
+			// encoding for "{" = %7B and "}" = %7D as they are unsafe according to RFC 1738			
+			String pathing = "graphql?input=query%7Bmediabase_bw_entries(id:14)%7Bmood%7D%7D";
+			pathing = "graphql?input=query%7Ball_reviews(id:\"14\")%7Bid, mood%7D%7D";
 			System.out.println("Path: " + graphQLmainPath + pathing);
 			ClientResponse result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
 			Assert.assertEquals(200, result.getHttpCode());
-			System.out.println("Result of 'testGet': " + result.getResponse());
-			Assert.assertEquals("{}", result.getResponse().trim());
-			
-			pathing = "graphql?input=query%7Bmediabase_bw_entries(id:14)%7Bmood%7D%7D";
-			System.out.println("Path: " + graphQLmainPath + pathing);
-			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
-			Assert.assertEquals(200, result.getHttpCode());
 			Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"5\"}]}", result.getResponse().trim());
 			System.out.println("Result of 'testGet': " + result.getResponse().trim());
-			
-			pathing = "graphql?input=mutation%7BaddDatabase(name:%22testing%22,"
-					+ "url:%22jdbc:db2://beuys.informatik.rwth-aachen.de:50003/mav_dev%22,"
-					+ "dbSchema:%22DB2INFO5%22,"
-					+ "user:%22db2info5%22,"
-					+ "password:%22pfidb52ab%22,"
-					+ "dbType:%22DB2%22)%7D";
-			//pathing = "graphql?input=mutation%7BaddDatabase(name:'testing')%7D";
-			System.out.println("Path: " + graphQLmainPath + pathing);
-			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
-			Assert.assertEquals(200, result.getHttpCode());
-			//Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
-			System.out.println("Result of 'testGet': " + result.getResponse().trim());
-			
-			pathing = "graphql?input=query%7Btesting_bw_entries(id:16)%7Bmood%7D%7D";
-			System.out.println("Path: " + graphQLmainPath + pathing);
-			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
-			Assert.assertEquals(200, result.getHttpCode());
-			Assert.assertEquals("{\"testing_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
-			System.out.println("Result of 'testGet': " + result.getResponse().trim());
-			
-			pathing = "graphql?input=mutation%7BdeleteDatabase(name:%22testing%22)%7D";
-			System.out.println("Path: " + graphQLmainPath + pathing);
-			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
-			Assert.assertEquals(200, result.getHttpCode());
-			//Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
-			System.out.println("Result of 'testGet': " + result.getResponse().trim());
-			
-//			pathing = "graphql?input=query%7Ball_reviews%7Bid%7D%7D";
-//			System.out.println("Path: " + graphQLmainPath + pathing);
-//			result = client.sendRequest("GET",  graphQLmainPath + pathing, "");
-//			Assert.assertEquals(200, result.getHttpCode());
-//			Assert.assertEquals("{\"mediabase_bw_entries\":[{\"mood\":\"4\"}]}", result.getResponse().trim());
-//			System.out.println("Result of 'testGet': " + result.getResponse().trim());
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.toString());
@@ -231,7 +188,8 @@ public class GraphQLTest {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 			}
 			
- 		    con = DriverManager.getConnection(prop.getProperty("db.url"), prop.getProperty("db.user"), prop.getProperty("db.password"));
+ 		    con = DriverManager.getConnection(prop.getProperty("db.url_mediabase"),
+ 		    		prop.getProperty("db.user_mediabase"), prop.getProperty("db.password_mediabase"));
  		    String schema = "DB2INFO5";
  	        String tableName = "BW_ENTRIES";
  			List<String> primaryKeys = MediabaseGraphQLAPI.getPrimaryKeys(tableName, schema, con);
@@ -247,13 +205,6 @@ public class GraphQLTest {
  					Assert.assertEquals(compareKeys.get(i), primaryKeys.get(i));
  				}
  			}
- 			
- 			schema = "DOES_NOT_EXIST";
- 	        tableName = "DOES_NOT_EXIST";
- 	        
- 			primaryKeys = MediabaseGraphQLAPI.getPrimaryKeys(tableName, schema, con);
- 			
- 			Assert.assertTrue(primaryKeys.isEmpty());
         } catch (SQLException exc) {
  		    System.err.println("getConnection failed: " + exc.toString());
  		   Assert.fail("Exception");
@@ -283,6 +234,8 @@ public class GraphQLTest {
 			
 			String schema = "DB2INFO5";
 	        String tableName = "FW_ATOM_ENTRYITEMCONNECT";
+	        con = DriverManager.getConnection(prop.getProperty("db.url_mediabase"),
+ 		    		prop.getProperty("db.user_mediabase"), prop.getProperty("db.password_mediabase"));
 			List<String> foreignKeys = MediabaseGraphQLAPI.getForeignTables(tableName, schema, con);
 			
 			List<String> compareKeys = new ArrayList<>();
@@ -298,19 +251,29 @@ public class GraphQLTest {
 					Assert.assertEquals(compareKeys.get(i), foreignKeys.get(i));
 				}
 			}
-			
-			schema = "DOES_NOT_EXIST";
-	        tableName = "DOES_NOT_EXIST";
-	        
-			foreignKeys = MediabaseGraphQLAPI.getForeignTables(tableName, schema, con);
-			
-			Assert.assertTrue(foreignKeys.isEmpty());
         } catch (IOException exc) {
  			System.err.println("Input failed: " + exc.toString());
  			Assert.fail("Exception");
  		} catch (ClassNotFoundException exc) {
 		    System.err.println("Could not load database driver:" + exc.toString());
 		    Assert.fail("Exception");
+		} catch (SQLException exc) {
+			System.err.println("Could establish SQL connection:" + exc.toString());
+		    Assert.fail("Exception");
+		}
+	}
+	
+	private String getJUNIT() {
+		InputStream input;
+		try {
+			input = new FileInputStream("config.properties");
+			Properties prop = new Properties();
+			prop.load(input);
+			String junit = prop.getProperty("junit");
+			input.close();
+			return junit;
+		} catch (IOException exc) {
+			return null;
 		}
 	}
 }

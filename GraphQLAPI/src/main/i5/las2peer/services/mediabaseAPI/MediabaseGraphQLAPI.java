@@ -71,15 +71,8 @@ import io.swagger.annotations.SwaggerDefinition;
 		info = @Info(
 				title = "MediabaseGraphQLAPI",
 				version = "1.0.0",
-				description = "A GraphQL API wrapped around a RESTful API for databases.",
-				termsOfService = "http://your-terms-of-service-url.com",
-				contact = @Contact(
-						name = "John Doe",
-						url = "provider.com",
-						email = "john.doe@provider.com"),
-				license = @License(
-						name = "your software license name",
-						url = "http://your-software-license-url.com")))
+				description = "A GraphQL API wrapped around a RESTful API for databases."
+				))
 
 @ServicePath("/graphql")
 public class MediabaseGraphQLAPI extends RESTService{
@@ -102,23 +95,11 @@ public class MediabaseGraphQLAPI extends RESTService{
 			FileChannel.open(Paths.get(mutationSchemaFile), StandardOpenOption.WRITE).truncate(0).close();
 			FileChannel.open(Paths.get(typeSchemaFile), StandardOpenOption.WRITE).truncate(0).close();
 			
-			//get RESTAPI connection
-//			InputStream initInput = new FileInputStream("config.properties");
-//		    Properties prop = new Properties();
-//			prop.load(initInput);
-//			String url = prop.getProperty("restAPIURL");
-//			if (url.equals("build")) {
-//				((MediabaseGraphQLAPI)Context.get().getService()).setRestAPIURL("http://localhost:8000/rest/");
-//			} else {
-//				((MediabaseGraphQLAPI)Context.get().getService()).setRestAPIURL(url);
-//			}
-//			initInput.close();
 		} catch (IOException exc) {
 			System.out.println("IOException: " + exc.toString());
 		}
 		
-		// build initial schema and add mediabase and las2peer database from properties file to it
-		//sc.setAttribute("RuntimeWiring", initialRuntimeWiring());
+		// build initial schema
 		runtimeWiring = initialRuntimeWiring();
 		String querySchema = initialQuerySchema();
 		String mutationSchema = initialMutationSchema();
@@ -140,11 +121,8 @@ public class MediabaseGraphQLAPI extends RESTService{
 			StringBuilder schema = new StringBuilder();
 			schema.append(querySchema);
 			schema.append(mutationSchema);
-			
-//			writer = new BufferedWriter(new FileWriter(schemaFile, true));
-//		    writer.write(schema.toString());
-//		    writer.close();
 		    
+			// add mediabase and las2peer database from properties file to schema
 		    InputStream input = new FileInputStream(propertyFile);
 		    Properties prop = new Properties();
 			prop.load(input);
@@ -160,18 +138,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 		    
 			System.out.println("Building schema.");
 			updateSchema("mediabase", mediabaseSchema);
-			updateSchema("las2peer", las2peerSchema);
-//			System.out.println("Building query schema.");
-//		    updateQuerySchema("mediabase", mediabaseSchema);
-//		    updateQuerySchema("las2peer", las2peerSchema);
-//		    
-//		    System.out.println("Building mutation schema.");
-//		    updateMutationSchema("mediabase", mediabaseSchema);
-//		    updateMutationSchema("las2peer", las2peerSchema);
-//		    
-//		    System.out.println("Building type schema.");
-//		    updateTypeSchema("mediabase", mediabaseSchema);
-//		    updateTypeSchema("las2peer", las2peerSchema);		    
+			updateSchema("las2peer", las2peerSchema);		    
 		    
 		} catch (IOException exc) {
 			System.out.println("IOException: " + exc.toString());
@@ -194,9 +161,6 @@ public class MediabaseGraphQLAPI extends RESTService{
 		this.restAPIURL = restAPI;
 	}
 	
-	//private static String restAPI = "http://localhost:8000/rest/";
-	//private String restAPITest = "http://localhost:8000/rest/";
-	//private static String restAPI = "http://137.226.58.243:8000/rest/";
 	private static String propertyFile = "config.properties";
 	private static String schemaFile = "schemas/schema.graphqls";
 	
@@ -225,28 +189,21 @@ public class MediabaseGraphQLAPI extends RESTService{
 		    
 		    BufferedReader reader = new BufferedReader(new FileReader(querySchemaFile));
 			StringBuilder schemaBuilder = new StringBuilder();
-			// for reading one line
 			String line = null;
-			// keep reading till readLine returns null
 			while ((line = reader.readLine()) != null) {
-			    // keep appending last line read to buffer
 			    schemaBuilder.append(line + "\r\n");
 			}
 		    reader.close();
 		    reader = new BufferedReader(new FileReader(mutationSchemaFile));
 		    line = null;
-			// keep reading till readLine returns null
 			while ((line = reader.readLine()) != null) {
-			    // keep appending last line read to buffer
 			    schemaBuilder.append(line + "\r\n");
 			}
 		    reader.close();
 		    
 		    reader = new BufferedReader(new FileReader(typeSchemaFile));
 		    line = null;
-			// keep reading till readLine returns null
 			while ((line = reader.readLine()) != null) {
-			    // keep appending last line read to buffer
 			    schemaBuilder.append(line + "\r\n");
 			}
 		    reader.close();
@@ -267,9 +224,6 @@ public class MediabaseGraphQLAPI extends RESTService{
 			if (input.contains("addDatabase")) {
 				String name = getInputProperty(input, "name");
 				String dbSchema = getInputProperty(input, "dbSchema");
-//				updateQuerySchema(name, dbSchema);
-//				updateMutationSchema(name, dbSchema);
-//				updateTypeSchema(name, dbSchema);
 				updateSchema(name, dbSchema);
 
 				RuntimeWiring.Builder test = ((MediabaseGraphQLAPI)(Context.get().getService())).getRuntimeWiring();
@@ -635,31 +589,37 @@ public class MediabaseGraphQLAPI extends RESTService{
 					List<Map<String, Object>> objectList = new ArrayList<Map<String, Object>>();
 					for (String databaseName: databaseList) {
 						// what does this line do?
-						if (databaseName.equals("mediabase") || databaseName.equals("las2peer"))
-						urlString = retrieveRESTURL() + "data/" + databaseName + "/" + "DB2INFO5" + "/" + "BW_ENTRIES";			
-						url = new URL(urlString + parameters);
-						System.out.println(url.toString());
-						con = (HttpURLConnection) url.openConnection();
-						con.setRequestMethod("GET");
-						con.setDoOutput(false);
-						in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-						inputLine = "";
-						
-						JSONArray jsonArray = new JSONArray();
-						while ((inputLine = in.readLine()) != null) {
-							System.out.println(inputLine);
-							jsonArray = new JSONArray(inputLine);
-							System.out.println("jsonArray: " + jsonArray.toString());
-							for (int i = 0; i < jsonArray.length(); i++) {
-								objectList.add(toMap((JSONObject) jsonArray.get(i)));							
+						if (databaseName.equals("mediabase") || databaseName.equals("las2peer")) {
+							if (databaseName.equals("mediabase")) {
+								urlString = retrieveRESTURL() +
+										"data/" + databaseName + "/" + "DB2INFO5" + "/" + "BW_ENTRIES";
+								url = new URL(urlString + parameters.replace("id", "author_id"));
 							}
+							else {
+								urlString = retrieveRESTURL()
+										+ "data/" + databaseName + "/" + "las2peer" + "/" + "reviewentry";
+								url = new URL(urlString + "?condition=author_id=14");
+							}
+							System.out.println(url.toString());
+							con = (HttpURLConnection) url.openConnection();
+							con.setRequestMethod("GET");
+							con.setDoOutput(false);
+							in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+							inputLine = "";
+							
+							JSONArray jsonArray = new JSONArray();
+							while ((inputLine = in.readLine()) != null) {
+								System.out.println(inputLine);
+								jsonArray = new JSONArray(inputLine);
+								System.out.println("jsonArray: " + jsonArray.toString());
+								for (int i = 0; i < jsonArray.length(); i++) {
+									objectList.add(toMap((JSONObject) jsonArray.get(i)));							
+								}
+							}
+							in.close();
 						}
-						in.close();
 					}
 					
-//					JSONObject jsonObject = new JSONObject();
-//					jsonObject.put(tableName.toLowerCase(), (Object) jsonArray);
-//					System.out.println("JSONObject: " + jsonObject.getJSONArray(tableName.toLowerCase()).get(0));
 					return objectList;
 				} catch (JSONException exc) {
 					System.out.println("JSONException: " + exc.toString());
@@ -701,33 +661,24 @@ public class MediabaseGraphQLAPI extends RESTService{
 		in.close();
 		StringBuilder querySchemaBuilder = new StringBuilder();
 		BufferedReader reader = new BufferedReader(new FileReader(querySchemaFile));
-		// for reading one line
 		String line = null;
-		// keep reading till readLine returns null
 		while ((line = reader.readLine()) != null) {
-		    // keep appending last line read to buffer
 		    querySchemaBuilder.append(line + "\r\n");
 		}
 	    reader.close();
 	    
 	    StringBuilder mutationSchemaBuilder = new StringBuilder();
 		reader = new BufferedReader(new FileReader(mutationSchemaFile));
-		// for reading one line
 		line = null;
-		// keep reading till readLine returns null
 		while ((line = reader.readLine()) != null) {
-		    // keep appending last line read to buffer
 			mutationSchemaBuilder.append(line + "\r\n");
 		}
 		reader.close();
 		
 		StringBuilder typeSchemaBuilder = new StringBuilder();
 		reader = new BufferedReader(new FileReader(typeSchemaFile));
-		// for reading one line
 		line = null;
-		// keep reading till readLine returns null
 		while ((line = reader.readLine()) != null) {
-		    // keep appending last line read to buffer
 			typeSchemaBuilder.append(line + "\r\n");
 		}
 		reader.close();
@@ -808,36 +759,21 @@ public class MediabaseGraphQLAPI extends RESTService{
 			tableIn.close();
 			String colname;
 			String coltype;
-			primaryKeys.clear();
-			foreignKeys.clear();
-			
-//			URL keyUrl = new URL(retrieveRESTURL() + "metadata/" + name + "/" + databaseSchema + "/"
-//			+ tableName + "/primaryKeys");
-//			System.out.println(keyUrl.toString());
-//			HttpURLConnection keyCon = (HttpURLConnection) keyUrl.openConnection();
-//			keyCon.setRequestMethod("GET");
-//			keyCon.setDoOutput(false);
-//			BufferedReader keyIn = new BufferedReader(new InputStreamReader(keyCon.getInputStream()));
-//			String keyInputLine;
-//			
-//			while ((keyInputLine = keyIn.readLine()) != null) {
-//				JSONArray jsonArray = new JSONArray(keyInputLine);
-//				for (int i = 0; i < jsonArray.length(); i++) {
-//					primaryKeys.add(((JSONObject) jsonArray.get(i)).getString("name"));
-//				}	
-//			}
-//			keyIn.close();
-			
+			foreignKeys.clear();			
 				
 			// transform db2 entries to GraphQL object types and build runtime wiring
 			// each table in database becomes GraphQL object type with column names as fields
-			//typeSchemaBuilder.append(" type " + tableName + " { " + "\r\n");
 			typeSchemaBuilder.append(" type " + name + "_" + tableName + " { " + "\r\n");
 			
+			System.out.println("PrimaryKeys: " + primaryKeys.toString());
 			for (int i = 0; i < tableColName.size(); i++) {
 				colname = tableColName.get(i);
+				
+				// changes make colname unrecognisable in primary keys
 				colname = colname.replaceAll("\\.", "_");
 				colname = colname.replaceAll("\\-", "_");
+				
+				// field names have to start with a character
 				if (!Character.isLetter(colname.charAt(0))) {
 					colname = "nr_" + colname;
 				}
@@ -849,6 +785,9 @@ public class MediabaseGraphQLAPI extends RESTService{
 				} else {
 					switch (coltype) {
 					case "INTEGER":
+						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": Int");
+						break;
+					case "int":
 						typeSchemaBuilder.append(" " + colname.toLowerCase() + ": Int");
 						break;
 					case "SMALLINT":
@@ -877,6 +816,7 @@ public class MediabaseGraphQLAPI extends RESTService{
 					typeSchemaBuilder.append("\r\n");
 				}
 			}
+			primaryKeys.clear();
 			typeSchemaBuilder.append("} " + "\r\n");
 		}
 				
@@ -1028,11 +968,8 @@ public class MediabaseGraphQLAPI extends RESTService{
 
 		StringBuilder mutationSchemaBuilder = new StringBuilder();
 		BufferedReader reader = new BufferedReader(new FileReader(mutationSchemaFile));
-		// for reading one line
 		String line = null;
-		// keep reading till readLine returns null
 		while ((line = reader.readLine()) != null) {
-		    // keep appending last line read to buffer
 			mutationSchemaBuilder.append(line + "\r\n");
 		}
 		
@@ -1084,11 +1021,8 @@ public class MediabaseGraphQLAPI extends RESTService{
 		
 		StringBuilder typeSchemaBuilder = new StringBuilder();
 		BufferedReader reader = new BufferedReader(new FileReader(typeSchemaFile));
-		// for reading one line
 		String line = null;
-		// keep reading till readLine returns null
 		while ((line = reader.readLine()) != null) {
-		    // keep appending last line read to buffer
 			typeSchemaBuilder.append(line + "\r\n");
 		}
 		
@@ -1142,7 +1076,6 @@ public class MediabaseGraphQLAPI extends RESTService{
 				
 			// transform db2 entries to GraphQL object types and build runtime wiring
 			// each table in database becomes GraphQL object type with column names as fields
-			//typeSchemaBuilder.append(" type " + tableName + " { " + "\r\n");
 			typeSchemaBuilder.append(" type " + name + "_" + tableName + " { " + "\r\n");
 			
 			for (int i = 0; i < tableColName.size(); i++) {

@@ -14,7 +14,10 @@ Add database credentials for two database *mediabase* and *las2peer* into config
 Execute following command in command line
 
     ant all
-    
+
+
+The unit tests only work on specific databases, therefore they are skipped in the build process. If access to the specific databases is specified in the config.properties file and the tests should be executed, set the property *junit* to *true*. 
+
 ## Deployment
 Navigate to mobsos-community-analytics/RESTAPI/bin and execute the following
 

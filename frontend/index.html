@@ -12,9 +12,6 @@
 	<script src="./bower_components/yjs/y.js"></script>
 	<script type="text/javascript" src="js/loader.js"></script>
 	
-
-	<!--<script type="text/javascript" src="js/collaborative.js">-->
-	
 	<!--UIKit Javascript-->
 	<script type="text/javascript" src="js/uikit.min.js"></script>
 	<script type="text/javascript" src="js/uikit-icons.min.js"></script>
@@ -37,25 +34,14 @@
         data-size="sm"
         data-scope="openid phone email address profile"><img style="margin-right:0px;" src="images/learningLayers.png" height="16px"> Sign in with <i>Learning Layers</i>
 </button>
-<!--<form id="qv_loginform" action="javascript:onlogin()"></form>-->
 </div>
-<!--<div id="mySidenav" class="sidenav">
-	<button class="closebtn" onclick="closeNav()">&#xab;</button>
-	<a href="#analytics.html#requestForm">Query</a>
-	<a href="#databaseForm.html#databasePage">Databases</a>
-</div>-->
-<!--<div class="navigationBar" style="display:block">uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky"
- class="uk-navbar-container" uk-navbar class="uk-navbar-nav"-->
 <div class="navigationBar" id="navigationBar" style="display:none">
 <nav>
-	<!--<ul>-->
-		<!--<button class="navbutton" style="display:none"> 🞬 </button><br>-->
-		<a href="javascript:void(0)" class="closebutton" onclick="closeNavbar()">×</a>
-		<li><a href="#requestForm" class="active navbar"><span style="color:black" uk-icon="icon: file-edit; ratio: 1.5;"></span> Visualization</a></li>
-		<li><a href="#requestConstructor" class="navbar"><span style="color:black" uk-icon="icon: nut; ratio: 1.5"></span> Visualization Templates</a></li>
-		<li><a href="#databaseForm" class="navbar"><span style="color:black" uk-icon="icon: database; ratio: 1.5"></span> Database Management</a></li>
-		<li><a href="#report" onclick="javascript:loadFile()" class="navbar"><span style="color:black" uk-icon="icon: world; ratio: 1.5"></span> Report</a></li>
-	<!--</ul>-->
+	<a href="javascript:void(0)" class="closebutton" onclick="closeNavbar()">×</a>
+	<li><a href="#requestForm" class="active navbar"><span style="color:black" uk-icon="icon: file-edit; ratio: 1.5;"></span> Visualization</a></li>
+	<li><a href="#requestConstructor" class="navbar"><span style="color:black" uk-icon="icon: nut; ratio: 1.5"></span> Visualization Templates</a></li>
+	<li><a href="#databaseForm" class="navbar"><span style="color:black" uk-icon="icon: database; ratio: 1.5"></span> Database Management</a></li>
+	<li><a href="#report" onclick="javascript:loadFile()" class="navbar"><span style="color:black" uk-icon="icon: world; ratio: 1.5"></span> Report</a></li>
 </nav>
 </div>
 <div class="pageContent" id="pageContent" style="display:none">
@@ -66,8 +52,7 @@
 <div id="main">
 <span class=fullscreen>
 <div id="databaseForm" class="formDatabase" style="display:none">
-	<!--<h2>las2peer Community<h2>-->
-	<!--<button id="hidelas2peer" onclick='javascript:toggleVisibility("las2peerForm")'>&#9660;</button> <br>-->
+	<h2>Database Management</h2><br><br>
 	<form method="POST" action="javascript:addDatabase()" id="las2peerForm">
 		<label id="databaseNameLabel">Database Name:<br><input type="text" name="DatabaseName" id="DatabaseName0" required></label> <br>
 		<label>Database Host:<br><input type="text" name="DatabaseHost" id="DatabaseHost0" placeholder="format: url:port/database" required></label> <br>
@@ -81,40 +66,20 @@
 		</select> <br>
 		<input type="submit" value="Execute" id="submit0" title="Execute Query"> <br>
 	</form>
-	<!--<form action="javascript:setAPI()">
-	<label>API URL:<br><input type="text" id="apiInput"></label>
-	<input type="submit" value="Set API" id="setAPISubmit">
-	</form>-->
 </div>
 <div id="requestForm" class="formRequest" style="display:block">
-	<h2>Visualization</h2>
-	<!-- Rectangular switch -->
-	<div class="sliderWrapper">
-	<div>Collaboration:</div>
-	<label class="switch">
-		<input type="checkbox" id="collabToggle"></input>
-		<span class="slider"></span>
-	</label>
-	</div>
+	<h2>Visualization</h2><br><br>
 	<form method="POST" action="javascript:callRequest()" id="queryForm">
 		<label id="RequestLabel">Visualization Request:<br><input type="text" name="Request" id="Request" required></label> <br>
 		<label id="SecondRequestLabel">Second Request:<br><input type="text" name="SecondRequest" id="SecondRequest"></label> <br id="SecondRequestBreak">
 		<label>Visualization Type:<br>
 		<select name="Visualization" id="Visualization" required>
-			<option value="JSON">JSON</option>
-			<!--<option value="CSV">CSV</option>
-			<option value="HTMLTABLE">HTMLTABLE</option>
-			<option value="XML">XML</option>-->
 			<option value="GOOGLEPIECHART">GOOGLEPIECHART</option>
 			<option value="GOOGLEBARCHART">GOOGLEBARCHART</option>
 			<option value="GOOGLECOLUMNCHART">GOOGLECOLUMNCHART</option>
 			<option value="GOOGLELINECHART">GOOGLELINECHART</option>
 			<option value="GOOGLEGEOCHART">GOOGLEGEOCHART</option>
 			<option value="GOOGLECALENDARCHART">GOOGLECALENDARCHART</option>
-			<option value="GOOGLETIMELINECHART">GOOGLETIMELINECHART</option>
-			<option value="GOOGLERADARCHART">GOOGLERADARCHART</option>
-			<option value="GOOGLETABLE">GOOGLETABLE</option>
-			<option value="GRAPH">GRAPH</option></label>
 		</select> <br>
 		<label>Google Chart Options:<br><input type="text" name="ChartOptions" id="ChartOptions" value='{"title":"sample title","width":1000,"height":1000}'><br>
 		<input type="submit" value="Execute" id="submit2" title="Execute Query"> <br>
@@ -122,7 +87,6 @@
 	<div id="chartDiv">
 	</div>
 	<div id="chartImageDiv" style="display:none">
-	<!--<button id="download" download="">Download as Image</button>-->
 	</div>
 	<a id="downloadClick" href="#" onclick="this.href = $('#chartImageDiv img:first').attr('src');" download>Download as image</a>
 </div>
@@ -132,6 +96,7 @@
 	</div>
 </div>
 <div id="requestConstructor" class="requestConstructor">
+	<h2>Template</h2><br><br>
 	<form method="POST" action="javascript:callRequestConstruction()" id="queryBuild">
 		<label>Template Type:<br><select id="TemplateType" onchange="javascript:constructionInput()" required>
 		<option disabled selected="selected" value=""> -- select an option -- </option>
@@ -149,17 +114,12 @@
 		</select> <br>
 		<label>Visualization Type:<br>
 		<select name="Visualization" id="VisualizationConstructor" required>
-			<option value="JSON">JSON</option>
 			<option value="GOOGLEPIECHART">GOOGLEPIECHART</option>
 			<option value="GOOGLEBARCHART">GOOGLEBARCHART</option>
 			<option value="GOOGLECOLUMNCHART">GOOGLECOLUMNCHART</option>
 			<option value="GOOGLELINECHART">GOOGLELINECHART</option>
 			<option value="GOOGLEGEOCHART">GOOGLEGEOCHART</option>
 			<option value="GOOGLECALENDARCHART">GOOGLECALENDARCHART</option>
-			<option value="GOOGLETIMELINECHART">GOOGLETIMELINECHART</option>
-			<option value="GOOGLERADARCHART">GOOGLERADARCHART</option>
-			<option value="GOOGLETABLE">GOOGLETABLE</option>
-			<option value="GRAPH">GRAPH</option></label>
 		</select> <br>
 		<label>Google Chart Options:<br><input type="text" name="ChartOptionsConstructor" id="ChartOptionsConstructor" value='{"title":"sample title","width":1000,"height":1000}'><br>
 		<input type="submit" value="Execute" id="submit3" title="Execute Query"> <br>
@@ -167,7 +127,6 @@
 	<div id="chartDivConstructor">
 	</div>
 	<div id="chartImageDivConstructor" style="display:none">
-	<!--<button id="download" download="">Download as Image</button>-->
 	</div>
 	<a id="downloadClickConstructor" href="#" onclick="this.href = $('#chartImageDivConstructor img:first').attr('src');" download>Download as image</a>
 </div>
@@ -177,16 +136,11 @@
 <p id="KeyCheck" style="display:none">Processing</p>
 </div>
 </div>
-<!--<script type="text/javascript">
-   loadFile();
-</script>-->
 <script type="text/javascript" src="js/jquery-min.js"></script>
 <script type="text/javascript" src="js/apiCall.js"></script>
 <script type="text/javascript" src="js/serviceworker.js"></script>
 <script type="text/javascript" src="js/usage.js"></script>
-<!--<script type="text/javascript" src="js/oidc-button.js"></script>-->
 <script>
-	// change icon on button, when click
 	$(".navbutton").click(function(){
 		if($(".navbutton").text() == "☰"){
 			$(".navbutton").text("✖");
@@ -195,10 +149,6 @@
 		}
 		$("li").toggle("fast");
 	});
-	/*$(".oidc-signin").click(function() {
-		console.log($(".oidc-signin").data())
-	});*/
-	// show context selected in navigation bar
 	(function($) {
 		$('nav li a').click(function() {
 			$(this).addClass('active').siblings('li').removeClass('active');
@@ -227,23 +177,6 @@
 		});
 	})(jQuery);
 </script>
-<!-- required for oidc button -->
-<!--<script type="text/javascript">
-function signinCallback(result){
-	console.log("Login");
-	if(result === "success"){
-		// authenticated
-		// OpenID Connect user info
-		console.log(oidc_userinfo);
-		document.getElementById("login").style.display = "none";
-		document.getElementById("navigationBar").style.display = "block";
-		document.getElementById("pageContent").style.display = "block";
-	} else {
-		// anonymous
-		console.log("Login failed.");
-	}
-};
-</script>-->
 <script type="text/javascript">
   (function() {
     var po = document.createElement('script'); 

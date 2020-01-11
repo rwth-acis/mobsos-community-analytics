@@ -17,17 +17,6 @@ function toggleVisibility(id) {
 	}
 };
 
-// handling for oidc button
-/*function signinCallback(result) {
-	if(result === "success"){
-	    // after successful sign in, display a welcome string for the user
-		//$("#status").html("Hello, " + oidc_userinfo.name + "!");
-	} else {
-	    // if sign in was not successful, log the cause of the error on the console
-		console.log(result);
-	}
-};*/
-
 function toggleSecond() {
 	if (document.getElementById("DatabaseSelect").value == "All") {
 		document.getElementById("SecondRequest").style.display = "block";
@@ -111,8 +100,6 @@ function showNavbar() {
 	document.getElementById("navigationBar").style.width = "50%";
 	document.getElementById("pageContent").style.marginLeft = "50%";
 	document.getElementById("navigationBar").style.display = "block";
-	//$("nav").style.display = "block";
-	//$("nav").style.width = "20%";
 };
 
 function closeNavbar() {
@@ -121,6 +108,7 @@ function closeNavbar() {
 	document.getElementById("navigationBar").style.display = "none";
 };
 
+// handling oidc button
 var signinCallback = function(result){
 	console.log("Login");
 	console.log("Result: " + result);

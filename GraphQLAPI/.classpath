@@ -7,11 +7,11 @@
 	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/las2peer-bundle-0.8.1.jar"/>
 	<classpathentry kind="lib" path="servicebundle/json-20190722.jar"/>
-	<classpathentry kind="lib" path="servicebundle/mysql-connector-java-6.0.6.jar"/>
 	<classpathentry kind="lib" path="servicebundle/jcc-11.1.4.4.jar"/>
 	<classpathentry kind="lib" path="servicebundle/graphql-java-13.0.jar"/>
 	<classpathentry kind="lib" path="servicebundle/gson-2.8.5.jar"/>
 	<classpathentry kind="lib" path="servicebundle/antlr4-runtime-4.7.2.jar"/>
 	<classpathentry kind="lib" path="servicebundle/java-dataloader-2.2.3.jar"/>
+	<classpathentry kind="lib" path="servicebundle/mysql-connector-java-5.1.44.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

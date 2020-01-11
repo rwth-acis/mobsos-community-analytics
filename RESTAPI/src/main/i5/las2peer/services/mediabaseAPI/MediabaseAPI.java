@@ -46,34 +46,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-// TODO Describe your own service
-/**
- * las2peer-Template-Service
- * 
- * This is a template for a very basic las2peer service that uses the las2peer WebConnector for RESTful access to it.
- * 
- * Note: If you plan on using Swagger you should adapt the information below in the SwaggerDefinition annotation to suit
- * your project. If you do not intend to provide a Swagger documentation of your service API, the entire Api and
- * SwaggerDefinition annotation should be removed.
- * 
- */
-// TODO Adjust the following configuration
 @Api
 @SwaggerDefinition(
 		info = @Info(
 				title = "MediabaseAPI",
 				version = "1.0.0",
-				description = "A RESTful API for databases.",
-				termsOfService = "http://your-terms-of-service-url.com",
-				contact = @Contact(
-						name = "John Doe",
-						url = "provider.com",
-						email = "john.doe@provider.com"),
-				license = @License(
-						name = "your software license name",
-						url = "http://your-software-license-url.com")))
+				description = "A RESTful API for databases."
+				))
 
-// for las2peer testing
+
 @ServicePath("/rest")
 public class MediabaseAPI extends RESTService{
 	
@@ -83,20 +64,6 @@ public class MediabaseAPI extends RESTService{
 	 }
 	 
 	 private static String filePath = "config.properties";
-	 //private List<String> nameList = new ArrayList<>();
-	 
-//	 @Path("/database/list")
-//	 @GET
-//	 public Response getDatabaseNames() {
-//		 
-//		 if (nameList.isEmpty()) {
-//			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
-//					 .entity("No databases.").build();
-//		 } else {
-//			 return Response.status(200).header("Access-Control-Allow-Origin", "*")
-//					 .entity(nameList.toString()).build();
-//		 }
-//	 }
 	 
 	 @Path("/database/{name}")
 	 @DELETE
@@ -136,10 +103,6 @@ public class MediabaseAPI extends RESTService{
 		 
 		 System.out.println("Properties: " + properties);
 		 try {
-//			 if (nameList.contains(name)) {
-//				 return Response.status(406).header("Access-Control-Allow-Origin", "*")
-//						 .entity("Name of database is already in use.").build();
-//			 }
 			 InputStream input = new FileInputStream(filePath);
 			 Properties prop = new Properties();
 			 prop.load(input);
@@ -189,7 +152,6 @@ public class MediabaseAPI extends RESTService{
 		 try {
 			 Connection connection = dbConnection(filePath, dbName);
 		     Statement stmt = connection.createStatement();
-		     System.out.println("Here!");
 		     String query = "";
 		     
 		     InputStream input = new FileInputStream(filePath);
@@ -202,12 +164,12 @@ public class MediabaseAPI extends RESTService{
 			 if (dbType.equals("MySQL")) {
 				 if (!views) {
 					 query = "SELECT TABLE_NAME AS NAME FROM information_schema.tables "
-					 		+ "where table_schema not in ('information_schema', 'mysql', 'performance_schema')";
+					 		+ " where table_schema = '" +  schema + "';";
 				 } else {
 					 query = "SELECT TABLE_NAME AS NAME \n" + 
 					 		"FROM information_schema.tables \n" + 
 					 		"WHERE (TABLE_TYPE LIKE 'VIEW' OR TABLE_TYPE LIKE 'TABLE') AND "
-					 		+ "table_schema not in ('information_schema', 'mysql', 'performance_schema');";
+					 		+ "table_schema = '" + schema + "';";
 				 }
 			 }
 			 else if (dbType.equals("DB2")) {
@@ -221,7 +183,9 @@ public class MediabaseAPI extends RESTService{
 				 return Response.status(500).header("Access-Control-Allow-Origin", "*").entity("Database type is not supported.").build();
 			 }
 		     
+			 System.out.println("Query: " + query);
 		     ResultSet rs = stmt.executeQuery(query);
+		     
 		     JSONArray json = resultSetToJSON(rs, false);
 		     System.out.println(json.toString());
 		     rs.close();
@@ -253,14 +217,17 @@ public class MediabaseAPI extends RESTService{
 		 
 			try {
 				Connection connection = dbConnection(filePath, dbName);
-			    Statement stmt = connection.createStatement();
-			    //stmt.execute("SET CURRENT SCHEMA " + schema);
-			    
 			    InputStream input = new FileInputStream(filePath);
 				Properties prop = new Properties();
 				prop.load(input);
 				String dbType = prop.getProperty("db.dbType_" + dbName);
-				input.close();
+			    Statement stmt = connection.createStatement();
+			    if (dbType.equals("MySQL")) {
+			    	stmt.execute("USE " + schema);
+			    } else {
+			    	stmt.execute("SET CURRENT SCHEMA " + schema);
+			    }
+			    input.close();
 				String query = "";
 			    
 			    stmt = connection.createStatement();
@@ -360,8 +327,18 @@ public class MediabaseAPI extends RESTService{
 			try {
 			    // set the actual schema
 				Connection connection = dbConnection(filePath, dbName);
+				InputStream input = new FileInputStream(filePath);
+				Properties prop = new Properties();
+				prop.load(input);
+				String dbType = prop.getProperty("db.dbType_" + dbName);
 			    Statement stmt = connection.createStatement();
-			    //stmt.execute("SET CURRENT SCHEMA " + schema);
+			    if (dbType.equals("MySQL")) {
+			    	stmt.execute("USE " + schema);
+			    } else {
+			    	stmt.execute("SET CURRENT SCHEMA " + schema);
+			    }
+			    input.close();
+			    
 			     
 			    stmt = connection.createStatement();
 			    String query = "";
@@ -394,6 +371,8 @@ public class MediabaseAPI extends RESTService{
 				}
 			    System.out.println("JDBC/SQL error: " + exc.toString());
 			    return Response.status(422).header("Access-Control-Allow-Origin", "*").entity("SQL error.").build();
+			} catch (IOException exc) {
+				return null;
 			}
 	 }
 	 
@@ -403,8 +382,17 @@ public class MediabaseAPI extends RESTService{
 			 @PathParam("mediaName") String mediaName) {
 		 try {
 			 Connection connection = dbConnection(filePath, dbName);
+			 InputStream input = new FileInputStream(filePath);
+			 Properties prop = new Properties();
+		     prop.load(input);
+			 String dbType = prop.getProperty("db.dbType_" + dbName);
 			 Statement stmt = connection.createStatement();
-			 //stmt.execute("SET CURRENT SCHEMA " + schema);
+			 if (dbType.equals("MySQL")) {
+			   	stmt.execute("USE " + schema);
+			 } else {
+			   	stmt.execute("SET CURRENT SCHEMA " + schema);
+			 }
+			 input.close();
 
 			 String query = "SELECT ";
 			 
@@ -447,12 +435,12 @@ public class MediabaseAPI extends RESTService{
 				return Response.status(455).header("Access-Control-Allow-Origin", "*").build();
 			 }
 			
-			 return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(json.toString()).build();
-			 			 
+			 return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(json.toString()).build();		 
 			 
 		 } catch (SQLException exc) {
 			 return Response.status(400).header("Access-Control-Allow-Origin", "*").build();
-			 
+		 } catch (IOException exc) {
+				return null;
 		 }
 	 }
 	 
@@ -468,8 +456,17 @@ public class MediabaseAPI extends RESTService{
 		 try {
 			// set the actual schema
 			Connection connection = dbConnection(filePath, dbName);
+		    InputStream input = new FileInputStream(filePath);
+			Properties prop = new Properties();
+			prop.load(input);
+			String dbType = prop.getProperty("db.dbType_" + dbName);
 		    Statement stmt = connection.createStatement();
-		    //stmt.execute("SET CURRENT SCHEMA " + schema);
+		    if (dbType.equals("MySQL")) {
+		    	stmt.execute("USE " + schema);
+		    } else {
+		    	stmt.execute("SET CURRENT SCHEMA " + schema);
+		    }
+		    input.close();
 			    
 		    // construct SQL-Query from path parameters 
 		    stmt = connection.createStatement();
@@ -514,7 +511,8 @@ public class MediabaseAPI extends RESTService{
 		 } catch (JSONException exc) {
 			 System.out.println("JSON error: " + exc.toString());
 			 return Response.status(415).header("Access-Control-Allow-Origin", "*").entity("Data is not in valid JSON format").build();
-			 
+		 } catch (IOException exc) {
+				return null;
 		 }
 	 }
 	 
@@ -528,8 +526,17 @@ public class MediabaseAPI extends RESTService{
 		 try {
 
 			Connection connection = dbConnection(filePath, dbName);
+		    InputStream input = new FileInputStream(filePath);
+			Properties prop = new Properties();
+			prop.load(input);
+			String dbType = prop.getProperty("db.dbType_" + dbName);
 		    Statement stmt = connection.createStatement();
-		    //stmt.execute("SET CURRENT SCHEMA " + schema);
+		    if (dbType.equals("MySQL")) {
+		    	stmt.execute("USE " + schema);
+		    } else {
+		    	stmt.execute("SET CURRENT SCHEMA " + schema);
+		    }
+		    input.close();
 		    String query = "DELETE FROM " + tableName;
 		    if (condition != null && !condition.isEmpty()) {
 		    	query = query + " WHERE " + condition;
@@ -541,6 +548,8 @@ public class MediabaseAPI extends RESTService{
 			return Response.status(200).header("Access-Control-Allow-Origin", "*").build();
 		 } catch (SQLException exc) {
 			 return Response.status(422).header("Access-Control-Allow-Origin", "*").entity("SQL error.").build();
+		 } catch (IOException exc) {
+				return null;
 		 }
 	 }
 	 
@@ -555,8 +564,17 @@ public class MediabaseAPI extends RESTService{
 		 try {
 			 Connection connection = dbConnection(filePath, dbName);
 			 System.out.println("SQL Query: " + query);
-			 Statement stmt = connection.createStatement();
-			 //stmt.execute("SET CURRENT SCHEMA " + schema);
+			 InputStream input = new FileInputStream(filePath);
+	 		 Properties prop = new Properties();
+	 		 prop.load(input);
+	 		 String dbType = prop.getProperty("db.dbType_" + dbName);
+		     Statement stmt = connection.createStatement();
+		     if (dbType.equals("MySQL")) {
+		    	stmt.execute("USE " + schema);
+		     } else {
+		    	stmt.execute("SET CURRENT SCHEMA " + schema);
+		     }
+		    input.close();
 			 ResultSet rs = stmt.executeQuery(query);
 			 JSONArray json = resultSetToJSON(rs, false);
 			 if (json != null && json.toString().equals("[]")) {
@@ -568,6 +586,8 @@ public class MediabaseAPI extends RESTService{
 			 System.out.println("SQLException: " + exc.toString());
 			 return Response.status(422).header("Access-Control-Allow-Origin", "*")
 					 .entity("SQL error: " + exc.toString()).build();
+		 } catch (IOException exc) {
+				return null;
 		 }
 	 }
 	 
@@ -627,6 +647,7 @@ public class MediabaseAPI extends RESTService{
 		 try {
 				JSONArray json = new JSONArray();
 				ResultSetMetaData rsmd = resultSet.getMetaData();
+				
 				int count = 0;
 				//while(resultSet.next() && (!limit || count < 16)) {
 				while(resultSet.next() && (!limit || count < 16)) {
@@ -635,7 +656,7 @@ public class MediabaseAPI extends RESTService{
 				    for (int i = 1; i <= numColumns; i++) {
 				    	//String columnName = rsmd.getColumnName(i).toLowerCase();
 				    	String columnName = rsmd.getColumnLabel(i).toLowerCase();
-				    	obj.put(columnName, resultSet.getObject(columnName));
+				    	obj.put(columnName, resultSet.getString(columnName));
 				    }
 				    json.put(obj);
 				    count++;
@@ -661,7 +682,7 @@ public class MediabaseAPI extends RESTService{
 			 System.err.println("Could not load DB2Driver: " + exc.toString());
 		 }
 		 try {
-			 Class.forName("com.mysql.cj.jdbc.Driver");
+			 Class.forName("com.mysql.jdbc.Driver");
 		 } catch (ClassNotFoundException exc) {
 			 System.err.println("Could not load MySQLDriver: " + exc.toString());
 		 }
@@ -673,32 +694,21 @@ public class MediabaseAPI extends RESTService{
 			 Properties prop = new Properties();
 			 prop.load(input);
 			 String connectType = prop.getProperty("db.connection_" + name);
+			 String databaseType = prop.getProperty("db.dbType_" + name);
 	         
-	         if (connectType != null && connectType.equals("ssh")) {
-//				 String sshuser = prop.getProperty("ssh.user");
-//		         String sshhost = prop.getProperty("ssh.host");
-//		         String sshpassword = prop.getProperty("ssh.password");
-//	        	 JSch jsch = new JSch();
-//		         session = jsch.getSession(sshuser, sshhost);
-//		         int lport = 4321;
-//		         String rhost = "localhost";
-//		         int rport = 3306;
-//		         session.setPassword(sshpassword);
-//		         session.setConfig("StrictHostKeyChecking", "no");
-//		         System.out.println("Establishing Connection...");
-//		         session.connect();
-//		         int assinged_port=session.setPortForwardingL(lport, rhost, rport);
-//		         System.out.println("localhost:"+assinged_port+" -> "+rhost+":"+rport);
-//				 System.out.println("Testing: " + prop.getProperty("db.url_" + name));
-//				 String url = prop.getProperty("ssh.dburl");
-//				 String user = prop.getProperty("ssh.dbuser");
-//				 String password = prop.getProperty("ssh.dbpassword");
-//				 Class.forName("com.mysql.cj.jdbc.Driver");
-//				 connection = DriverManager.getConnection(url, user, password);
-	         } else {
+	         if (connectType != null) {
+	        	 
+	         } else if (databaseType.equals("MySQL")) {
+	        	 Class.forName("com.mysql.jdbc.Driver");
+	        	 	connection = DriverManager.getConnection(prop.getProperty("db.url_" + name),
+		        			prop.getProperty("db.user_" + name), prop.getProperty("db.password_" + name));
+        	 	
+	         }
+	         else {
         	 	Class.forName("com.ibm.db2.jcc.DB2Driver");
         	 	connection = DriverManager.getConnection(prop.getProperty("db.url_" + name),
 	        			prop.getProperty("db.user_" + name), prop.getProperty("db.password_" + name));
+        	 	
 	         }
 			 input.close();
 			 return connection;
@@ -727,13 +737,17 @@ public class MediabaseAPI extends RESTService{
 		 List<String> columns = new ArrayList<>();
 		 try {
 			 connection = dbConnection(filePath, name);
-		     Statement stmt = connection.createStatement();
-		     //stmt.execute("SET CURRENT SCHEMA " + schema);
-		     
 		     InputStream input = new FileInputStream(filePath);
-			 Properties prop = new Properties();
+		     Properties prop = new Properties();
 			 prop.load(input);
-			 String dbType = prop.getProperty("db.dbType_" + name);
+		 	String dbType = prop.getProperty("db.dbType_" + name);
+		     Statement stmt = connection.createStatement();
+		     if (dbType.equals("MySQL")) {
+		     	stmt.execute("USE " + schema);
+		     } else {
+		     	stmt.execute("SET CURRENT SCHEMA " + schema);
+		     } 
+		     input.close();
 			 input.close();
 			 String query = "";
 		    
@@ -770,52 +784,3 @@ public class MediabaseAPI extends RESTService{
 	 }
 
 }
-
-// public class MediabaseAPI extends RESTService {
-//
-//	/**
-//	 * Template of a get function.
-//	 * 
-//	 * @return Returns an HTTP response with the username as string content.
-//	 */
-//	@GET
-//	@Path("/get")
-//	@Produces(MediaType.TEXT_PLAIN)
-//	@ApiOperation(
-//			value = "REPLACE THIS WITH AN APPROPRIATE FUNCTION NAME",
-//			notes = "REPLACE THIS WITH YOUR NOTES TO THE FUNCTION")
-//	@ApiResponses(
-//			value = { @ApiResponse(
-//					code = HttpURLConnection.HTTP_OK,
-//					message = "REPLACE THIS WITH YOUR OK MESSAGE") })
-//	public Response getTemplate() {
-//		UserAgent userAgent = (UserAgent) Context.getCurrent().getMainAgent();
-//		String name = userAgent.getLoginName();
-//		return Response.ok().entity(name).build();
-//	}
-//
-//	/**
-//	 * Template of a post function.
-//	 * 
-//	 * @param myInput The post input the user will provide.
-//	 * @return Returns an HTTP response with plain text string content derived from the path input param.
-//	 */
-//	@POST
-//	@Path("/post/{input}")
-//	@Produces(MediaType.TEXT_PLAIN)
-//	@ApiResponses(
-//			value = { @ApiResponse(
-//					code = HttpURLConnection.HTTP_OK,
-//					message = "REPLACE THIS WITH YOUR OK MESSAGE") })
-//	@ApiOperation(
-//			value = "REPLACE THIS WITH AN APPROPRIATE FUNCTION NAME",
-//			notes = "Example method that returns a phrase containing the received input.")
-//	public Response postTemplate(@PathParam("input") String myInput) {
-//		String returnString = "";
-//		returnString += "Input " + myInput;
-//		return Response.ok().entity(returnString).build();
-//	}
-//
-//	// TODO your own service methods, e. g. for RMI
-//
-//}

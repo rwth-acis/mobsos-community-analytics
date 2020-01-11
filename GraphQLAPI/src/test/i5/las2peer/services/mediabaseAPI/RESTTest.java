@@ -1,14 +1,21 @@
 package i5.las2peer.services.mediabaseAPI;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,6 +54,10 @@ public class RESTTest {
 		 */
 		@Before
 		public void startServer() throws Exception {
+			
+			// test cases are designed for specific databases, credentials are not publicly available
+			// therefore tests should be skipped
+			Assume.assumeTrue(getJUNIT().equals("true"));
 			// start node
 			node = new LocalNodeManager().newNode();
 			node.launch();
@@ -110,117 +121,146 @@ public class RESTTest {
 				Assert.assertEquals("[{\"mood\":\"5\"}]",
 						result.getResponse().trim());
 				
-//				pathing = "data/DOES_NOT_EXIST/BW_AUTHOR/?colname=AUTHORURL&condition=ID=175105";
-//				result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(454, result.getHttpCode());
-//				
-//				pathing = "data/DB2INFO5/NOTHING_HERE/?colname=AUTHORURL&condition=ID=175105";
-//				result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(454, result.getHttpCode());
-//				
-//				pathing = "data/DB2INFO5/BW_AUTHOR/?colname=AUTHORURL&condition=ID=42069360";
-//				result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(455, result.getHttpCode());
-//				
-//				pathing = "data/DB2INFO5/BW_AUTHOR/?colname=NOTHING_HERE&condition=ID=175105";
-//				result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(453, result.getHttpCode());
 			} catch (Exception e) {
 				e.printStackTrace();
 				Assert.fail(e.toString());
 			}
 		}
-//		
-//		@Test
-//		public void testGetTableNames() {
-//			try {
-//				MiniClient client = new MiniClient();
-//				client.setConnectorEndpoint(connector.getHttpEndpoint());
-//				client.setLogin(testAgent.getIdentifier(), testPass);
-//				
-//				String pathing = "metadata/DB2INFO5?views=true";
-//				ClientResponse result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(200, result.getHttpCode());
-//				Assert.assertEquals("[{\"name\":\"SW_FILENAMES\"},{\"name\":\"SW_ANALYSIS\"},"
-//						+ "{\"name\":\"SW_ANALYSIS_DEAD_PROJECT\"},{\"name\":\"LW_MAILANALYSIS\"},"
-//						+ "{\"name\":\"SW_RUN_TASKS\"},{\"name\":\"SW_RUN_TASKS_DEAD_PROJECT\"},"
-//						+ "{\"name\":\"PROJ_CORRESPONDENCE\"},{\"name\":\"MAVIS_PROJECTS\"},"
-//						+ "{\"name\":\"SW_TEMP\"},{\"name\":\"SW_SCREENSHOTS\"},"
-//						+ "{\"name\":\"SW_SCREENSHOTS_DEAD_PROJECT\"},{\"name\":\"NW_ENTRIES\"},"
-//						+ "{\"name\":\"NW_USED_MIME_PARTS\"},{\"name\":\"NW_URL_REFERENCES\"},"
-//						+ "{\"name\":\"LW_URL_REFERENCES\"},{\"name\":\"NW_PROJECTS\"}]",
-//						result.getResponse().trim());
-//				
-//				pathing = "metadata/NOTHING_HERE?views=false";
-//				result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(454, result.getHttpCode());
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				Assert.fail(e.toString());
-//			}
-//		}
-//		
-//		@Test 
-//		public void testGetColumnNames() {
-//			try {
-//				MiniClient client = new MiniClient();
-//				client.setConnectorEndpoint(connector.getHttpEndpoint());
-//				client.setLogin(testAgent.getIdentifier(), testPass);
-//				
-//				String pathing = "metadata/DB2INFO5/BW_AUTHOR";
-//				ClientResponse result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(200, result.getHttpCode());
-//				Assert.assertEquals("[{\"colname\":\"AUTHORNAME\"},"
-//						+ "{\"colname\":\"AUTHORURL\"},{\"colname\":\"ID\"}]",
-//						result.getResponse().trim());
-//				
-//				pathing = "metadata/NOTHING_HERE/BW_AUTHOR";
-//				result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(454, result.getHttpCode());
-//				
-//				pathing = "metadata/DB2INFO5/NOTHING_HERE";
-//				result = client.sendRequest("GET", mainPath + pathing, "");
-//				Assert.assertEquals(454, result.getHttpCode());
-//				
-//			} catch (Exception exc) {
-//				exc.printStackTrace();
-//				Assert.fail(exc.toString());
-//			}
-//		}
-//		
-//		@Test
-//		public void testPutEntry() {
-//			
-//			try {
-//				MiniClient client = new MiniClient();
-//				client.setConnectorEndpoint(connector.getHttpEndpoint());
-//				client.setLogin(testAgent.getIdentifier(), testPass);
-//				String pathing = "data/DB2INFO5/BW_AUTHOR/";
-//				String json = "{\"AUTHORNAME\":\"Test Testing\", \"AUTHORURL\":\"www.uniquetest.de\"}";
-//				System.out.println("JSON: " + json);
-//				ClientResponse result = client.sendRequest("PUT", mainPath + pathing, json);
-//				Assert.assertEquals(200, result.getHttpCode());
-//			} catch (Exception exc) {
-//				exc.printStackTrace();
-//				Assert.fail(exc.toString());
-//			}
-//		}
-//		
-//		@Test
-//		public void testDeleteEntry() {
-//			try {
-//				MiniClient client = new MiniClient();
-//				client.setConnectorEndpoint(connector.getHttpEndpoint());
-//				client.setLogin(testAgent.getIdentifier(), testPass);
-//				String pathing = "data/DB2INFO5/BW_AUTHOR?condition=AUTHORNAME=\'www.uniquetest.de\'";
-//				ClientResponse result = client.sendRequest("DELETE", mainPath + pathing, "");
-//				Assert.assertEquals(200, result.getHttpCode());
-//			} catch (Exception exc) {
-//				exc.printStackTrace();
-//				Assert.fail(exc.toString());
-//			}
-//		}
-//		
+		
+		@Test 
+		public void addAndDeleteDatabase() {
+			try {
+				MiniClient client = new MiniClient(); 
+				client.setConnectorEndpoint(connector.getHttpEndpoint());
+				client.setLogin(testAgent.getIdentifier(), testPass);
+				
+				String pathing = "database/testing";
+				String properties = "{\"name\":\"testing\","
+						+ " \"url\":\"jdbc:db2://beuys.informatik.rwth-aachen.de:50003/mav_dev\","
+						+ " \"dbSchema\":\"DB2INFO5\", \"user\":\"db2info5\", \"password\":\"pfidb52ab\","
+						+ " \"dbType\":\"DB2\"}";
+				ClientResponse result = client.sendRequest("POST",
+						mainPath + pathing, properties);
+				Assert.assertEquals(201, result.getHttpCode());
+				
+				client = new MiniClient(); 
+				client.setConnectorEndpoint(connector.getHttpEndpoint());
+				client.setLogin(testAgent.getIdentifier(), testPass);
+				
+				pathing = "database/testing";
+				result = client.sendRequest("DELETE",
+						mainPath + pathing, "");
+				Assert.assertEquals(200, result.getHttpCode());
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				Assert.fail(e.toString());
+			}
+		}
+		
+		@Test
+		public void testGetDatabaseNames() {
+			try {
+				MiniClient client = new MiniClient(); 
+				client.setConnectorEndpoint(connector.getHttpEndpoint());
+				client.setLogin(testAgent.getIdentifier(), testPass);
+				
+				String pathing = "listDatabases";
+				ClientResponse result = client.sendRequest("GET",
+						mainPath + pathing, "");
+				Assert.assertEquals(200, result.getHttpCode());
+				Assert.assertEquals("[las2peer, mediabase, las2peer_reserve]",
+				result.getResponse().trim());
+			} catch (Exception e) {
+				e.printStackTrace();
+				Assert.fail(e.toString());
+			}
+		}
+		
+		@Test
+		public void testGetTableNames() {
+			try {
+				MiniClient client = new MiniClient();
+				client.setConnectorEndpoint(connector.getHttpEndpoint());
+				client.setLogin(testAgent.getIdentifier(), testPass);
+				
+				String pathing = "metadata/mediabase/DB2INFO5?views=true";
+				ClientResponse result = client.sendRequest("GET", mainPath + pathing, "");
+				Assert.assertEquals(200, result.getHttpCode());
+				Assert.assertEquals("[{\"name\":\"SW_FILENAMES\"},{\"name\":\"SW_ANALYSIS\"},"
+						+ "{\"name\":\"SW_ANALYSIS_DEAD_PROJECT\"},"
+						+ "{\"name\":\"LW_MAILANALYSIS\"},{\"name\":\"SW_RUN_TASKS\"},"
+						+ "{\"name\":\"SW_RUN_TASKS_DEAD_PROJECT\"},"
+						+ "{\"name\":\"PROJ_CORRESPONDENCE\"},"
+						+ "{\"name\":\"MAVIS_PROJECTS\"},"
+						+ "{\"name\":\"SW_TEMP\"},{\"name\":\"SW_SCREENSHOTS\"},"
+						+ "{\"name\":\"SW_SCREENSHOTS_DEAD_PROJECT\"},"
+						+ "{\"name\":\"NW_ENTRIES\"},{\"name\":\"NW_USED_MIME_PARTS\"},"
+						+ "{\"name\":\"NW_URL_REFERENCES\"},{\"name\":\"LW_URL_REFERENCES\"},"
+						+ "{\"name\":\"NW_PROJECTS\"},{\"name\":\"UD_CLASSIFICATION\"},"
+						+ "{\"name\":\"SW_PROJECTS\"},{\"name\":\"FW_PROJECTS\"},"
+						+ "{\"name\":\"LW_PROJECT_WORD_OF_DAY\"},"
+						+ "{\"name\":\"LW_PERSON_MAIL\"},{\"name\":\"SWAPIT_STOPWORDS_OLD\"},"
+						+ "{\"name\":\"WORD_OF_DAY_STOPWORDS\"},{\"name\":\"EGRAECULI\"},"
+						+ "{\"name\":\"LW_WORD_OF_DAY\"},{\"name\":\"LW_PROJECTS_MONTH_ANALYSIS\"},"
+						+ "{\"name\":\"LW_THREAD_TREE\"},{\"name\":\"NW_PROJECT_REGEX_CHECK\"},"
+						+ "{\"name\":\"LW_PROJECT_REGEX_CHECK\"},{\"name\":\"T20060606_084327\"},"
+						+ "{\"name\":\"FW_ATOM_ENTRIES\"},{\"name\":\"LW_PROJECTS\"},"
+						+ "{\"name\":\"PROJ_LANG\"},{\"name\":\"UDC\"},{\"name\":\"SUB_UDC\"},"
+						+ "{\"name\":\"SUB_UDC_RELATION\"},{\"name\":\"FW_RSS_RUN\"},"
+						+ "{\"name\":\"FW_ATOM_RUN\"},{\"name\":\"LW_PROJECT_ANALYSIS_TEMP\"},"
+						+ "{\"name\":\"LW_ENTRIES\"},{\"name\":\"LW_USED_MIME_PARTS\"},"
+						+ "{\"name\":\"FW_ATOM_ENTRYITEMCONNECT\"},{\"name\":\"FW_RSS_ENTRYITEMCONNECT\"},"
+						+ "{\"name\":\"FW_RSS_ITEMS\"},{\"name\":\"T20060606_084327_EXCEPTION\"},"
+						+ "{\"name\":\"FW_ATOM_ITEMS\"},{\"name\":\"FW_RSS_ENTRIES\"},"
+						+ "{\"name\":\"LW_ENTRIES_TT\"},{\"name\":\"TEMP_LW_MONTH_ANALYSIS\"},"
+						+ "{\"name\":\"EXPLAIN_INSTANCE\"},{\"name\":\"EXPLAIN_STATEMENT\"},"
+						+ "{\"name\":\"EXPLAIN_ARGUMENT\"},{\"name\":\"EXPLAIN_OBJECT\"},"
+						+ "{\"name\":\"EXPLAIN_OPERATOR\"},{\"name\":\"EXPLAIN_PREDICATE\"},"
+						+ "{\"name\":\"EXPLAIN_STREAM\"},{\"name\":\"ADVISE_INSTANCE\"},"
+						+ "{\"name\":\"ADVISE_INDEX\"},{\"name\":\"ADVISE_WORKLOAD\"},{\"name\":\"ADVISE_MQT\"},"
+						+ "{\"name\":\"ADVISE_PARTITION\"},{\"name\":\"ADVISE_TABLE\"},"
+						+ "{\"name\":\"REGIST_INFO\"},{\"name\":\"EVENT\"},{\"name\":\"LW_PROJECT_ANALYSIS\"},"
+						+ "{\"name\":\"LW_PERSON_ADDR\"},{\"name\":\"COUNTRY\"},{\"name\":\"CONTACTS\"},"
+						+ "{\"name\":\"BW_AUTHOR\"},{\"name\":\"BW_COMMENT\"},{\"name\":\"BW_MULTIMEDIA\"},"
+						+ "{\"name\":\"BW_REFERENCES\"},{\"name\":\"BW_TRACKBACKS\"},{\"name\":\"BW_ENTRIES\"},"
+						+ "{\"name\":\"BW_PROJECTS\"},{\"name\":\"LW_WOTD\"},{\"name\":\"P_MEMBER_MAILING_LIST\"},"
+						+ "{\"name\":\"P_MEMBER_NETWORK\"},{\"name\":\"P_COMMON_MEMBER\"},{\"name\":\"P_THREAD\"},"
+						+ "{\"name\":\"P_MEMBER_URL\"},{\"name\":\"P_CROSSMEDIA\"},{\"name\":\"P_GATEKEEPER\"},"
+						+ "{\"name\":\"P_ANSWERING_PERSON\"},{\"name\":\"P_CONVERSATIONALIST\"},"
+						+ "{\"name\":\"P_QUESTIONEER\"},{\"name\":\"P_SPAMMER\"},"
+						+ "{\"name\":\"SWAPIT_COLLECTIONS\"},{\"name\":\"SWAPIT_STOPWORDS\"},"
+						+ "{\"name\":\"FW_CHECKOFCHANGE_HELP\"}]",
+						result.getResponse().trim());
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				Assert.fail(e.toString());
+			}
+		}
+		
+		@Test 
+		public void testGetColumnNames() {
+			try {
+				MiniClient client = new MiniClient();
+				client.setConnectorEndpoint(connector.getHttpEndpoint());
+				client.setLogin(testAgent.getIdentifier(), testPass);
+				
+				String pathing = "metadata/mediabase/DB2INFO5/BW_AUTHOR";
+				ClientResponse result = client.sendRequest("GET", mainPath + pathing, "");
+				Assert.assertEquals(200, result.getHttpCode());
+				Assert.assertEquals("[{\"colname\":\"AUTHORNAME\","
+						+ "\"nulls\":\"N\",\"typename\":\"VARCHAR\"},"
+						+ "{\"colname\":\"AUTHORURL\",\"nulls\":\"Y\","
+						+ "\"typename\":\"VARCHAR\"},{\"colname\":\"ID\","
+						+ "\"nulls\":\"N\",\"typename\":\"BIGINT\"}]",
+						result.getResponse().trim());
+				
+			} catch (Exception exc) {
+				exc.printStackTrace();
+				Assert.fail(exc.toString());
+			}
+		}
 		@Test
 		public void testDbConnection() {
 			String filePath = "config.properties";
@@ -239,26 +279,43 @@ public class RESTTest {
 			connection = MediabaseAPI.dbConnection(filePath, dbName);
 			Assert.assertNull(connection);
 		}
-//		
-//		@Test
-//		public void testGetAutoGenerated() {
-//			String filePath = "src/main/resources/config.properties";
-//			String dbName = "testdb";
-//			Connection connection = MediabaseAPI.dbConnection(filePath, dbName);
-//			
-//			Assert.assertNotNull(connection);
-//			List<String> expected = new ArrayList<>();
-//			expected.add("ID");
-//			
-//			List<String> actual = MediabaseAPI.getAutoGenerated(connection, dbName, "DB2INFO5", "BW_AUTHOR");
-//			Assert.assertFalse(actual.isEmpty());
-//			Assert.assertEquals(expected.size(), actual.size());
-//			for (int i = 0; i < expected.size(); i++) {
-//				Assert.assertEquals(expected.get(i), actual.get(i));
-//			}
-//			
-//			actual = MediabaseAPI.getAutoGenerated(connection, dbName, "FAILURE", "NOTHING_HERE");
-//			Assert.assertTrue(actual.isEmpty());
-//		}
+		
+		@Test
+		public void testGetAutoGenerated() {
+			String filePath = "config.properties";
+			String dbName = "mediabase";
+			Connection connection = MediabaseAPI.dbConnection(filePath, dbName);
+			
+			Assert.assertNotNull(connection);
+			List<String> expected = new ArrayList<>();
+			expected.add("ID");
+			
+			List<String> actual = MediabaseAPI.getAutoGenerated(connection, dbName, "DB2INFO5", "BW_AUTHOR");
+			Assert.assertFalse(actual.isEmpty());
+			Assert.assertEquals(expected.size(), actual.size());
+			for (int i = 0; i < expected.size(); i++) {
+				Assert.assertEquals(expected.get(i), actual.get(i));
+			}
+			
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				System.out.println("Exception");
+			}
+		}
+		
+		private String getJUNIT() {
+			InputStream input;
+			try {
+				input = new FileInputStream("config.properties");
+				Properties prop = new Properties();
+				prop.load(input);
+				String junit = prop.getProperty("junit");
+				input.close();
+				return junit;
+			} catch (IOException exc) {
+				return null;
+			}
+		}
 
-	}
+}

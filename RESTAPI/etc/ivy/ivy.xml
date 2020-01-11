@@ -18,7 +18,7 @@
         <!-- DB2 -->
         <dependency org="com.ibm.db2" name="jcc" rev="11.1.4.4" conf="bundle->*"/>
         <!-- MySQL -->
-        <dependency org="mysql" name="mysql-connector-java" rev="6.0.6" conf="bundle->*"/>
+        <dependency org="mysql" name="mysql-connector-java" rev="5.1.44" conf="bundle->*"/>
         <!-- GSON -->
         <dependency org="com.google.code.gson" name="gson" rev="2.8.5" conf="bundle->*"/>
 
