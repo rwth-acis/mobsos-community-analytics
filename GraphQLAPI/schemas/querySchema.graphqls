@@ -4,6 +4,6 @@ mutation: Mutation
 }
 type Query { 
 databaseNames: String 
-all_reviews(id: ID): [REVIEW] 
+reviews(id: ID): [REVIEW] 
 customQuery(dbName: String!, dbSchema: String!, query: String!): String 
 }

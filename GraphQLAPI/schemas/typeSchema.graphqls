@@ -1,8 +1,8 @@
 type REVIEW { 
-perma_link: String 
-date: String 
-mood: Int 
-author_id: Int 
-id: ID 
-
+  dishId: String 
+  mensaId: String 
+  timestamp: String 
+  stars: Int 
+  author: String 
+  id: ID 
 }
