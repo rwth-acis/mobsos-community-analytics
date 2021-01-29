@@ -792,7 +792,7 @@ public class MediabaseAPI extends RESTService {
 
   @Path("/data/query/{dbName}/{schema}")
   @GET
-  @ApiOperation(value = "Executes given query on database.")
+  @ApiOperation(value = "Executes given SQL query on database.")
   @ApiResponses(
     value = {
       @ApiResponse(code = 200, message = "Successful request."),

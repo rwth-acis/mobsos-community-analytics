@@ -339,15 +339,15 @@ public class MediabaseGraphQLAPI extends RESTService {
     return (
       "schema {" +
       "\r\n" +
-      "query: Query" +
+      "  query: Query" +
       "\r\n" +
-      "mutation: Mutation" +
+      "  mutation: Mutation" +
       "\r\n}" +
       "\r\n" +
       "type Query { \r\n" +
-      "databaseNames: String \r\n" +
-      "reviews(id: ID): [REVIEW] \r\n" +
-      "customQuery(dbName: String!, dbSchema: String!, query: String!): String \r\n}"
+      "  databaseNames: String \r\n" +
+      "  reviews(id: ID): [REVIEW] \r\n" +
+      "  customQuery(dbName: String!, dbSchema: String!, query: String!): String \r\n}"
     );
   }
 
@@ -359,9 +359,9 @@ public class MediabaseGraphQLAPI extends RESTService {
     return (
       "type Mutation { " +
       "\r\n" +
-      "addDatabase(name: String!, url: String!, dbSchema: String!, user: String!," +
-      " password:String!, dbType: String!): String \r\n" +
-      "deleteDatabase(name: String!): String \r\n}"
+      "  addDatabase(name: String!, url: String!, dbSchema: String!, user: String!," +
+      "    password:String!, dbType: String!): String \r\n" +
+      "  deleteDatabase(name: String!): String \r\n}"
     );
   }
 
