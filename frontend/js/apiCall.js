@@ -319,7 +319,7 @@ function createLineChart(data, options, outputID) {
     google.visualization.events.addListener(chart, 'ready', function () {
       chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
       document.getElementById('downloadClick').style.display = 'block';
-      console.log(chartImageDiv.innerHTML);
+      // console.log(chartImageDiv.innerHTML);
       document.getElementById(outputID).style.visibility = 'visible';
     });
   } else if (outputID == 'chartDivConstructor') {
@@ -337,7 +337,9 @@ function createLineChart(data, options, outputID) {
 // creates Google Column, Pie or Bar Chart of data with option in <p> with id outputID
 function createBaseChart(data, type, options, outputID) {
   var output = data;
+
   var array = JSON.parse(output);
+  console.log(output, array);
   var key = Object.keys(array);
   var formattedArray = formattingBarChart(array[key[0]]);
   document.getElementById('ChartCheck').innerHTML = JSON.stringify(formattedArray);
@@ -360,7 +362,7 @@ function createBaseChart(data, type, options, outputID) {
     google.visualization.events.addListener(chart, 'ready', function () {
       chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
       document.getElementById('downloadClick').style.display = 'block';
-      console.log(chartImageDiv.innerHTML);
+      // console.log(chartImageDiv.innerHTML);
       document.getElementById(outputID).style.visibility = 'visible';
     });
   } else if (outputID == 'chartDivConstructor') {
@@ -368,7 +370,7 @@ function createBaseChart(data, type, options, outputID) {
     google.visualization.events.addListener(chart, 'ready', function () {
       chartImageDiv.innerHTML = '<img src="' + chart.getImageURI() + '">';
       document.getElementById('downloadClickConstructor').style.display = 'block';
-      console.log(chartImageDiv.innerHTML);
+      // console.log(chartImageDiv.innerHTML);
       document.getElementById(outputID).style.visibility = 'visible';
     });
   }
@@ -483,9 +485,14 @@ function formattingCalendarChart(json) {
 
 // format json in accordance to google bar chart, column chart, and pie chart requirements
 function formattingBarChart(json) {
+  if (typeof json == 'string') {
+    json = JSON.parse(json);
+  }
   var formattedJSON = '{';
   var firstElem = json[0];
+
   var keys = Object.keys(firstElem);
+
   var cols = '"cols":[';
   var type = '';
   for (var i = 0; i < keys.length; i++) {

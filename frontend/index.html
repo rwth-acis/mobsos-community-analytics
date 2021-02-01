@@ -56,7 +56,8 @@
 	<h2>Database Management</h2><br><br>
 	<form method="POST" action="javascript:addDatabase()" id="las2peerForm">
 		<label id="databaseNameLabel">Database Name:<br><input type="text" name="DatabaseName" id="DatabaseName0" required></label> <br>
-		<label>Database Host:<br><input type="text" name="DatabaseHost" id="DatabaseHost0" placeholder="format: url:port/database" required></label> <br>
+		<label>Database Host:<br><input type="text" name="DatabaseHost" id="DatabaseHost0" placeholder="ex: jdbc:mysql://http://127.0.0.1:3306" required></label> <br>
+		<small style="color: grey;">Format: driver:url:port/database</small><br>
 		<label>Database Schema:<br><input type="text" name="DatabaseSchema" id="DatabaseSchema0" required></label> <br>
 		<label>Username:<br><input type = "text" name="Username" id="Username0"  required></label> <br>
 		<label>Password:<br><input type = "password" name="Password" id="Password0" required></label> <br>
@@ -71,7 +72,7 @@
 <div id="requestForm" class="formRequest" style="display:block">
 	<h2>Visualization</h2><br><br>
 	<form method="POST" action="javascript:callRequest()" id="queryForm">
-		<label id="RequestLabel">Visualization Request:<br><input type="text" name="Request" id="Request" required></label> <br>
+		<label id="RequestLabel">Visualization Request:<br><textarea style="width: 50%;" autofocus rows="8" type="text" name="Request" id="Request" required></textarea></label> <br>
 		<label id="SecondRequestLabel">Second Request:<br><input type="text" name="SecondRequest" id="SecondRequest"></label> <br id="SecondRequestBreak">
 		<label>Visualization Type:<br>
 		<select name="Visualization" id="Visualization" required>
