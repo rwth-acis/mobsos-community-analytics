@@ -22,9 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Contact;
 import io.swagger.annotations.Info;
-import io.swagger.annotations.License;
 import io.swagger.annotations.SwaggerDefinition;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -53,9 +51,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import net.minidev.json.parser.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,6 +74,8 @@ public class MediabaseGraphQLAPI extends RESTService {
   // GraphQL configuration
   private RuntimeWiring.Builder runtimeWiring;
   private String restAPIURL;
+  private String defaultDatabase;
+  private String defaultDatabaseSchema;
 
   /**
    * Initialization of GraphQL API at start of server
@@ -307,6 +309,81 @@ public class MediabaseGraphQLAPI extends RESTService {
         .entity("Schemafile Error.")
         .build();
     }
+  }
+
+  @Path("/visualize")
+  @POST
+  @ApiOperation(value = "Processes GraphQL request.")
+  @ApiResponses(
+    value = {
+      @ApiResponse(code = 200, message = "Executed request successfully."),
+      @ApiResponse(
+        code = 400,
+        message = "GraphQL call is not in correct syntax."
+      ),
+      @ApiResponse(code = 415, message = "Request is missing GraphQL call."),
+      @ApiResponse(code = 512, message = "Response is not in correct format."),
+      @ApiResponse(code = 513, message = "Internal GraphQL server error."),
+      @ApiResponse(code = 514, message = "Schemafile error."),
+    }
+  )
+  public Response visualizeRequest(String body) {
+    JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+    Response res = null;
+    String graphQLQueryString;
+    JSONObject chatResponse = new JSONObject();
+
+    try {
+      JSONObject json = (JSONObject) parser.parse(body);
+      String type = json.getString("queryType");
+      if ("customQuery".equals(type)) {
+        JSONObject queryObject = new JSONObject();
+        String dbName = defaultDatabase;
+        String dbSchema = defaultDatabaseSchema;
+        String queryString;
+
+        queryString = json.getString("query");
+        dbName = json.getString("dbName");
+        dbSchema = json.getString("dbSchema");
+        if (queryString == null) {
+          throw new Exception(""); //TODO: throw chatexception
+        }
+
+        queryObject.put("query", queryString);
+        queryObject.put("dbName", dbName);
+        queryObject.put("dbSchema", dbSchema);
+
+        graphQLQueryString = queryObject.toString();
+      } else {
+        graphQLQueryString = body;
+      }
+
+      Response graphQLResponse = queryExecute(graphQLQueryString);
+      String jsonString = (String) graphQLResponse.getEntity();
+      parser.parse(jsonString);
+      String responseData = "";
+      URL url = new URL("");
+      HttpURLConnection con = (HttpURLConnection) url.openConnection();
+      con.addRequestProperty("Content-type", "image/png");
+      con.setRequestMethod("GET");
+      con.setDoOutput(true);
+      BufferedReader in = new BufferedReader(
+        new InputStreamReader(con.getInputStream())
+      );
+      String inputLine;
+      while ((inputLine = in.readLine()) != null) {
+        responseData = responseData + inputLine;
+      }
+      in.close();
+      chatResponse.append("fileBody", responseData);
+      chatResponse.append("fileName", "");
+      chatResponse.append("fileType", "image/png");
+      return Response.ok(chatResponse.toString()).build();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return res;
   }
 
   /**
