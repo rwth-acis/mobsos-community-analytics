@@ -1,4 +1,4 @@
 type Mutation { 
-addDatabase(name: String!, url: String!, dbSchema: String!, user: String!, password:String!, dbType: String!): String 
-deleteDatabase(name: String!): String 
+  addDatabase(name: String!, url: String!, dbSchema: String!, user: String!,    password:String!, dbType: String!): String 
+  deleteDatabase(name: String!): String 
 }

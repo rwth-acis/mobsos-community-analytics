@@ -1,9 +1,9 @@
 schema {
-query: Query
-mutation: Mutation
+  query: Query
+  mutation: Mutation
 }
 type Query { 
-databaseNames: String 
-reviews(id: ID): [REVIEW] 
-customQuery(dbName: String!, dbSchema: String!, query: String!): String 
+  databaseNames: String 
+  reviews(id: ID): [REVIEW] 
+  customQuery(dbName: String!, dbSchema: String!, query: String!): String 
 }
