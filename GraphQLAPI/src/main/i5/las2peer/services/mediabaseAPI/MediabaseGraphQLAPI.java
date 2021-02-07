@@ -1,6 +1,7 @@
 package i5.las2peer.services.mediabaseAPI;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.GraphQLError;
@@ -26,6 +27,7 @@ import io.swagger.annotations.Info;
 import io.swagger.annotations.SwaggerDefinition;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -33,8 +35,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -44,17 +48,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import javax.imageio.ImageIO;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import net.minidev.json.parser.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,8 +81,9 @@ public class MediabaseGraphQLAPI extends RESTService {
   // GraphQL configuration
   private RuntimeWiring.Builder runtimeWiring;
   private String restAPIURL;
-  private String defaultDatabase;
-  private String defaultDatabaseSchema;
+  private String qvsURL;
+  private String defaultDatabase = "las2peer";
+  private String defaultDatabaseSchema = "las2peermon";
 
   /**
    * Initialization of GraphQL API at start of server
@@ -311,6 +319,11 @@ public class MediabaseGraphQLAPI extends RESTService {
     }
   }
 
+  /**
+   * Bot function to get a visualization
+   * @param body jsonString containing the query, the Chart type and other optional parameters
+   * @return image to be displayed in chat
+   */
   @Path("/visualize")
   @POST
   @ApiOperation(value = "Processes GraphQL request.")
@@ -331,59 +344,126 @@ public class MediabaseGraphQLAPI extends RESTService {
     JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
     Response res = null;
     String graphQLQueryString;
-    JSONObject chatResponse = new JSONObject();
+    net.minidev.json.JSONObject chatResponse = new net.minidev.json.JSONObject();
+    String chartType = "PieChart";
+    String chartTitle = null;
+    String tmpString = null;
 
     try {
-      JSONObject json = (JSONObject) parser.parse(body);
-      String type = json.getString("queryType");
-      if ("customQuery".equals(type)) {
-        JSONObject queryObject = new JSONObject();
-        String dbName = defaultDatabase;
-        String dbSchema = defaultDatabaseSchema;
-        String queryString;
+      net.minidev.json.JSONObject json = (net.minidev.json.JSONObject) parser.parse(
+        body
+      );
 
-        queryString = json.getString("query");
-        dbName = json.getString("dbName");
-        dbSchema = json.getString("dbSchema");
-        if (queryString == null) {
-          throw new Exception(""); //TODO: throw chatexception
-        }
-
-        queryObject.put("query", queryString);
-        queryObject.put("dbName", dbName);
-        queryObject.put("dbSchema", dbSchema);
-
-        graphQLQueryString = queryObject.toString();
-      } else {
-        graphQLQueryString = body;
-      }
+      graphQLQueryString = prepareGQLQueryString(json);
 
       Response graphQLResponse = queryExecute(graphQLQueryString);
-      String jsonString = (String) graphQLResponse.getEntity();
-      parser.parse(jsonString);
-      String responseData = "";
-      URL url = new URL("");
-      HttpURLConnection con = (HttpURLConnection) url.openConnection();
-      con.addRequestProperty("Content-type", "image/png");
-      con.setRequestMethod("GET");
-      con.setDoOutput(true);
-      BufferedReader in = new BufferedReader(
-        new InputStreamReader(con.getInputStream())
-      );
-      String inputLine;
-      while ((inputLine = in.readLine()) != null) {
-        responseData = responseData + inputLine;
+      if (graphQLResponse.getStatus() != 200) {
+        throw new ChatException("Sorry your query has lead to an error 😓");
       }
-      in.close();
-      chatResponse.append("fileBody", responseData);
-      chatResponse.append("fileName", "");
-      chatResponse.append("fileType", "image/png");
-      return Response.ok(chatResponse.toString()).build();
+      tmpString = (String) graphQLResponse.getEntity(); //get the result from the graphql query
+
+      //add properties to the json necessary for the visualization
+      net.minidev.json.JSONObject jsonObject = (net.minidev.json.JSONObject) parser.parse(
+        tmpString
+      );
+      chartType = json.getAsString("chartType");
+      chartTitle = json.getAsString("chartTitle");
+      jsonObject.put("chartType", chartType);
+      if (chartTitle != null) {
+        jsonObject.put("options", "{'title':" + chartTitle + "}");
+      }
+      tmpString = jsonObject.toJSONString();
+
+      String responseData = getImage(tmpString); //get image from visualization service
+
+      chatResponse.put("fileBody", responseData);
+      chatResponse.put("fileName", "chart.png");
+      chatResponse.put("fileType", "image/png");
+      res = Response.ok(chatResponse.toString()).build();
+    } catch (ChatException e) {
+      e.printStackTrace();
+      chatResponse.put("text", e.getMessage());
+      res = Response.ok(chatResponse.toString()).build();
+    } catch (Exception e) {
+      chatResponse.put("text", "An error occured 😦");
+      res = Response.ok(chatResponse.toString()).build();
+      e.printStackTrace();
+    }
+    return res;
+  }
+
+  private String getImage(String reqBodyString) throws ChatException {
+    //Make visualization request
+    try {
+      String urlString = "http://127.0.0.1:3000/customQuery";
+      URL url = new URL(urlString);
+      HttpURLConnection con = (HttpURLConnection) url.openConnection();
+      con.setRequestProperty("Content-Type", "application/json");
+      con.setRequestMethod("POST");
+      con.setDoOutput(true);
+      DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+      wr.writeBytes(reqBodyString);
+      wr.flush();
+      wr.close();
+      return toBase64(con.getInputStream());
+    } catch (IOException e) {
+      throw new ChatException("Sorry the visualization has failed");
+    }
+  }
+
+  private String prepareGQLQueryString(net.minidev.json.JSONObject json) {
+    String result = null;
+
+    String dbName = json.getAsString("dbName");
+    String dbSchema = json.getAsString("dbSchema");
+    String queryString = json.getAsString("query");
+
+    if (queryString == null) {
+      queryString = json.getAsString("msg");
+    }
+    if (dbSchema == null) {
+      dbSchema = this.defaultDatabaseSchema;
+    }
+    if (dbName == null) {
+      dbName = this.defaultDatabase;
+    }
+
+    result =
+      "{customQuery(dbName: \"" +
+      dbName +
+      "\",dbSchema: \"" +
+      dbSchema +
+      "\",query: \"" +
+      queryString +
+      "\")}";
+
+    return result;
+  }
+
+  private String toBase64(InputStream is) {
+    try {
+      byte[] bytes = org.apache.commons.io.IOUtils.toByteArray(is);
+
+      String chunky = Base64.getEncoder().encodeToString(bytes);
+
+      return chunky;
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return null;
+  }
 
-    return res;
+  /** Exceptions ,with messages, that should be returned in Chat */
+  protected static class ChatException extends Exception {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    protected ChatException(String message) {
+      super(message);
+    }
   }
 
   /**
