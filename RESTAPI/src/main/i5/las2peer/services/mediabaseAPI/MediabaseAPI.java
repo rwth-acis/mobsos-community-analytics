@@ -944,25 +944,22 @@ public class MediabaseAPI extends RESTService {
         for (int i = 1; i <= numColumns; i++) {
           //String columnName = rsmd.getColumnName(i).toLowerCase();
           String columnName = rsmd.getColumnLabel(i).toLowerCase();
+          Object entry = resultSet.getObject(columnName);
 
-          switch (rsmd.getColumnType(i)) {
-            case Types.INTEGER:
-              obj.put(columnName, resultSet.getInt(columnName));
-              break;
-            case Types.DATE:
-              obj.put(columnName, resultSet.getDate(columnName));
-              break;
-            case Types.TIMESTAMP:
-              obj.put(columnName, resultSet.getTimestamp(columnName));
-              break;
-            default:
-              obj.put(columnName, resultSet.getString(columnName));
-              break;
+          if (entry instanceof String) {
+            String cleanedString = resultSet
+              .getString(columnName)
+              .replace("\"", "");
+            System.out.println("cleaned: " + cleanedString);
+            obj.put(columnName, cleanedString);
+          } else {
+            obj.put(columnName, resultSet.getObject(columnName));
           }
         }
         json.put(obj);
         count++;
       }
+      System.out.println(json);
       return json;
     } catch (SQLException exc) {
       return null;
