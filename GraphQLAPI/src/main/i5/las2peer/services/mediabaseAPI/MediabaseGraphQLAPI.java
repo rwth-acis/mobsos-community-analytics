@@ -37,6 +37,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
@@ -303,6 +306,7 @@ public class MediabaseGraphQLAPI extends RESTService {
               .build();
           }
         }
+        System.out.println(errors);
         return Response
           .status(513)
           .header("Access-Control-Allow-Origin", "*")
@@ -316,6 +320,22 @@ public class MediabaseGraphQLAPI extends RESTService {
         .header("Access-Control-Allow-Origin", "*")
         .entity("Schemafile Error.")
         .build();
+    }
+  }
+
+  private String replaceInQuery(String input) {
+    try {
+      JSONParser p = new JSONParser(JSONParser.MODE_PERMISSIVE);
+      net.minidev.json.JSONObject json = (net.minidev.json.JSONObject) p.parse(
+        input
+      );
+      String query = json.getAsString("query");
+
+      json.put("query", query.replaceAll("\\\"", " ' "));
+      return json.toJSONString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "";
     }
   }
 
@@ -661,20 +681,24 @@ public class MediabaseGraphQLAPI extends RESTService {
         String name = environment.getArgument("dbName");
         String dbSchema = environment.getArgument("dbSchema");
         String query = environment.getArgument("query");
-        String modQuery = query.replaceAll(" ", "%20");
-        String urlString =
-          retrieveRESTURL() +
-          "data/query/" +
-          name +
-          "/" +
-          dbSchema +
-          "?query=" +
-          modQuery;
-        System.out.println("In data fetcher, URL: " + urlString);
+        URL url = null;
+        try {
+          url =
+            new URI(
+              "http",
+              retrieveRESTHost(),
+              "/rest/data/query/" + name + "/" + dbSchema,
+              "query=" + query,
+              null
+            )
+              .toURL();
+        } catch (URISyntaxException | MalformedURLException e) {
+          e.printStackTrace();
+        }
+
         String responseData = "";
 
         try {
-          URL url = new URL(urlString);
           System.out.println(url.toString());
           HttpURLConnection con = (HttpURLConnection) url.openConnection();
           con.setRequestMethod("GET");
@@ -694,6 +718,10 @@ public class MediabaseGraphQLAPI extends RESTService {
           return null;
         } catch (IOException exc) {
           System.out.println("IOException: " + exc.toString());
+          return null;
+        } catch (Exception exc) {
+          System.out.println("Exception: " + exc.toString());
+          exc.printStackTrace();
           return null;
         }
       }
@@ -2366,6 +2394,24 @@ public class MediabaseGraphQLAPI extends RESTService {
         return "http://localhost:8088/rest/";
       } else {
         return url + "/rest/";
+      }
+    } catch (IOException exc) {
+      System.out.println("IOException" + exc.toString());
+      return null;
+    }
+  }
+
+  public static String retrieveRESTHost() {
+    try {
+      InputStream initInput = new FileInputStream("config.properties");
+      Properties prop = new Properties();
+      prop.load(initInput);
+      String url = prop.getProperty("restAPIURL");
+      initInput.close();
+      if (url.equals("build")) {
+        return "localhost:8088";
+      } else {
+        return url.replace("http://", "");
       }
     } catch (IOException exc) {
       System.out.println("IOException" + exc.toString());
