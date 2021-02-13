@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -812,6 +813,7 @@ public class MediabaseAPI extends RESTService {
   ) {
     try {
       Connection connection = dbConnection(filePath, dbName);
+      query = java.net.URLDecoder.decode(query, StandardCharsets.UTF_8.name());
       System.out.println("SQL Query: " + query);
       InputStream input = new FileInputStream(filePath);
       Properties prop = new Properties();
