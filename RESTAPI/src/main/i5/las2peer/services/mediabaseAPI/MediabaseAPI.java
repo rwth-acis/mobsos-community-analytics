@@ -809,7 +809,8 @@ public class MediabaseAPI extends RESTService {
   public Response sqlQuery(
     @PathParam("dbName") String dbName,
     @PathParam("schema") String schema,
-    @QueryParam("query") String query
+    @QueryParam("query") String query,
+    @QueryParam("metadata") @DefaultValue("false") boolean sendMetadata
   ) {
     try {
       Connection connection = dbConnection(filePath, dbName);
@@ -827,7 +828,13 @@ public class MediabaseAPI extends RESTService {
       }
       input.close();
       ResultSet rs = stmt.executeQuery(query);
+      JSONObject res = new JSONObject();
       JSONArray json = resultSetToJSON(rs, false);
+      res.put("result", json);
+      JSONArray order = getResultSetOrder(stmt.executeQuery(query));
+      System.out.println("order: " + order.toString());
+      res.put("order", order);
+
       if (json != null && json.toString().equals("[]")) {
         return Response
           .status(406)
@@ -837,7 +844,7 @@ public class MediabaseAPI extends RESTService {
       return Response
         .status(200)
         .header("Access-Control-Allow-Origin", "*")
-        .entity(json.toString())
+        .entity(res.toString())
         .build();
     } catch (SQLException exc) {
       System.out.println("SQLException: " + exc.toString());
@@ -952,7 +959,7 @@ public class MediabaseAPI extends RESTService {
             String cleanedString = resultSet
               .getString(columnName)
               .replace("\"", "");
-            System.out.println("cleaned: " + cleanedString);
+
             obj.put(columnName, cleanedString);
           } else {
             obj.put(columnName, resultSet.getObject(columnName));
@@ -1096,5 +1103,20 @@ public class MediabaseAPI extends RESTService {
       System.out.println("IOException: " + exc.toString());
       return null;
     }
+  }
+
+  public JSONArray getResultSetOrder(ResultSet rs) throws SQLException {
+    JSONArray order = new JSONArray();
+    if (rs.next()) {
+      ResultSetMetaData rsmd = rs.getMetaData();
+      int numColumns = rsmd.getColumnCount();
+
+      for (int i = 1; i <= numColumns; i++) {
+        //String columnName = rsmd.getColumnName(i).toLowerCase();
+        String columnName = rsmd.getColumnLabel(i).toLowerCase();
+        order.put(columnName);
+      }
+    }
+    return order;
   }
 }
