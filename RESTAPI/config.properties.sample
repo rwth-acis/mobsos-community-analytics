@@ -16,5 +16,5 @@ db.password_qvs=hellome
 db.url_las2peermon=jdbc:mysql://127.0.0.1:3306
 db.dbSchema_qvs=qvs
 junit=false
-db.password_las2peermon=
+db.password_las2peermon=hellome
 db.dbSchema_las2peermon=las2peermon

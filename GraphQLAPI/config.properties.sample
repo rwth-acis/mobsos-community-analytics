@@ -12,5 +12,5 @@ db.user_las2peer=root
 db.dbType_las2peer=MySQL
 db.url_las2peer=jdbc:mysql://http://127.0.0.1:3306
 
-restAPIURL=http://localhost:8000
+restAPIURL=http://host.docker.internal:8000
 junit=false

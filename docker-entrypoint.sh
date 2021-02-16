@@ -22,7 +22,7 @@ echo ${GRAPHQL_SERVICE}
 export REST_SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' /src/RESTAPI/etc/ant_configuration/service.properties)
 export REST_SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' /src/RESTAPI/etc/ant_configuration/service.properties)
 export REST_SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' /src/RESTAPI/etc/ant_configuration/service.properties)
-export REST_SERVICE=${REST_SERVICE_NAME}.${REST_SERVICE_CLASS}@${EST_SERVICE_VERSION}
+export REST_SERVICE=${REST_SERVICE_NAME}.${REST_SERVICE_CLASS}@${REST_SERVICE_VERSION}
 
 echo ${REST_SERVICE}
 
