@@ -27,6 +27,8 @@ WORKDIR /src
 RUN chmod -R a+rwx /src
 RUN chmod +x /src/docker-entrypoint.sh
 RUN dos2unix docker-entrypoint.sh
+RUN dos2unix etc/i5.las2peer.connectors.webConnector.WebConnector.properties
+RUN dos2unix config.properties
 # run the rest as unprivileged user
 USER las2peer
 RUN ant jar startscripts
