@@ -84,7 +84,6 @@ public class MediabaseGraphQLAPI extends RESTService {
   // GraphQL configuration
   private RuntimeWiring.Builder runtimeWiring;
   private String restAPIURL;
-  private String qvsURL;
   private String defaultDatabase = "las2peer";
   private String defaultDatabaseSchema = "las2peermon";
 
