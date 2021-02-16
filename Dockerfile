@@ -29,8 +29,12 @@ WORKDIR /src
 RUN chmod -R a+rwx /src
 RUN chmod +x /src/docker-entrypoint.sh
 RUN dos2unix docker-entrypoint.sh
-RUN dos2unix GraphQLAPI/etc/i5.las2peer.connectors.webConnector.WebConnector.properties
-RUN dos2unix GraphQLAPI/config.properties
+
+RUN dos2unix /src/GraphQLAPI/config.properties
+RUN dos2unix /src/RESTAPI/config.properties
+
+RUN dos2unix /src/GraphQLAPI/etc/ant_configuration/service.properties
+RUN dos2unix /src/RESTAPI/etc/ant_configuration/service.properties
 # run the rest as unprivileged user
 USER las2peer
 
@@ -41,6 +45,6 @@ WORKDIR /src/RESTAPI
 RUN ant jar startscripts
 
 
-EXPOSE ${GRAPHQL_PORT}
-EXPOSE ${REST_PORT}
+EXPOSE 8090
+
 ENTRYPOINT ["/src/docker-entrypoint.sh"]
