@@ -46,17 +46,6 @@ set_in_service_config junit ${junit}
 set_in_service_config db.password_las2peermon ${password_las2peermon}
 set_in_service_config db.dbSchema_las2peermon ${dbSchema_las2peermon}
 
-#GraphQL
-set -f
-LAUNCH_COMMAND='java -cp /src/GraphQLAPI/lib/* i5.las2peer.tools.L2pNodeLauncher -s /src/GraphQLAPI/service -p '"${GRAPHQL_PORT} ${SERVICE_EXTRA_ARGS}"
-echo ${LAUNCH_COMMAND}
-
-#prepare pastry properties
-echo external_address = $(curl -s https://ipinfo.io/ip):${GRAPHQL_PORT} > etc/pastry.properties
-cd /src/GraphQLAPI
-# start the service within a las2peer node     
-exec ${LAUNCH_COMMAND} uploadStartupDirectory startService\("'""${GRAPHQL_SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\) startWebConnector
-
 #REST
 set -f
 LAUNCH_COMMAND='java -cp /src/RESTAPI/lib/* i5.las2peer.tools.L2pNodeLauncher -s /src/RESTAPI/service -p '"${REST_PORT} ${SERVICE_EXTRA_ARGS}"
@@ -68,4 +57,13 @@ echo external_address = $(curl -s https://ipinfo.io/ip):${REST_PORT} > etc/pastr
 # start the service within a las2peer node     
 exec ${LAUNCH_COMMAND} uploadStartupDirectory startService\("'""${REST_SERVICE}""'", "'""${REST_SERVICE_PASSPHRASE}""'"\) startWebConnector
 
+#GraphQL
+set -f
+LAUNCH_COMMAND='java -cp /src/GraphQLAPI/lib/* i5.las2peer.tools.L2pNodeLauncher -s /src/GraphQLAPI/service -p '"${GRAPHQL_PORT} ${SERVICE_EXTRA_ARGS}"
+echo ${LAUNCH_COMMAND}
 
+#prepare pastry properties
+echo external_address = $(curl -s https://ipinfo.io/ip):${GRAPHQL_PORT} > etc/pastry.properties
+cd /src/GraphQLAPI
+# start the service within a las2peer node     
+exec ${LAUNCH_COMMAND} uploadStartupDirectory startService\("'""${GRAPHQL_SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\) startWebConnector

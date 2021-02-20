@@ -1,8 +1,5 @@
-# use this dockerfile to deploy both services in one container
-
 FROM openjdk:8-jdk-alpine
 
-ENV GRAPHQL_PORT=9011
 ENV REST_PORT=9012
 
 ENV user_las2peermon=root
@@ -19,7 +16,6 @@ ENV password_las2peermon=password
 ENV dbSchema_las2peermon=las2peermon
 ENV TZ=Europe/Berlin
 
-
 RUN apk add --update bash mysql-client apache-ant tzdata curl && rm -f /var/cache/apk/*
 
 RUN addgroup -g 1000 -S las2peer && \
@@ -32,21 +28,15 @@ RUN chmod -R a+rwx /src
 RUN chmod +x /src/docker-entrypoint.sh
 RUN dos2unix docker-entrypoint.sh
 
-RUN dos2unix /src/GraphQLAPI/config.properties
-RUN dos2unix /src/RESTAPI/config.properties
+RUN dos2unix config.properties
 
-RUN dos2unix /src/GraphQLAPI/etc/ant_configuration/service.properties
-RUN dos2unix /src/RESTAPI/etc/ant_configuration/service.properties
-# run the rest as unprivileged user
+RUN dos2unix etc/ant_configuration/service.properties
+
 USER las2peer
 
-WORKDIR /src/GraphQLAPI
-RUN ant jar startscripts
-
-WORKDIR /src/RESTAPI
 RUN ant jar startscripts
 
 
-EXPOSE 8090
+EXPOSE 8000
 
 ENTRYPOINT ["/src/docker-entrypoint.sh"]
