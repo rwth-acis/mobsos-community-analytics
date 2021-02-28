@@ -5,6 +5,7 @@ set -e
 if [[ ! -z "${DEBUG}" ]]; then
     set -x
 fi
+NODE_ID_SEED=${NODE_ID_SEED:-$RANDOM}
 
 # set some helpful variables
 export CONFIG_PROPERTY_FILE='config.properties'
