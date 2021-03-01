@@ -1,7 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
 ENV GRAPHQL_PORT=9011
-
+ENV restAPIURL=http://git.tech4comp.dbis.rwth-aachen.de
 # ENV user_las2peermon=root
 # ENV dbSchema_las2peer=LAS2PEERMON
 # ENV dbType_las2peermon=MySQL

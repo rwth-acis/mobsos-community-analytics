@@ -37,6 +37,7 @@ set_in_service_config db.url_las2peermon ${url_las2peermon}
 set_in_service_config junit ${junit}
 set_in_service_config db.password_las2peermon ${password_las2peermon}
 set_in_service_config db.dbSchema_las2peermon ${dbSchema_las2peermon}
+set_in_service_config restAPIURL ${restAPIURL}
 
 # wait for any bootstrap host to be available
 if [[ ! -z "${BOOTSTRAP}" ]]; then
