@@ -4,11 +4,11 @@ ENV HTTP_PORT=8080
 ENV HTTPS_PORT=8443
 ENV REST_PORT=9012
 
-ENV url_las2peer=jdbc:mysql://127.0.0.1:3306
+ENV url_las2peer=jdbc:mysql://mobsos-mysql.sbf-dev
 ENV dbSchema_las2peer=LAS2PEERMON
 ENV dbType_las2peer=MySQL
 ENV user_las2peer=root
-ENV password_las2peer=hellome
+ENV password_las2peer=password
 
 ENV TZ=Europe/Berlin
 
