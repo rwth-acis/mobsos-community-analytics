@@ -145,9 +145,12 @@ public class MediabaseGraphQLAPI extends RESTService {
       input.close();
 
       System.out.println("Building runtime wiring.");
-      runtimeWiring =
-        updateRuntimeWiring("mediabase", mediabaseSchema, runtimeWiring);
-      System.out.println("Runtime Wiring Mediabase complete.");
+      if (mediabaseSchema != null) {
+        runtimeWiring =
+          updateRuntimeWiring("mediabase", mediabaseSchema, runtimeWiring);
+        System.out.println("Runtime Wiring Mediabase complete.");
+      }
+
       System.out.println("las2peer Schema:" + las2peerSchema);
       runtimeWiring =
         updateRuntimeWiring("las2peer", las2peerSchema, runtimeWiring);
