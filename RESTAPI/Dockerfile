@@ -1,5 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
+ENV HTTP_PORT=8080
+ENV HTTPS_PORT=8443
 ENV REST_PORT=9012
 
 ENV url_las2peer=jdbc:mysql://127.0.0.1:3306

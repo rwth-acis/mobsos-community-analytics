@@ -1,5 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
+ENV HTTP_PORT=8080
+ENV HTTPS_PORT=8443
 ENV GRAPHQL_PORT=9011
 ENV restAPIURL=http://git.tech4comp.dbis.rwth-aachen.de
 # ENV user_las2peermon=root
