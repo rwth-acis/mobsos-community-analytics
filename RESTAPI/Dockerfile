@@ -2,18 +2,12 @@ FROM openjdk:8-jdk-alpine
 
 ENV REST_PORT=9012
 
-ENV user_las2peermon=root
+ENV url_las2peer=jdbc:mysql://127.0.0.1:3306
 ENV dbSchema_las2peer=LAS2PEERMON
-ENV dbType_las2peermon=MySQL
-
 ENV dbType_las2peer=MySQL
 ENV user_las2peer=root
 ENV password_las2peer=hellome
 
-ENV url_las2peermon=jdbc:mysql://127.0.0.1:3306
-ENV junit=false
-ENV password_las2peermon=password
-ENV dbSchema_las2peermon=las2peermon
 ENV TZ=Europe/Berlin
 
 RUN apk add --update bash mysql-client apache-ant tzdata curl && rm -f /var/cache/apk/*
@@ -37,6 +31,9 @@ USER las2peer
 RUN ant jar startscripts
 
 
-EXPOSE 8000
+# EXPOSE 8000
+EXPOSE $HTTP_PORT
+EXPOSE $HTTPS_PORT
+EXPOSE $REST_PORT
 
 ENTRYPOINT ["/src/docker-entrypoint.sh"]

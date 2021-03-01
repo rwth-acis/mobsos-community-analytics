@@ -37,6 +37,9 @@ USER las2peer
 
 RUN ant jar startscripts
 
-EXPOSE 8090
+# EXPOSE 8090
+EXPOSE $HTTP_PORT
+EXPOSE $HTTPS_PORT
+EXPOSE $GRAPHQL_PORT
 
 ENTRYPOINT ["/src/docker-entrypoint.sh"]
