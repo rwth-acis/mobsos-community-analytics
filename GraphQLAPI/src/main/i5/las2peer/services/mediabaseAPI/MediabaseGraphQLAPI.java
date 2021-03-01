@@ -1033,6 +1033,7 @@ public class MediabaseGraphQLAPI extends RESTService {
     System.out.println("URL: " + url.toString());
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("GET");
+    con.setRequestProperty("Content-Type", "text/plain");
     con.setDoOutput(false);
 
     BufferedReader in = new BufferedReader(
@@ -2413,7 +2414,9 @@ public class MediabaseGraphQLAPI extends RESTService {
       if (url.equals("build")) {
         return "localhost:8088";
       } else {
-        return url.replace("http://", "");
+        String result = url.replace("http://", "");
+        result = result.replace("https://", "");
+        return result;
       }
     } catch (IOException exc) {
       System.out.println("IOException" + exc.toString());
