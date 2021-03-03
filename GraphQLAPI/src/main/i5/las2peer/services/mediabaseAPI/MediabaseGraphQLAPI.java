@@ -684,10 +684,14 @@ public class MediabaseGraphQLAPI extends RESTService {
         String dbSchema = environment.getArgument("dbSchema");
         String query = environment.getArgument("query");
         URL url = null;
+        String protocol = "http";
         try {
+          if (retrieveRESTURL().contains("https://")) {
+            protocol = "https";
+          }
           url =
             new URI(
-              "http",
+              protocol,
               retrieveRESTHost(),
               "/rest/data/query/" + name + "/" + dbSchema,
               "query=" + query,

@@ -14,9 +14,20 @@ export CONFIG_PROPERTY_FILE='config.properties'
 export GRAPHQL_SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' etc/ant_configuration/service.properties)
 export GRAPHQL_SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' etc/ant_configuration/service.properties)
 export GRAPHQL_SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' etc/ant_configuration/service.properties)
-
+export WEB_CONNECTOR_PROPERTY_FILE='etc/i5.las2peer.connectors.webConnector.WebConnector.properties'
 export GRAPHQL_SERVICE=${GRAPHQL_SERVICE_NAME}.${GRAPHQL_SERVICE_CLASS}@${GRAPHQL_SERVICE_VERSION}
 echo ${GRAPHQL_SERVICE}
+
+# set defaults for optional web connector parameters
+[[ -z "${START_HTTP}" ]] && export START_HTTP='TRUE'
+[[ -z "${START_HTTPS}" ]] && export START_HTTPS='FALSE'
+[[ -z "${SSL_KEYSTORE}" ]] && export SSL_KEYSTORE=''
+[[ -z "${SSL_KEY_PASSWORD}" ]] && export SSL_KEY_PASSWORD=''
+[[ -z "${CROSS_ORIGIN_RESOURCE_DOMAIN}" ]] && export CROSS_ORIGIN_RESOURCE_DOMAIN='*'
+[[ -z "${CROSS_ORIGIN_RESOURCE_MAX_AGE}" ]] && export CROSS_ORIGIN_RESOURCE_MAX_AGE='60'
+[[ -z "${ENABLE_CROSS_ORIGIN_RESOURCE_SHARING}" ]] && export ENABLE_CROSS_ORIGIN_RESOURCE_SHARING='TRUE'
+[[ -z "${OIDC_PROVIDERS}" ]] && export OIDC_PROVIDERS='https://api.learning-layers.eu/o/oauth2,https://accounts.google.com'
+
 
 
 [[ -z "${GRAPHQL_SERVICE_PASSPHRASE}" ]] && export GRAPHQL_SERVICE_PASSPHRASE='graphql'
@@ -32,7 +43,19 @@ set_in_service_config db.password_las2peer ${password_las2peer}
 set_in_service_config junit ${junit}
 set_in_service_config restAPIURL ${restAPIURL}
 
-cat CONFIG_PROPERTY_FILE
+function set_in_web_config {
+    sed -i "s?${1}[[:blank:]]*=.*?${1}=${2}?g" ${WEB_CONNECTOR_PROPERTY_FILE}
+}
+set_in_web_config httpPort ${HTTP_PORT}
+set_in_web_config httpsPort ${HTTPS_PORT}
+set_in_web_config startHttp ${START_HTTP}
+set_in_web_config startHttps ${START_HTTPS}
+set_in_web_config sslKeystore ${SSL_KEYSTORE}
+set_in_web_config sslKeyPassword ${SSL_KEY_PASSWORD}
+set_in_web_config crossOriginResourceDomain ${CROSS_ORIGIN_RESOURCE_DOMAIN}
+set_in_web_config crossOriginResourceMaxAge ${CROSS_ORIGIN_RESOURCE_MAX_AGE}
+set_in_web_config enableCrossOriginResourceSharing ${ENABLE_CROSS_ORIGIN_RESOURCE_SHARING}
+set_in_web_config oidcProviders ${OIDC_PROVIDERS}
 # wait for any bootstrap host to be available
 if [[ ! -z "${BOOTSTRAP}" ]]; then
     echo "Waiting for any bootstrap host to become available..."

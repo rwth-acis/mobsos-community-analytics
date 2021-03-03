@@ -3,7 +3,7 @@ FROM openjdk:8-jdk-alpine
 ENV HTTP_PORT=8080
 ENV HTTPS_PORT=8443
 ENV GRAPHQL_PORT=9011
-ENV restAPIURL=http://git.tech4comp.dbis.rwth-aachen.de
+ENV restAPIURL=https://git.tech4comp.dbis.rwth-aachen.de
 
 
 ENV dbSchema_las2peer=LAS2PEERMON
@@ -11,6 +11,8 @@ ENV dbType_las2peer=MySQL
 ENV user_las2peer=root
 ENV password_las2peer=password
 ENV url_las2peermon=jdbc:mysql://127.0.0.1:3306
+
+ENV SERVICE_EXTRA_ARGS=startWebConnector
 
 ENV TZ=Europe/Berlin
 
