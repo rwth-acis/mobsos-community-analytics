@@ -72,10 +72,16 @@ fi
 
 # prevent glob expansion in lib/*
 set -f
-LAUNCH_COMMAND='java -cp lib/* i5.las2peer.tools.L2pNodeLauncher -s service -p '"${GRAPHQL_PORT} ${SERVICE_EXTRA_ARGS}"
+LAUNCH_COMMAND='java -cp lib/* i5.las2peer.tools.L2pNodeLauncher -s service -p '"${GRAPHQL_PORT} ${SERVICE_EXTRA_ARGS}" ""
+
+if [[ ! -z "${webconnector}" ]]; then
+    LAUNCH_COMMAND="${LAUNCH_COMMAND} startWebConnector"
+fi
+
 if [[ ! -z "${BOOTSTRAP}" ]]; then
     LAUNCH_COMMAND="${LAUNCH_COMMAND} -b ${BOOTSTRAP}"
 fi
+
 
 # it's realistic for different nodes to use different accounts (i.e., to have
 # different node operators). this function echos the N-th mnemonic if the

@@ -12,7 +12,7 @@ ENV user_las2peer=root
 ENV password_las2peer=password
 ENV url_las2peermon=jdbc:mysql://127.0.0.1:3306
 
-ENV SERVICE_EXTRA_ARGS=startWebConnector
+ENV webconnector=startWebConnector
 
 ENV TZ=Europe/Berlin
 
