@@ -74,7 +74,7 @@ fi
 set -f
 LAUNCH_COMMAND='java -cp lib/* i5.las2peer.tools.L2pNodeLauncher -s service -p '"${GRAPHQL_PORT} ${SERVICE_EXTRA_ARGS}" ""
 
-if [[ ! -z "${webconnector}" ]]; then
+if [[ ! -z "${WEBCONNECTOR}" ]]; then
     LAUNCH_COMMAND="${LAUNCH_COMMAND} startWebConnector"
 fi
 
