@@ -10,9 +10,9 @@ ENV dbSchema_las2peer=LAS2PEERMON
 ENV dbType_las2peer=MySQL
 ENV user_las2peer=root
 ENV password_las2peer=password
-
 ENV url_las2peermon=jdbc:mysql://127.0.0.1:3306
-ENV junit=false
+
+ENV TZ=Europe/Berlin
 
 RUN apk add --update bash mysql-client apache-ant tzdata curl && rm -f /var/cache/apk/*
 

@@ -25,20 +25,14 @@ function set_in_service_config {
     sed -i "s?${1}[[:blank:]]*=.*?${1}=${2}?g" ${CONFIG_PROPERTY_FILE}
 }
 cp $CONFIG_PROPERTY_FILE.sample $CONFIG_PROPERTY_FILE
-set_in_service_config db.user_las2peermon ${user_las2peermon}
 set_in_service_config db.dbSchema_las2peer ${dbSchema_las2peer}
-set_in_service_config db.dbType_las2peermon ${dbType_las2peermon}
-
 set_in_service_config db.dbType_las2peer ${dbType_las2peer}
 set_in_service_config db.user_las2peer  ${user_las2peer}
 set_in_service_config db.password_las2peer ${password_las2peer}
-
-set_in_service_config db.url_las2peermon ${url_las2peermon}
 set_in_service_config junit ${junit}
-set_in_service_config db.password_las2peermon ${password_las2peermon}
-set_in_service_config db.dbSchema_las2peermon ${dbSchema_las2peermon}
 set_in_service_config restAPIURL ${restAPIURL}
 
+cat CONFIG_PROPERTY_FILE
 # wait for any bootstrap host to be available
 if [[ ! -z "${BOOTSTRAP}" ]]; then
     echo "Waiting for any bootstrap host to become available..."
