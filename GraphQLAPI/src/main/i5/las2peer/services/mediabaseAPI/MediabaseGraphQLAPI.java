@@ -450,6 +450,8 @@ public class MediabaseGraphQLAPI extends RESTService {
       dbName = this.defaultDatabase;
     }
 
+    queryString.replace("\"", "'");
+
     result =
       "{customQuery(dbName: \"" +
       dbName +
