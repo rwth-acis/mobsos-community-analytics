@@ -72,9 +72,9 @@ echo external_address = $(curl -s https://ipinfo.io/ip):${REST_PORT} > etc/pastr
 if [[ -z "${@}" ]]
 then
     if [ -n "$LAS2PEER_ETH_HOST" ]; then
-        exec ${LAUNCH_COMMAND} --node-id-seed $NODE_ID_SEED --observer --ethereum-mnemonic "$(selectMnemonic)" uploadStartupDirectory startService\("'""${REST_SERVICE}""'", "'""${REST_SERVICE_PASSPHRASE}""'"\)  "node=getNodeAsEthereumNode()" "registry=node.getRegistryClient()" "n=getNodeAsEthereumNode()" "r=n.getRegistryClient()" 
+        exec ${LAUNCH_COMMAND}  --ethereum-mnemonic "$(selectMnemonic)" uploadStartupDirectory startService\("'""${REST_SERVICE}""'", "'""${REST_SERVICE_PASSPHRASE}""'"\)  "node=getNodeAsEthereumNode()" "registry=node.getRegistryClient()" "n=getNodeAsEthereumNode()" "r=n.getRegistryClient()" 
     else
-        exec ${LAUNCH_COMMAND} --node-id-seed $NODE_ID_SEED --observer uploadStartupDirectory startService\("'""${REST_SERVICE}""'", "'""${REST_SERVICE_PASSPHRASE}""'"\) 
+        exec ${LAUNCH_COMMAND} --node-id-seed $NODE_ID_SEED uploadStartupDirectory startService\("'""${REST_SERVICE}""'", "'""${REST_SERVICE_PASSPHRASE}""'"\) 
     fi
 else
   exec ${LAUNCH_COMMAND} ${@}
