@@ -5,4 +5,5 @@ type REVIEW {
   stars: Int 
   author: String 
   id: ID 
+  comment:String
 }
