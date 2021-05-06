@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+set -e
+
+# print all comands to console if DEBUG is set
+if [[ ! -z "${DEBUG}" ]]; then
+    set -x
+fi
+NODE_ID_SEED=${NODE_ID_SEED:-$RANDOM}
+
+# set some helpful variables
+export CONFIG_PROPERTY_FILE='config.properties'
+
+#GRAPHQL variables
+export GRAPHQL_SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' etc/ant_configuration/service.properties)
+export GRAPHQL_SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' etc/ant_configuration/service.properties)
+export GRAPHQL_SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' etc/ant_configuration/service.properties)
+export WEB_CONNECTOR_PROPERTY_FILE='etc/i5.las2peer.connectors.webConnector.WebConnector.properties'
+export GRAPHQL_SERVICE=${GRAPHQL_SERVICE_NAME}.${GRAPHQL_SERVICE_CLASS}@${GRAPHQL_SERVICE_VERSION}
+echo ${GRAPHQL_SERVICE}
+
+# set defaults for optional web connector parameters
+[[ -z "${START_HTTP}" ]] && export START_HTTP='TRUE'
+[[ -z "${START_HTTPS}" ]] && export START_HTTPS='FALSE'
+[[ -z "${SSL_KEYSTORE}" ]] && export SSL_KEYSTORE=''
+[[ -z "${SSL_KEY_PASSWORD}" ]] && export SSL_KEY_PASSWORD=''
+[[ -z "${CROSS_ORIGIN_RESOURCE_DOMAIN}" ]] && export CROSS_ORIGIN_RESOURCE_DOMAIN='*'
+[[ -z "${CROSS_ORIGIN_RESOURCE_MAX_AGE}" ]] && export CROSS_ORIGIN_RESOURCE_MAX_AGE='60'
+[[ -z "${ENABLE_CROSS_ORIGIN_RESOURCE_SHARING}" ]] && export ENABLE_CROSS_ORIGIN_RESOURCE_SHARING='TRUE'
+[[ -z "${OIDC_PROVIDERS}" ]] && export OIDC_PROVIDERS='https://api.learning-layers.eu/o/oauth2,https://accounts.google.com'
+
+
+
+[[ -z "${GRAPHQL_SERVICE_PASSPHRASE}" ]] && export GRAPHQL_SERVICE_PASSPHRASE='graphql'
+
+function set_in_service_config {
+    sed -i "s?${1}[[:blank:]]*=.*?${1}=${2}?g" ${CONFIG_PROPERTY_FILE}
+}
+cp $CONFIG_PROPERTY_FILE.sample $CONFIG_PROPERTY_FILE
+set_in_service_config db.dbSchema_las2peer ${dbSchema_las2peer}
+set_in_service_config db.dbType_las2peer ${dbType_las2peer}
+set_in_service_config db.user_las2peer  ${user_las2peer}
+set_in_service_config db.password_las2peer ${password_las2peer}
+set_in_service_config junit ${junit}
+set_in_service_config restAPIURL ${restAPIURL}
+
+function set_in_web_config {
+    sed -i "s?${1}[[:blank:]]*=.*?${1}=${2}?g" ${WEB_CONNECTOR_PROPERTY_FILE}
+}
+set_in_web_config httpPort ${HTTP_PORT}
+set_in_web_config httpsPort ${HTTPS_PORT}
+set_in_web_config startHttp ${START_HTTP}
+set_in_web_config startHttps ${START_HTTPS}
+set_in_web_config sslKeystore ${SSL_KEYSTORE}
+set_in_web_config sslKeyPassword ${SSL_KEY_PASSWORD}
+set_in_web_config crossOriginResourceDomain ${CROSS_ORIGIN_RESOURCE_DOMAIN}
+set_in_web_config crossOriginResourceMaxAge ${CROSS_ORIGIN_RESOURCE_MAX_AGE}
+set_in_web_config enableCrossOriginResourceSharing ${ENABLE_CROSS_ORIGIN_RESOURCE_SHARING}
+set_in_web_config oidcProviders ${OIDC_PROVIDERS}
+# wait for any bootstrap host to be available
+if [[ ! -z "${BOOTSTRAP}" ]]; then
+    echo "Waiting for any bootstrap host to become available..."
+    for host_port in ${BOOTSTRAP//,/ }; do
+        arr_host_port=(${host_port//:/ })
+        host=${arr_host_port[0]}
+        port=${arr_host_port[1]}
+        if { </dev/tcp/${host}/${port}; } 2>/dev/null; then
+            echo "${host_port} is available. Continuing..."
+            break
+        fi
+    done
+fi
+
+# prevent glob expansion in lib/*
+set -f
+LAUNCH_COMMAND='java -cp lib/* i5.las2peer.tools.L2pNodeLauncher -s service -p '"${GRAPHQL_PORT} ${SERVICE_EXTRA_ARGS}" 
+
+if ["${WEBCONNECTOR}" = "true"]; then
+    LAUNCH_COMMAND="${LAUNCH_COMMAND} startWebConnector"
+fi
+
+if [[ ! -z "${BOOTSTRAP}" ]]; then
+    LAUNCH_COMMAND="${LAUNCH_COMMAND} -b ${BOOTSTRAP}"
+fi
+
+
+# it's realistic for different nodes to use different accounts (i.e., to have
+# different node operators). this function echos the N-th mnemonic if the
+# variable WALLET is set to N. If not, first mnemonic is used
+function selectMnemonic {
+    declare -a mnemonics=("differ employ cook sport clinic wedding melody column pave stuff oak price" "memory wrist half aunt shrug elbow upper anxiety maximum valve finish stay" "alert sword real code safe divorce firm detect donate cupboard forward other" "pair stem change april else stage resource accident will divert voyage lawn" "lamp elbow happy never cake very weird mix episode either chimney episode" "cool pioneer toe kiwi decline receive stamp write boy border check retire" "obvious lady prize shrimp taste position abstract promote market wink silver proof" "tired office manage bird scheme gorilla siren food abandon mansion field caution" "resemble cattle regret priority hen six century hungry rice grape patch family" "access crazy can job volume utility dial position shaft stadium soccer seven")
+    if [[ ${WALLET} =~ ^[0-9]+$ && ${WALLET} -lt ${#mnemonics[@]} ]]; then
+    # get N-th mnemonic
+        echo "${mnemonics[${WALLET}]}"
+    else
+        # note: zsh and others use 1-based indexing. this requires bash
+        echo "${mnemonics[0]}"
+    fi
+}
+echo ${LAUNCH_COMMAND}
+
+#prepare pastry properties
+echo external_address = $(curl -s https://ipinfo.io/ip):${GRAPHQL_PORT} > etc/pastry.properties
+echo external_address = $(curl -s https://ipinfo.io/ip):${GRAPHQL_PORT}
+# start the service within a las2peer node
+if [[ -z "${@}" ]]
+then
+    if [ -n "$LAS2PEER_ETH_HOST" ]; then
+        exec ${LAUNCH_COMMAND}  --observer --ethereum-mnemonic "$(selectMnemonic)" uploadStartupDirectory startService\("'""${SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\)  "node=getNodeAsEthereumNode()" "registry=node.getRegistryClient()" "n=getNodeAsEthereumNode()" "r=n.getRegistryClient()" 
+    else
+        exec ${LAUNCH_COMMAND} --node-id-seed $NODE_ID_SEED  startService\("'""${GRAPHQL_SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\) 
+    fi
+else
+  exec ${LAUNCH_COMMAND} ${@}
+fi
