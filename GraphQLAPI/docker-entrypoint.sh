@@ -107,7 +107,7 @@ then
     if [ -n "$LAS2PEER_ETH_HOST" ]; then
         exec ${LAUNCH_COMMAND}  --observer --ethereum-mnemonic "$(selectMnemonic)" uploadStartupDirectory startService\("'""${SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\)  "node=getNodeAsEthereumNode()" "registry=node.getRegistryClient()" "n=getNodeAsEthereumNode()" "r=n.getRegistryClient()" 
     else
-        exec ${LAUNCH_COMMAND}   startService\("'""${GRAPHQL_SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\) 
+        exec ${LAUNCH_COMMAND} --node-id-seed $NODE_ID_SEED  startService\("'""${GRAPHQL_SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\) 
     fi
 else
   exec ${LAUNCH_COMMAND} ${@}
