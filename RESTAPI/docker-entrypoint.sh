@@ -11,10 +11,11 @@ NODE_ID_SEED=${NODE_ID_SEED:-$RANDOM}
 export CONFIG_PROPERTY_FILE='config.properties'
 
 #RESTAPI variables
-export REST_SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' etc/ant_configuration/service.properties)
-export REST_SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' etc/ant_configuration/service.properties)
-export REST_SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' etc/ant_configuration/service.properties)
-export REST_SERVICE=${REST_SERVICE_NAME}.${REST_SERVICE_CLASS}@${REST_SERVICE_VERSION}
+export WEB_CONNECTOR_PROPERTY_FILE='etc/i5.las2peer.connectors.webConnector.WebConnector.properties'
+export SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' gradle.properties)
+export SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' gradle.properties)
+export SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' gradle.properties)
+export REST_SERVICE=${SERVICE_CLASS}.${SERVICE_NAME}@${SERVICE_VERSION}
 
 echo ${REST_SERVICE}
 
@@ -66,7 +67,7 @@ function selectMnemonic {
 }
 
 #prepare pastry properties
-echo external_address = $(curl -s https://ipinfo.io/ip):${REST_PORT} > etc/pastry.properties
+echo external_address = $(curl -s https://ipinfo.io/ip):${LAS2PEER_PORT} > etc/pastry.properties
 
 # start the service within a las2peer node
 if [[ -z "${@}" ]]
