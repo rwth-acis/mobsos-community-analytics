@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="servicebundle/jcc-11.1.4.4.jar"/>
 	<classpathentry kind="lib" path="servicebundle/gson-2.8.5.jar"/>
 	<classpathentry kind="lib" path="servicebundle/mysql-connector-java-5.1.44.jar"/>
+	<classpathentry kind="src" path="lib"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
