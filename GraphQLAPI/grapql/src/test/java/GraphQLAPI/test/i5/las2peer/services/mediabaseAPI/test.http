@@ -1,6 +1,0 @@
-POST http://127.0.0.1:8090/graphql/visualize
-Content-Type: application/json
-
-{
-    "msg": "SELECT author,avg(stars) as stars FROM reviews Group by author"
-}
