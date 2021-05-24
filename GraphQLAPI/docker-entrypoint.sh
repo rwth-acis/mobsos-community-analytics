@@ -11,11 +11,12 @@ NODE_ID_SEED=${NODE_ID_SEED:-$RANDOM}
 export CONFIG_PROPERTY_FILE='config.properties'
 
 #GRAPHQL variables
-export GRAPHQL_SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' etc/ant_configuration/service.properties)
-export GRAPHQL_SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' etc/ant_configuration/service.properties)
-export GRAPHQL_SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' etc/ant_configuration/service.properties)
+export SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' gradle.properties)
+export SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' gradle.properties)
+export SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' gradle.properties)
+
 export WEB_CONNECTOR_PROPERTY_FILE='etc/i5.las2peer.connectors.webConnector.WebConnector.properties'
-export GRAPHQL_SERVICE=${GRAPHQL_SERVICE_NAME}.${GRAPHQL_SERVICE_CLASS}@${GRAPHQL_SERVICE_VERSION}
+export GRAPHQL_SERVICE=${SERVICE_NAME}.${SERVICE_CLASS}@${SERVICE_VERSION}
 echo ${GRAPHQL_SERVICE}
 
 # set defaults for optional web connector parameters
@@ -30,7 +31,7 @@ echo ${GRAPHQL_SERVICE}
 
 
 
-[[ -z "${GRAPHQL_SERVICE_PASSPHRASE}" ]] && export GRAPHQL_SERVICE_PASSPHRASE='graphql'
+[[ -z "${GRAPHQL_SERVICE_PASSPHRASE}" ]] && export GRAPHQL_SERVICE_PASSPHRASE='gql'
 
 function set_in_service_config {
     sed -i "s?${1}[[:blank:]]*=.*?${1}=${2}?g" ${CONFIG_PROPERTY_FILE}
@@ -72,12 +73,7 @@ fi
 
 # prevent glob expansion in lib/*
 set -f
-LAUNCH_COMMAND='java -cp lib/* i5.las2peer.tools.L2pNodeLauncher -s service -p '"${GRAPHQL_PORT} ${SERVICE_EXTRA_ARGS}" 
-
-if ["${WEBCONNECTOR}" = "true"]; then
-    LAUNCH_COMMAND="${LAUNCH_COMMAND} startWebConnector"
-fi
-
+LAUNCH_COMMAND='java -cp lib/* i5.las2peer.tools.L2pNodeLauncher -s service -p '"${LAS2PEER_PORT} ${SERVICE_EXTRA_ARGS}" 
 if [[ ! -z "${BOOTSTRAP}" ]]; then
     LAUNCH_COMMAND="${LAUNCH_COMMAND} -b ${BOOTSTRAP}"
 fi
@@ -99,15 +95,15 @@ function selectMnemonic {
 echo ${LAUNCH_COMMAND}
 
 #prepare pastry properties
-echo external_address = $(curl -s https://ipinfo.io/ip):${GRAPHQL_PORT} > etc/pastry.properties
-echo external_address = $(curl -s https://ipinfo.io/ip):${GRAPHQL_PORT}
+echo external_address = $(curl -s https://ipinfo.io/ip):${LAS2PEER_PORT} > etc/pastry.properties
+
 # start the service within a las2peer node
 if [[ -z "${@}" ]]
 then
     if [ -n "$LAS2PEER_ETH_HOST" ]; then
-        exec ${LAUNCH_COMMAND}  --observer --ethereum-mnemonic "$(selectMnemonic)" uploadStartupDirectory startService\("'""${SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\)  "node=getNodeAsEthereumNode()" "registry=node.getRegistryClient()" "n=getNodeAsEthereumNode()" "r=n.getRegistryClient()" 
+        exec ${LAUNCH_COMMAND}  --observer --node-id-seed $NODE_ID_SEED --ethereum-mnemonic "$(selectMnemonic)" uploadStartupDirectory startService\("'""${SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\)  "node=getNodeAsEthereumNode()" "registry=node.getRegistryClient()" "n=getNodeAsEthereumNode()" "r=n.getRegistryClient()" 
     else
-        exec ${LAUNCH_COMMAND} --node-id-seed $NODE_ID_SEED  startService\("'""${GRAPHQL_SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\) 
+        exec ${LAUNCH_COMMAND}  --observer --node-id-seed $NODE_ID_SEED startService\("'""${GRAPHQL_SERVICE}""'", "'""${GRAPHQL_SERVICE_PASSPHRASE}""'"\) 
     fi
 else
   exec ${LAUNCH_COMMAND} ${@}

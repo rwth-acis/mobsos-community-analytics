@@ -11,10 +11,11 @@ NODE_ID_SEED=${NODE_ID_SEED:-$RANDOM}
 export CONFIG_PROPERTY_FILE='config.properties'
 
 #RESTAPI variables
-export REST_SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' etc/ant_configuration/service.properties)
-export REST_SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' etc/ant_configuration/service.properties)
-export REST_SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' etc/ant_configuration/service.properties)
-export REST_SERVICE=${REST_SERVICE_NAME}.${REST_SERVICE_CLASS}@${REST_SERVICE_VERSION}
+export WEB_CONNECTOR_PROPERTY_FILE='etc/i5.las2peer.connectors.webConnector.WebConnector.properties'
+export SERVICE_VERSION=$(awk -F "=" '/service.version/ {print $2}' gradle.properties)
+export SERVICE_NAME=$(awk -F "=" '/service.name/ {print $2}' gradle.properties)
+export SERVICE_CLASS=$(awk -F "=" '/service.class/ {print $2}' gradle.properties)
+export REST_SERVICE=${SERVICE_NAME}.${SERVICE_CLASS}@${SERVICE_VERSION}
 
 echo ${REST_SERVICE}
 
@@ -46,7 +47,7 @@ fi
 
 # prevent glob expansion in lib/*
 set -f
-LAUNCH_COMMAND='java -cp lib/* i5.las2peer.tools.L2pNodeLauncher -s service -p '"${REST_PORT} ${SERVICE_EXTRA_ARGS}"
+LAUNCH_COMMAND='java -cp lib/* i5.las2peer.tools.L2pNodeLauncher -s service -p '"${LAS2PEER_PORT} ${SERVICE_EXTRA_ARGS}"
 if [[ ! -z "${BOOTSTRAP}" ]]; then
     LAUNCH_COMMAND="${LAUNCH_COMMAND} -b ${BOOTSTRAP}"
 fi
@@ -66,13 +67,13 @@ function selectMnemonic {
 }
 
 #prepare pastry properties
-echo external_address = $(curl -s https://ipinfo.io/ip):${REST_PORT} > etc/pastry.properties
+echo external_address = $(curl -s https://ipinfo.io/ip):${LAS2PEER_PORT} > etc/pastry.properties
 
 # start the service within a las2peer node
 if [[ -z "${@}" ]]
 then
     if [ -n "$LAS2PEER_ETH_HOST" ]; then
-        exec ${LAUNCH_COMMAND}  --ethereum-mnemonic "$(selectMnemonic)" uploadStartupDirectory startService\("'""${REST_SERVICE}""'", "'""${REST_SERVICE_PASSPHRASE}""'"\)  "node=getNodeAsEthereumNode()" "registry=node.getRegistryClient()" "n=getNodeAsEthereumNode()" "r=n.getRegistryClient()" 
+        exec ${LAUNCH_COMMAND}  --node-id-seed $NODE_ID_SEED  --ethereum-mnemonic "$(selectMnemonic)" uploadStartupDirectory startService\("'""${REST_SERVICE}""'", "'""${REST_SERVICE_PASSPHRASE}""'"\)  "node=getNodeAsEthereumNode()" "registry=node.getRegistryClient()" "n=getNodeAsEthereumNode()" "r=n.getRegistryClient()" 
     else
         exec ${LAUNCH_COMMAND} --node-id-seed $NODE_ID_SEED uploadStartupDirectory startService\("'""${REST_SERVICE}""'", "'""${REST_SERVICE_PASSPHRASE}""'"\) 
     fi
