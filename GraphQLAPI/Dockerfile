@@ -26,6 +26,7 @@ RUN chmod +x docker-entrypoint.sh
 
 RUN dos2unix docker-entrypoint.sh
 RUN dos2unix gradle.properties
+RUN dos2unix config.properties
 # RUN dos2unix etc/ant_configuration/service.properties
 # run the rest as unprivileged user
 RUN chmod +x gradlew && ./gradlew build --exclude-task test
