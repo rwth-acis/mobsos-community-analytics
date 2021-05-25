@@ -1,0 +1,5 @@
+db.url_las2peer=jdbc:mysql://mobsos-mysql.sbf-dev
+db.dbSchema_las2peer=LAS2PEERMON
+db.dbType_las2peer=MySQL
+db.user_las2peer=root
+db.password_las2peer=password

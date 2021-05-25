@@ -23,4 +23,4 @@ Navigate to mobsos-community-analytics/RESTAPI/bin and execute the following
 
 	start_network.bat/sh
 	
-The URL of the API is shown above the dashed line
+The URL of the API is shown above the dashed line.
