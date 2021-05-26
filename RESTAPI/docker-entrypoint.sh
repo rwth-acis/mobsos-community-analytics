@@ -27,9 +27,11 @@ function set_in_service_config {
 cp $CONFIG_PROPERTY_FILE.sample $CONFIG_PROPERTY_FILE
 
 set_in_service_config db.dbSchema_las2peer ${dbSchema_las2peer}
+set_in_service_config db.url_las2peer ${url_las2peer}
 set_in_service_config db.dbType_las2peer ${dbType_las2peer}
 set_in_service_config db.user_las2peer  ${user_las2peer}
 set_in_service_config db.password_las2peer ${password_las2peer}
+
 
 # wait for any bootstrap host to be available
 if [[ ! -z "${BOOTSTRAP}" ]]; then
