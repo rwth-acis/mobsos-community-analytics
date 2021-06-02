@@ -814,6 +814,8 @@ public class MediabaseAPI extends RESTService {
   ) {
     try {
       Connection connection = dbConnection(filePath, dbName);
+      System.out.println("RAW : " + query);
+      query = query.replaceAll("%(?![0-9a-fA-F]{2})", "%25"); //replace % which are not intended to be escaped by the encode value
       query = java.net.URLDecoder.decode(query, StandardCharsets.UTF_8.name());
       System.out.println("SQL Query: " + query);
       InputStream input = new FileInputStream(filePath);
