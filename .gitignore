@@ -1,3 +1,4 @@
 /.metadata/
 /.log/
 RESTAPI/config.properties
+GraphQLAPI/graphql/.settings/org.eclipse.jdt.core.prefs
