@@ -1,4 +1,6 @@
 type Mutation { 
   addDatabase(name: String!, url: String!, dbSchema: String!, user: String!,    password:String!, dbType: String!): String 
-  deleteDatabase(name: String!): String 
+  deleteDatabase(name: String!): String
+  addLRS(name: String!, url: String!, auth: String!): String
+  deleteLRS(name: String!): String
 }

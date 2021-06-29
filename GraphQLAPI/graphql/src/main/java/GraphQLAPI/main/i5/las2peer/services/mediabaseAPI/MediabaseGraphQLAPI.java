@@ -1,7 +1,6 @@
-package i5.las2peer.services.mediabaseAPI;
+package GraphQLAPI.main.i5.las2peer.services.mediabaseAPI;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.GraphQLError;
@@ -27,7 +26,6 @@ import io.swagger.annotations.Info;
 import io.swagger.annotations.SwaggerDefinition;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -35,13 +33,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -58,13 +54,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javax.imageio.ImageIO;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+
 import net.minidev.json.parser.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,7 +73,7 @@ import org.json.JSONObject;
     description = "A GraphQL API wrapped around a RESTful API for databases."
   )
 )
-@ServicePath("/graphql")
+  @ServicePath("/graphql")
 public class MediabaseGraphQLAPI extends RESTService {
 
   // GraphQL configuration
@@ -94,47 +89,43 @@ public class MediabaseGraphQLAPI extends RESTService {
   @Override
   public void onStart() throws ServiceException {
     try {
-      // clear schema files
-      FileChannel
-        .open(Paths.get(querySchemaFile), StandardOpenOption.WRITE)
-        .truncate(0)
-        .close();
-      FileChannel
-        .open(Paths.get(mutationSchemaFile), StandardOpenOption.WRITE)
-        .truncate(0)
-        .close();
-      FileChannel
-        .open(Paths.get(typeSchemaFile), StandardOpenOption.WRITE)
-        .truncate(0)
-        .close();
-    } catch (IOException exc) {
-      System.out.println("IOException: " + exc.toString());
-    }
-
-    // build initial schema
-    runtimeWiring = initialRuntimeWiring();
-    String querySchema = initialQuerySchema();
-    String mutationSchema = initialMutationSchema();
-    String typeSchema = initialTypeSchema();
-
-    try {
-      BufferedWriter writer = new BufferedWriter(
-        new FileWriter(querySchemaFile, true)
-      );
-      writer.write(querySchema.toString());
-      writer.close();
-
-      writer = new BufferedWriter(new FileWriter(mutationSchemaFile, true));
-      writer.write(mutationSchema.toString());
-      writer.close();
-
-      writer = new BufferedWriter(new FileWriter(typeSchemaFile, true));
-      writer.write(typeSchema.toString());
-      writer.close();
-
-      StringBuilder schema = new StringBuilder();
-      schema.append(querySchema);
-      schema.append(mutationSchema);
+//      // clear schema files
+//      FileChannel
+//        .open(Paths.get(querySchemaFile), StandardOpenOption.WRITE)
+//        .truncate(0)
+//        .close();
+//      FileChannel
+//        .open(Paths.get(mutationSchemaFile), StandardOpenOption.WRITE)
+//        .truncate(0)
+//        .close();
+//      FileChannel
+//        .open(Paths.get(typeSchemaFile), StandardOpenOption.WRITE)
+//        .truncate(0)
+//        .close();
+//    } catch (IOException exc) {
+//      System.out.println("IOException: " + exc.toString());
+//    }
+//
+//    // build initial schema
+//    runtimeWiring = initialRuntimeWiring();
+//    String querySchema = initialQuerySchema();
+//    String mutationSchema = initialMutationSchema();
+//    String typeSchema = initialTypeSchema();
+//
+//    try {
+//      BufferedWriter writer = new BufferedWriter(
+//        new FileWriter(querySchemaFile, true)
+//      );
+//      writer.write(querySchema.toString());
+//      writer.close();
+//
+//      writer = new BufferedWriter(new FileWriter(mutationSchemaFile, true));
+//      writer.write(mutationSchema.toString());
+//      writer.close();
+//
+//      writer = new BufferedWriter(new FileWriter(typeSchemaFile, true));
+//      writer.write(typeSchema.toString());
+//      writer.close();
 
       // add mediabase and las2peer database from properties file to schema
       InputStream input = new FileInputStream(propertyFile);
@@ -145,6 +136,7 @@ public class MediabaseGraphQLAPI extends RESTService {
       input.close();
 
       System.out.println("Building runtime wiring.");
+      runtimeWiring = initialRuntimeWiring();
       if (mediabaseSchema != null && !"".equals(mediabaseSchema)) {
         runtimeWiring =
           updateRuntimeWiring("mediabase", mediabaseSchema, runtimeWiring);
@@ -597,12 +589,25 @@ public class MediabaseGraphQLAPI extends RESTService {
           typeWiring.dataFetcher("addDatabase", createAddDBDataFetcher())
       );
     runtimeWiring =
+            runtimeWiring.type(
+                    "Mutation",
+                    typeWiring ->
+                            typeWiring.dataFetcher("addLRS", createAddLRSDataFetcher())
+            );
+    runtimeWiring =
       runtimeWiring.type(
         "Mutation",
         typeWiring ->
           typeWiring.dataFetcher("deleteDatabase", createDeleteDBDataFetcher())
       );
+    runtimeWiring =
+            runtimeWiring.type(
+                    "Mutation",
+                    typeWiring ->
+                            typeWiring.dataFetcher("deleteLRS", createDeleteLRSDataFetcher())
+            );
 
+    // Data fetchers for REVIEW data type
     runtimeWiring =
       runtimeWiring.type(
         "REVIEW",
@@ -670,6 +675,177 @@ public class MediabaseGraphQLAPI extends RESTService {
             createRESTTypeDataFetcher("REVIEW", "comment", "")
           )
       );
+
+    // Data fetchers for XAPI_STATEMENT data type
+    runtimeWiring =
+            runtimeWiring.type(
+                    "Query",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "getXAPIByActor",
+                                    createXapiByActorDataFetcher()
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "Query",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "getXAPIByVerb",
+                                    createXapiByVerbDataFetcher()
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "Query",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "getXAPIByObject",
+                                    createXapiByObjectDataFetcher()
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "XAPI_STATEMENT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "actor",
+                                    createRESTTypeDataFetcher("", "actor", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "XAPI_STATEMENT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "verb",
+                                    createRESTTypeDataFetcher("", "verb", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "XAPI_STATEMENT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "object",
+                                    createRESTTypeDataFetcher("", "object", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "XAPI_STATEMENT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "timestamp",
+                                    createRESTTypeDataFetcher("", "timestamp", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "XAPI_STATEMENT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "statementId",
+                                    createRESTTypeDataFetcher("", "statementId", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "XAPI_STATEMENT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "courseid",
+                                    createRESTTypeDataFetcher("", "courseid", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "ACTOR",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "actorId",
+                                    createRESTTypeDataFetcher("", "actorId", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "ACTOR",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "name",
+                                    createRESTTypeDataFetcher("", "name", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "ACTOR",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "roles",
+                                    createRESTTypeDataFetcher("", "roles", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "VERB",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "verbId",
+                                    createRESTTypeDataFetcher("", "verbId", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "VERB",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "name",
+                                    createRESTTypeDataFetcher("", "name", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "OBJECT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "objectId",
+                                    createRESTTypeDataFetcher("", "objectId", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "OBJECT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "name",
+                                    createRESTTypeDataFetcher("", "name", "")
+                            )
+            );
+
+    runtimeWiring =
+            runtimeWiring.type(
+                    "OBJECT",
+                    typeWiring ->
+                            typeWiring.dataFetcher(
+                                    "objectType",
+                                    createRESTTypeDataFetcher("", "objectType", "")
+                            )
+            );
 
     return runtimeWiring;
   }
@@ -838,6 +1014,58 @@ public class MediabaseGraphQLAPI extends RESTService {
   }
 
   /**
+   * sets up DataFetcher enabling addition of LRSs, used in definition of runtime wiring
+   * @return DataFetcher for adding LRSs
+   */
+  private DataFetcher<String> createAddLRSDataFetcher() {
+    return new DataFetcher<String>() {
+      @Override
+      public String get(DataFetchingEnvironment environment) {
+        String name = environment.getArgument("name");
+        String lrsurl = environment.getArgument("url");
+        String auth = environment.getArgument("auth");
+
+        JSONObject data = new JSONObject();
+        data.put("url", lrsurl);
+        data.put("auth", auth);
+
+        String urlString = retrieveRESTURL() + "lrs/" + name;
+        System.out.println(urlString);
+        String responseData = "";
+
+        try {
+          URL url = new URL(urlString);
+          System.out.println(url.toString());
+          HttpURLConnection con = (HttpURLConnection) url.openConnection();
+          con.setRequestMethod("POST");
+          con.setRequestProperty("Content-Type", "application/json");
+          con.setDoOutput(true);
+          DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+          wr.writeBytes(data.toString());
+          wr.flush();
+          wr.close();
+          BufferedReader in = new BufferedReader(
+                  new InputStreamReader(con.getInputStream())
+          );
+          String inputLine;
+          while ((inputLine = in.readLine()) != null) {
+            responseData = responseData + inputLine;
+          }
+          in.close();
+
+          return responseData;
+        } catch (JSONException exc) {
+          System.out.println("JSONException: " + exc.toString());
+          return null;
+        } catch (IOException exc) {
+          System.out.println("IOException: " + exc.toString());
+          return null;
+        }
+      }
+    };
+  }
+
+  /**
    * sets up DataFetcher enabling deletion of databases, used in definition of runtime wiring
    * @return DataFetcher for deleting databases
    */
@@ -879,10 +1107,48 @@ public class MediabaseGraphQLAPI extends RESTService {
   }
 
   /**
+   * sets up DataFetcher enabling deletion of LRSs, used in definition of runtime wiring
+   * @return DataFetcher for deleting LRSs
+   */
+  private DataFetcher<String> createDeleteLRSDataFetcher() {
+    return new DataFetcher<String>() {
+      @Override
+      public String get(DataFetchingEnvironment environment) {
+        String name = environment.getArgument("name");
+        String urlString = retrieveRESTURL() + "lrs/" + name;
+        String responseData = "";
+
+        try {
+          URL url = new URL(urlString);
+          System.out.println(url.toString());
+          HttpURLConnection con = (HttpURLConnection) url.openConnection();
+          con.setRequestMethod("DELETE");
+          con.setRequestProperty("Content-Type", "application/json");
+          con.setDoOutput(true);
+          DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+          wr.close();
+          BufferedReader in = new BufferedReader(
+                  new InputStreamReader(con.getInputStream())
+          );
+          String inputLine;
+          while ((inputLine = in.readLine()) != null) {
+            responseData = responseData + inputLine;
+          }
+          in.close();
+          return responseData;
+        } catch (JSONException exc) {
+          System.out.println("JSONException: " + exc.toString());
+          return null;
+        } catch (IOException exc) {
+          System.out.println("IOException: " + exc.toString());
+          return null;
+        }
+      }
+    };
+  }
+
+  /**
    * builds new data fetcher for query types
-   * @param 	tableName contains name of the GraphQL query type
-   * @param 	schema contains name of schema of the database
-   * @param	con contains connection to DB2 database
    * @return	Data fetcher for query type which returns list GraphQL object types as HashMaps, field names as String
    * 			and their values of Object
    */
@@ -1023,6 +1289,244 @@ public class MediabaseGraphQLAPI extends RESTService {
         }
       }
     };
+  }
+
+  /**
+   * builds new data fetcher for query types
+   * @return	Data fetcher for query type which returns list GraphQL object types as HashMaps, field names as String
+   * 			and their values of Object
+   */
+  private static DataFetcher<List<Map<String, Object>>> createXapiByActorDataFetcher() {
+    return new DataFetcher<List<Map<String, Object>>>() {
+      @Override
+      public List<Map<String, Object>> get(
+              DataFetchingEnvironment environment
+      ) {
+        // Get query arguments
+        String lrsName = environment.getArgument("lrsName");
+        String actorId = environment.getArgument("actorId");
+
+        // Generate pipeline
+        // Match
+        JSONObject match = new JSONObject();
+        match.put("statement.actor.account.name", actorId);
+        JSONObject matchObj = new JSONObject();
+        matchObj.put("$match", match);
+
+        // Assemble pipeline
+        JSONArray pipeline = new JSONArray();
+        pipeline.put(matchObj);
+        pipeline.put(createProjectObject());
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : pipeline.toString().getBytes()) {
+          sb.append("%" + String.format("%02X", b));
+        }
+
+        String urlString = retrieveRESTURL() + "data/query/lrs/" + lrsName + "?query=" + sb.toString();
+        String result = "";
+        try {
+          URL url = new URL(urlString);
+          System.out.println(url.toString());
+          HttpURLConnection con = (HttpURLConnection) url.openConnection();
+          con.setRequestMethod("GET");
+          con.setDoOutput(false);
+          BufferedReader in = new BufferedReader(
+                  new InputStreamReader(con.getInputStream())
+          );
+          String inputLine;
+
+          while ((inputLine = in.readLine()) != null) {
+            System.out.println(inputLine);
+            result = result + inputLine;
+          }
+
+
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+        JSONArray resultArray = new JSONArray(result);
+        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < resultArray.length(); i++) {
+          resultList.add(toMap(resultArray.getJSONObject(i)));
+        }
+
+        return resultList;
+      }
+    };
+  }
+
+  /**
+   * builds new data fetcher for query types
+   * @return	Data fetcher for query type which returns list GraphQL object types as HashMaps, field names as String
+   * 			and their values of Object
+   */
+  private static DataFetcher<List<Map<String, Object>>> createXapiByVerbDataFetcher() {
+    return new DataFetcher<List<Map<String, Object>>>() {
+      @Override
+      public List<Map<String, Object>> get(
+              DataFetchingEnvironment environment
+      ) {
+        // Get query arguments
+        String lrsName = environment.getArgument("lrsName");
+        String verbId = environment.getArgument("verbId");
+
+        // Generate pipeline
+        // Match
+        JSONObject match = new JSONObject();
+        match.put("statement.verb.id", verbId);
+        JSONObject matchObj = new JSONObject();
+        matchObj.put("$match", match);
+
+        // Assemble pipeline
+        JSONArray pipeline = new JSONArray();
+        pipeline.put(matchObj);
+        pipeline.put(createProjectObject());
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : pipeline.toString().getBytes()) {
+          sb.append("%" + String.format("%02X", b));
+        }
+
+        String urlString = retrieveRESTURL() + "data/query/lrs/" + lrsName + "?query=" + sb.toString();
+        String result = "";
+        try {
+          URL url = new URL(urlString);
+          System.out.println(url.toString());
+          HttpURLConnection con = (HttpURLConnection) url.openConnection();
+          con.setRequestMethod("GET");
+          con.setDoOutput(false);
+          BufferedReader in = new BufferedReader(
+                  new InputStreamReader(con.getInputStream())
+          );
+          String inputLine;
+
+          while ((inputLine = in.readLine()) != null) {
+            System.out.println(inputLine);
+            result = result + inputLine;
+          }
+
+
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+        JSONArray resultArray = new JSONArray(result);
+        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < resultArray.length(); i++) {
+          resultList.add(toMap(resultArray.getJSONObject(i)));
+        }
+
+        return resultList;
+      }
+    };
+  }
+
+  /**
+   * builds new data fetcher for query types
+   * @return	Data fetcher for query type which returns list GraphQL object types as HashMaps, field names as String
+   * 			and their values of Object
+   */
+  private static DataFetcher<List<Map<String, Object>>> createXapiByObjectDataFetcher() {
+    return new DataFetcher<List<Map<String, Object>>>() {
+      @Override
+      public List<Map<String, Object>> get(
+              DataFetchingEnvironment environment
+      ) {
+        // Get query arguments
+        String lrsName = environment.getArgument("lrsName");
+        String objectId = environment.getArgument("objectId");
+
+        // Generate pipeline
+        // Match
+        JSONObject match = new JSONObject();
+        match.put("statement.object.id", objectId);
+        JSONObject matchObj = new JSONObject();
+        matchObj.put("$match", match);
+
+        // Assemble pipeline
+        JSONArray pipeline = new JSONArray();
+        pipeline.put(matchObj);
+        pipeline.put(createProjectObject());
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : pipeline.toString().getBytes()) {
+          sb.append("%" + String.format("%02X", b));
+        }
+
+        String urlString = retrieveRESTURL() + "data/query/lrs/" + lrsName + "?query=" + sb.toString();
+        String result = "";
+        try {
+          URL url = new URL(urlString);
+          System.out.println(url.toString());
+          HttpURLConnection con = (HttpURLConnection) url.openConnection();
+          con.setRequestMethod("GET");
+          con.setDoOutput(false);
+          BufferedReader in = new BufferedReader(
+                  new InputStreamReader(con.getInputStream())
+          );
+          String inputLine;
+
+          while ((inputLine = in.readLine()) != null) {
+            System.out.println(inputLine);
+            result = result + inputLine;
+          }
+
+
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+        JSONArray resultArray = new JSONArray(result);
+        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < resultArray.length(); i++) {
+          resultList.add(toMap(resultArray.getJSONObject(i)));
+        }
+
+        return resultList;
+      }
+    };
+  }
+
+  private static JSONObject createProjectObject() {
+    JSONObject project = new JSONObject();
+
+    project.put("_id", 0);
+
+    project.put("statementid", "$_id");
+
+    JSONObject actorObj = new JSONObject();
+    actorObj.put("name", "$statement.actor.name");
+    actorObj.put("actorid", "$statement.actor.account.name");
+    JSONObject rolesMap = new JSONObject();
+    JSONObject rolesMapVals = new JSONObject();
+    rolesMapVals.put("input", "$statement.context.extensions.https://tech4comp&46;de/xapi/context/extensions/actorRoles");
+    rolesMapVals.put("as", "role");
+    rolesMapVals.put("in", "$$role.rolename");
+    rolesMap.put("$map", rolesMapVals);
+    actorObj.put("roles", rolesMap);
+    project.put("actor", actorObj);
+
+    JSONObject verbObj = new JSONObject();
+    verbObj.put("name", "$statement.verb.display.en-US");
+    verbObj.put("verbid", "$statement.verb.id");
+    project.put("verb", verbObj);
+
+    JSONObject objectObj = new JSONObject();
+    objectObj.put("objectid", "$statement.object.id");
+    objectObj.put("name", "$statement.object.definition.name.en-US");
+    objectObj.put("objecttype", "$statement.object.definition.type");
+    project.put("object", objectObj);
+
+    project.put("timestamp", "$statement.timestamp");
+
+    project.put("course", "$statement.context.extensions.https://tech4comp&46;de/xapi/context/extensions/courseInfo.courseid");
+
+    JSONObject projectObj = new JSONObject();
+    projectObj.put("$project", project);
+
+    return projectObj;
   }
 
   /**
@@ -2110,7 +2614,6 @@ public class MediabaseGraphQLAPI extends RESTService {
    * builds new data fetcher for query types
    * @param 	tableName contains name of the GraphQL query type
    * @param 	schema contains name of schema of the database
-   * @param	con contains connection to DB2 database
    * @return	Data fetcher for query type which returns list GraphQL object types as HashMaps, field names as String
    * 			and their values of Object
    */
@@ -2215,7 +2718,6 @@ public class MediabaseGraphQLAPI extends RESTService {
    * builds new data fetcher for object types
    * @param 	tableName contains name of the GraphQL object type
    * @param 	schema contains name of schema of the database
-   * @param	con contains connection to DB2 database
    * @return	Data fetcher for object type which returns GraphQL object type as HashMap, field names as String
    * 			and their values of Object
    */
@@ -2398,6 +2900,8 @@ public class MediabaseGraphQLAPI extends RESTService {
       Properties prop = new Properties();
       prop.load(initInput);
       String url = prop.getProperty("restAPIURL");
+      System.out.println("TEST: " + prop.getProperty("restAPIURL"));
+      System.out.println("TEST: " + prop.getProperty("junit"));
       initInput.close();
       if (url.equals("build")) {
         return "http://localhost:8088/rest/";

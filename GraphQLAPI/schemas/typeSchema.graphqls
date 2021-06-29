@@ -7,3 +7,29 @@ type REVIEW {
   id: ID 
   comment:String
 }
+
+type XAPI_STATEMENT {
+    statementId: ID!
+    actor: ACTOR
+    verb: VERB
+    object: OBJECT
+    timestamp: String
+    courseId: Int
+}
+
+type ACTOR {
+    actorId: ID!
+    name: String
+    roles: [String]
+}
+
+type VERB {
+    verbId: ID!
+    name: String
+}
+
+type OBJECT {
+    objectId: ID!
+    name: String
+    objectType: String
+}

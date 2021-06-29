@@ -5,5 +5,9 @@ schema {
 type Query { 
   databaseNames: String 
   reviews(id: ID): [REVIEW] 
-  customQuery(dbName: String!, dbSchema: String!, query: String!): String 
+  customQuery(dbName: String!, dbSchema: String!, query: String!): String
+  customLRSQuery(dbName: String!, query: String!): String
+  getXAPIByActor(actorId: ID!, lrsName: String!): [XAPI_STATEMENT]
+  getXAPIByVerb(verbId: ID!, lrsName: String!): [XAPI_STATEMENT]
+  getXAPIByObject(objectId: ID!, lrsName: String!): [XAPI_STATEMENT]
 }

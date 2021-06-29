@@ -12,11 +12,11 @@ import io.swagger.annotations.Contact;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.License;
 import io.swagger.annotations.SwaggerDefinition;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -171,6 +171,72 @@ public class MediabaseAPI extends RESTService {
         .header("Access-Control-Allow-Origin", "*")
         .entity("Internal file management error.")
         .build();
+    }
+  }
+
+  @Path("/lrs/{name}")
+  @DELETE
+  @ApiOperation(value = "Deletes database from API.")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful deletion."),
+          @ApiResponse(code = 500, message = "Error when handling properties file.")})
+  public Response deleteLRS(@PathParam("name") String name) {
+
+    try {
+      InputStream input = new FileInputStream(filePath);
+      Properties prop = new Properties();
+      prop.load(input);
+      prop.remove("lrs.url_" + name);
+      prop.remove("lrs.auth_" + name);
+      OutputStream output = new FileOutputStream(filePath);
+      prop.store(output, null);
+      System.out.println("DELETE");
+      return Response.status(200).header("Access-Control-Allow-Origin", "*")
+              .entity("Deletion successful").build();
+    } catch (IOException exc) {
+      return Response.status(500).header("Access-Control-Allow-Origin", "*").build();
+    }
+  }
+
+  @POST
+  @Path("/lrs/{name}")
+  @ApiOperation(value = "Adds LRS containing xAPI statements.")
+  @ApiResponses(value = { @ApiResponse(code = 210, message = "LRS was already registered."),
+          @ApiResponse(code = 201, message = "LRS was added successfully."),
+          @ApiResponse(code = 422, message = "Properties are not provided in required format"),
+          @ApiResponse(code = 500, message = "Error when handling properties file.")})
+  public Response addLRS(@PathParam("name") String name,
+                         @ApiParam(value="Properties of LRS in JSON format") String properties) {
+
+    System.out.println("Properties: " + properties);
+    try {
+      InputStream input = new FileInputStream(filePath);
+      Properties prop = new Properties();
+      prop.load(input);
+
+      if (prop.getProperty("lrs.url_" + name) != null && prop.getProperty("lrs.auth_" + name) != null) {
+        return Response.status(210).header("Access-Control-Allow-Origin", "*")
+                .entity("LRS already added").build();
+      } else {
+        JSONObject json = new JSONObject(properties);
+        OutputStream output = new FileOutputStream(filePath);
+
+        prop.setProperty("lrs.url_" + name, json.getString("url"));
+        prop.setProperty("lrs.auth_" + name, json.getString("auth"));
+
+        // save properties to project root folder
+        prop.store(output, null);
+        return Response.status(201).header("Access-Control-Allow-Origin", "*")
+                .entity("LRS added.").build();
+      }
+    }
+    catch (JSONException exc) {
+      System.out.println("JSON Exception: " + exc.toString());
+      return Response.status(422).header("Access-Control-Allow-Origin", "*")
+              .entity("LRS properties are not provided in correct JSON format").build();
+    } catch (IOException exc) {
+      System.err.println("Input failed: " + exc.toString());
+      return Response.status(500).header("Access-Control-Allow-Origin", "*")
+              .entity("Internal file management error.").build();
     }
   }
 
@@ -858,6 +924,69 @@ public class MediabaseAPI extends RESTService {
     } catch (IOException exc) {
       return null;
     }
+  }
+
+  @Path("/data/query/lrs/{lrsName}")
+  @GET
+  @ApiOperation(value = "Executes given Learning Locker query on a LRS.")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful request."),
+          @ApiResponse(code = 406, message = "Structure is not present in database.")})
+  public Response lrsQuery(@PathParam("lrsName") String lrsName, @QueryParam("query") String query) {
+    try {
+      InputStream input = new FileInputStream(filePath);
+      Properties prop = new Properties();
+      prop.load(input);
+
+
+
+      StringBuilder sb = new StringBuilder();
+      for (byte b : query.getBytes()) {
+        sb.append("%" + String.format("%02X", b));
+      }
+
+      String result = LRSconnect(prop.getProperty("lrs.url_" + lrsName),
+              prop.getProperty("lrs.auth_" + lrsName),
+              sb.toString());
+
+      JSONArray json = new JSONArray(result);
+      if (json != null && json.isEmpty()) {
+        return Response.status(406).header("Access-Control-Allow-Origin", "*").build();
+      }
+      return Response.status(200).header("Access-Control-Allow-Origin", "*")
+              .entity(json.toString()).build();
+
+    } catch (Exception exc) {
+      System.out.println("Exception: " + exc.toString());
+      return Response.status(422).header("Access-Control-Allow-Origin", "*")
+              .entity("Error: " + exc.toString()).build();
+    }
+  }
+
+  public String LRSconnect(String domain, String auth, String pipeline)  {
+    StringBuilder response = new StringBuilder();
+
+    try {
+      URL url = new URL(domain + "pipeline=" + pipeline);
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("GET");
+      conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+      conn.setRequestProperty("Authorization","Basic " + auth);
+
+      BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+      String inputLine;
+
+      while ((inputLine = in.readLine()) != null) {
+        response.append(inputLine);
+      }
+      in.close();
+      conn.disconnect();
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return response.toString();
   }
 
   @Path("view/{dbName}/{schema}/{viewName}")
