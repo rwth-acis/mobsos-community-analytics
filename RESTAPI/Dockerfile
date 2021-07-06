@@ -15,7 +15,7 @@ RUN dos2unix ./gradlew
 # run the rest as unprivileged user
 USER las2peer
 RUN chmod +x gradlew && ./gradlew build --exclude-task test
-
+RUN chmod +x /src/docker-entrypoint.sh
 
 RUN dos2unix /src/docker-entrypoint.sh
 RUN dos2unix /src/gradle.properties
